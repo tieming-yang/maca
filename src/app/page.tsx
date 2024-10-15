@@ -74,6 +74,13 @@ export default function Home() {
         opts={opts}
       />
 
+      <section className="" id="metadata">
+        <h1>{lyric.title}</h1>
+        <p>{lyric.artist}</p>
+        <p>作詞家: {lyric.lyricist}</p>
+        <p>作曲家: {lyric.composer}</p>
+      </section>
+
       <ul className="leading-relaxed">
         {lyric.lines.map((line) => {
           return (
