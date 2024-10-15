@@ -29,11 +29,15 @@ export default function Home() {
     });
 
     if (currentLine) {
-      setCurrentLine({ text: currentLine.text, timeStamp: currentLine.timeStamp });
+      setCurrentLine({
+        text: currentLine.text,
+        timeStamp: currentLine.timeStamp,
+      });
     }
   }, [currentTimeStamp]);
 
-  console.log("time", currentTimeStamp);
+  // keep this console.log for adjust the time
+  // console.log("time", currentTimeStamp);
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <Youtube
@@ -70,18 +74,29 @@ export default function Home() {
         opts={opts}
       />
 
-      <ul>
+      <ul className="leading-relaxed">
         {lyric.lines.map((line) => {
           return (
             <li
-              className={`text-center leading-10 transition-all duration-300 ${
+              className={`text-center leading-[3rem] transition-all duration-300 ${
                 currentLine?.timeStamp === line.timeStamp
-                  ? "text-white font-bold text-xl"
-                  : "text-white/70"
+                  ? "text-white font-bold text-2xl"
+                  : "text-white/70 text-xl"
               }`}
               key={line.timeStamp}
             >
-              {line.text}
+              {line.text.map((part, index) => {
+                if (typeof part === "string") {
+                  return <span key={index}>{part}</span>;
+                } else {
+                  return (
+                    <ruby key={index}>
+                      {part.kanji}
+                      <rt>{part.furigana}</rt>
+                    </ruby>
+                  );
+                }
+              })}
             </li>
           );
         })}

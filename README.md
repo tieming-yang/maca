@@ -5,7 +5,7 @@
 2. Change `timeStamp` to `start` and `end`
 
 ## 10-14-2024 Monday
-1. Fix accuracy
+1. ~~Fix accuracy~~
 2. Add Translations
 3. Add select and jump
 
