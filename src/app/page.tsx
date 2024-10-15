@@ -2,37 +2,38 @@
 
 import { useEffect, useState } from "react";
 import Youtube from "react-youtube";
-import { lyrics } from "./osaka-lover";
+import { Line, lyric } from "./osaka-lover";
+
+const opts = {
+  height: "390",
+  width: "640",
+  playerVars: {
+    // https://developers.google.com/youtube/player_parameters
+    autoplay: 1,
+  },
+};
 
 export default function Home() {
   const [player, setPlayer] = useState(null);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
   const [currentTimeStamp, setCurrentTimeStamp] = useState(0);
-  const [currentLine, setCurrentLine] = useState("");
+  const [currentLine, setCurrentLine] = useState<Line>();
 
   useEffect(() => {
-    const currentLyric = lyrics.find((lyric, index) => {
-      const nextLyric = lyrics[index + 1];
+    const currentLine = lyric.lines.find((line, index) => {
+      const nextLyric = lyric.lines[index + 1];
       return (
-        currentTimeStamp >= lyric.timeStamp &&
+        currentTimeStamp >= line.timeStamp &&
         (!nextLyric || currentTimeStamp < nextLyric.timeStamp)
       );
     });
 
-    if (currentLyric) {
-      setCurrentLine(currentLyric.lyric);
+    if (currentLine) {
+      setCurrentLine({ text: currentLine.text, timeStamp: currentLine.timeStamp });
     }
   }, [currentTimeStamp]);
 
-  const opts = {
-    height: "390",
-    width: "640",
-    playerVars: {
-      // https://developers.google.com/youtube/player_parameters
-      autoplay: 1,
-    },
-  };
-
+  console.log("time", currentTimeStamp);
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <Youtube
@@ -70,17 +71,17 @@ export default function Home() {
       />
 
       <ul>
-        {lyrics.map((lyric) => {
+        {lyric.lines.map((line) => {
           return (
             <li
               className={`text-center leading-10 transition-all duration-300 ${
-                currentLine === lyric.lyric
-                  ? "text-white font-bold text-3xl"
+                currentLine?.timeStamp === line.timeStamp
+                  ? "text-white font-bold text-xl"
                   : "text-white/70"
               }`}
-              key={lyric.timeStamp}
+              key={line.timeStamp}
             >
-              {lyric.lyric}
+              {line.text}
             </li>
           );
         })}
