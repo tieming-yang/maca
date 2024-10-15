@@ -5,8 +5,8 @@ import Youtube from "react-youtube";
 import { Line, lyric } from "./osaka-lover";
 
 const opts = {
-  height: "390",
-  width: "640",
+  height: "300",
+  width: "440",
   playerVars: {
     // https://developers.google.com/youtube/player_parameters
     autoplay: 1,
@@ -39,7 +39,7 @@ export default function Home() {
   // keep this console.log for adjust the time
   // console.log("time", currentTimeStamp);
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex min-h-screen flex-col items-center p-3 md:p-0">
       <Youtube
         // @ts-expect-error as I dont want to handle Youtube player event
         onReady={(e) => {
@@ -81,11 +81,11 @@ export default function Home() {
         <p>作曲家: {lyric.composer}</p>
       </section>
 
-      <ul className="leading-relaxed">
+      <ul className="leading-relaxed w-full">
         {lyric.lines.map((line) => {
           return (
             <li
-              className={`text-center leading-[3rem] transition-all duration-300 ${
+              className={`text-center min-w-full leading-[3rem] transition-all duration-300 ${
                 currentLine?.timeStamp === line.timeStamp
                   ? "text-white font-bold text-2xl"
                   : "text-white/70 text-xl"
