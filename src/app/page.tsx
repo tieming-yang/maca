@@ -51,10 +51,20 @@ export default function Home() {
     }
   }, [currentLine]);
 
+  const handleToggle = () => {
+    if (!player) return;
+
+    if (player.getPlayerState() === 1) {
+      player.pauseVideo();
+    } else {
+      player.playVideo();
+    }
+  };
+  console.log(player.getPlayerState());
   // keep this console.log for adjust the time
   // console.log("time", currentTimeStamp);
   return (
-    <main className="flex min-h-screen flex-col max-h-dvh items-center p-3 md:p-0 overflow-y-hidden">
+    <main className="flex min-h-screen min-w-dvw flex-col max-h-dvh items-center p-3 md:p-0 overflow-y-hidden">
       <Youtube
         // @ts-expect-error as I dont want to handle Youtube player event
         onReady={(e) => {
@@ -97,10 +107,7 @@ export default function Home() {
       </section>
 
       <div className="overflow-y-auto min-w-dvw">
-        <ul
-          ref={lyricsContianerRef}
-          className=""
-        >
+        <ul ref={lyricsContianerRef} className="">
           {lyric.lines.map((line) => {
             return (
               <li
@@ -129,6 +136,12 @@ export default function Home() {
           })}
         </ul>
       </div>
+
+      <section className="fixed bottom-3 w-full px-3 md:px-0 flex justify-center items-center">
+        <nav className="flex items-center justify-center w-full px-16 py-2 border rounded-full shadow-xl gap-x-7 border-primary/70 backdrop-blur-md bg-white/30">
+          <button onMouseDown={handleToggle}>play</button>
+        </nav>
+      </section>
     </main>
   );
 }
