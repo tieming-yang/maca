@@ -14,9 +14,9 @@ const opts = {
 };
 
 export default function Home() {
-  const [player, setPlayer] = useState(null);
+  const [player, setPlayer] = useState<YT.Player | null>(null);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
-  const [currentTimeStamp, setCurrentTimeStamp] = useState(0);
+  const [currentTimeStamp, setCurrentTimeStamp] = useState<number>(0);
   const [currentLine, setCurrentLine] = useState<Line>();
 
   const lyricsContianerRef = useRef<HTMLUListElement>(null);
@@ -66,13 +66,12 @@ export default function Home() {
   return (
     <main className="flex min-h-screen min-w-dvw flex-col max-h-dvh items-center p-3 md:p-0 overflow-y-hidden">
       <Youtube
-        // @ts-expect-error as I dont want to handle Youtube player event
-        onReady={(e) => {
+        onReady={(e: YT.PlayerEvent) => {
           setPlayer(e.target);
         }}
         onPlay={() => {
+          if (!player) return;
           const id = setInterval(() => {
-            // @ts-expect-error as I dont want to handle Youtube player event
             setCurrentTimeStamp(player?.getCurrentTime());
           }, 100);
 
