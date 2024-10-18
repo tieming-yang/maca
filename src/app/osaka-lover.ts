@@ -76,7 +76,8 @@ export const lyric: Lyric = {
       timeStamp: 39,
       text: [
         { kanji: "新大阪", furigana: "しんおおさか" },
-        "駅まで",
+        { kanji: "駅", furigana: "えき" },
+        "まで",
         { kanji: "迎", furigana: "むか" },
         "えに",
         { kanji: "来", furigana: "き" },
@@ -152,7 +153,8 @@ export const lyric: Lyric = {
     {
       timeStamp: 79.9,
       text: [
-        "あなた以外に",
+        { kanji: "以外", furigana: "いがい" },
+        "あなたに",
         { kanji: "連", furigana: "つ" },
         "れはおれへんのよ",
       ],
@@ -255,7 +257,8 @@ export const lyric: Lyric = {
       timeStamp: 134,
       text: [
         { kanji: "気分", furigana: "きぶん" },
-        "変えようとしてるんじゃん!",
+        { kanji: "変", furigana: "か" },
+        "えようとしてるんじゃん!",
       ],
     },
     {
