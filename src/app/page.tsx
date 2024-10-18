@@ -76,7 +76,8 @@ export default function Home() {
     <main className="flex min-h-dvh min-w-dvw flex-col max-h-dvh items-center overflow-y-hidden">
       <section className="fixed z-20 top-0 w-full">
         <div
-          className="flex items-center justify-center w-full py-1 border-b shadow-xl gap-x-7 border-white/20 backdrop-blur-md bg-white/10"
+          className="flex items-center justify-center w-full py-1 border-b shadow-xl gap-x-7 border-white/20 backdrop-blur-md bg-white/10 font-semibold"
+          style={{ filter: "drop-shadow(0 0 7px)" }}
           id="metadata"
         >
           <div>
