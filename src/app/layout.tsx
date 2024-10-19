@@ -29,7 +29,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Link className="fixed top-3 left-7" href="https://github.com/snow-t-m-yang" target="_blank">
+        <Link
+          className="fixed top-3 left-7"
+          href="https://github.com/snow-t-m-yang"
+          target="_blank"
+        >
           @kurogane
         </Link>
         {children}

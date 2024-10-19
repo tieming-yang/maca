@@ -9,7 +9,7 @@ export type TLyric = {
 
 export type TSong = {
   artist: string;
-  title: string;
+  name: string;
   lyricist: string;
   composer: string;
   lyrics: TLyric[];

@@ -2,7 +2,7 @@ import type { TSong } from "./Song";
 
 export const lyric: TSong = {
   artist: "DREAMS COME TRUE",
-  title: "大阪LOVER",
+  name: "大阪LOVER",
   lyricist: "吉田美和",
   composer: "吉田美和",
   lyrics: [
