@@ -18,13 +18,13 @@ export default function Home() {
   const [player, setPlayer] = useState<YT.Player | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+  const lyricsContianerRef = useRef<HTMLDivElement>(null);
+  const updateIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [currentTimeStamp, setCurrentTimeStamp] = useState<number>(0);
   const [currentLine, setCurrentLine] = useState<Line>();
-  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
 
-  const lyricsContianerRef = useRef<HTMLDivElement>(null);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // const [isAutoScrolling, setIsAutoScrolling] = useState(false);
 
   useEffect(() => {
     const currentLine = lyric.lines.find((line, index) => {
@@ -56,7 +56,8 @@ export default function Home() {
       const lyricsContainerHeight = lyricsContainer.clientHeight;
       const activeLineOffsetTop = activeLine.offsetTop;
       const activeLineHight = activeLine.clientHeight;
-      const offset = activeLineOffsetTop - lyricsContainerHeight / 2 + activeLineHight;
+      const offset =
+        activeLineOffsetTop - lyricsContainerHeight / 2 + activeLineHight;
 
       lyricsContainer.scrollTo({ top: offset, behavior: "smooth" });
     }
@@ -138,28 +139,27 @@ export default function Home() {
 
             setIsPlaying(true);
 
-            const id = setInterval(() => {
+            updateIntervalRef.current = setInterval(() => {
               setCurrentTimeStamp(player?.getCurrentTime());
             }, 100);
-
-            setIntervalId(id);
           }}
           onPause={() => {
             setIsPlaying(false);
-            if (!intervalId) {
+            if (!updateIntervalRef.current) {
               console.warn("intervalId is null");
               return;
             }
-            clearInterval(intervalId);
+            clearInterval(updateIntervalRef.current);
           }}
           onEnd={() => {
             setIsPlaying(false);
-            if (!intervalId) {
+            if (!updateIntervalRef.current) {
               console.warn("intervalId is null");
               return;
             }
 
-            clearInterval(intervalId);
+            clearInterval(updateIntervalRef.current);
+
             setCurrentTimeStamp(0);
           }}
           videoId="E-DAUGDEeRA"
