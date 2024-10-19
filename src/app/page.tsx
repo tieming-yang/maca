@@ -194,6 +194,7 @@ export default function Home() {
                 onMouseDown={() => {
                   setCurrentTimeStamp(line.timeStamp);
                   player?.seekTo(line.timeStamp, true);
+                  player?.playVideo();
                 }}
                 className={`transition-all duration-300 text-2xl font-bold ${
                   currentLine?.timeStamp === line.timeStamp
