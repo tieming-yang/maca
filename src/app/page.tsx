@@ -23,8 +23,8 @@ export default function Home() {
   const [currentTimeStamp, setCurrentTimeStamp] = useState<number>(0);
   const [currentLine, setCurrentLine] = useState<Line>();
 
-  // const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  // const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
 
   useEffect(() => {
     const currentLine = lyric.lines.find((line, index) => {
@@ -44,7 +44,7 @@ export default function Home() {
   }, [currentTimeStamp]);
 
   useEffect(() => {
-    if (!currentLine || !lyricsContianerRef.current) return;
+    if (!currentLine || !lyricsContianerRef.current || !isAutoScrolling) return;
 
     const sanitizedId = `#line-${currentLine.timeStamp
       .toString()
@@ -61,7 +61,29 @@ export default function Home() {
 
       lyricsContainer.scrollTo({ top: offset, behavior: "smooth" });
     }
-  }, [currentLine]);
+  }, [currentLine, isAutoScrolling]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsAutoScrolling(false);
+
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsAutoScrolling(true);
+      }, 2000);
+    };
+
+    if (!lyricsContianerRef.current) return;
+    const lyricsContainer = lyricsContianerRef.current;
+    lyricsContainer.addEventListener("scroll", handleScroll);
+
+    return () => {
+      lyricsContainer.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const handleToggle = () => {
     if (!player) return;
