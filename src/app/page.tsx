@@ -1,8 +1,10 @@
 "use client";
 
+import type { TLine } from "./lyric";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import Youtube from "react-youtube";
-import { Line, lyric } from "./osaka-lover";
+import { lyric } from "./osaka-lover";
 import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { LoaderCircle } from "lucide-react";
 import { Lyric } from "./lyric";
@@ -23,7 +25,7 @@ export default function Home() {
   const lyricsContianerRef = useRef<HTMLDivElement>(null);
   const updateIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [currentTimeStamp, setCurrentTimeStamp] = useState<number>(0);
-  const [currentLine, setCurrentLine] = useState<Line>();
+  const [currentLine, setCurrentLine] = useState<TLine>();
 
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);

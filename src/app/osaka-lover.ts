@@ -1,19 +1,6 @@
-type Lyric = {
-  artist: string;
-  title: string;
-  lyricist: string;
-  composer: string;
-  lines: Line[];
-};
+import type { TLyric } from "./lyric";
 
-type TextPart = string | { kanji: string; furigana: string };
-
-export type Line = {
-  timeStamp: number;
-  text: TextPart[];
-};
-
-export const lyric: Lyric = {
+export const lyric: TLyric = {
   artist: "DREAMS COME TRUE",
   title: "大阪LOVER",
   lyricist: "吉田美和",
