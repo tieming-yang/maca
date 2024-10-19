@@ -74,7 +74,7 @@ export default function Home() {
 
       scrollTimeoutRef.current = setTimeout(() => {
         setIsAutoScrolling(true);
-      }, 500);
+      }, 3000);
     };
 
     if (!lyricsContianerRef.current) return;
