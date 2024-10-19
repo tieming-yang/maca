@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Youtube from "react-youtube";
 import { Line, lyric } from "./osaka-lover";
 import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
+import { LoaderCircle } from "lucide-react";
 import { Lyric } from "./lyric";
 
 const opts = {
@@ -114,6 +115,11 @@ export default function Home() {
   // console.log("time", currentTimeStamp);
   return (
     <main className="flex min-h-dvh min-w-dvw flex-col max-h-dvh items-center overflow-y-hidden">
+      {!player && (
+        <div className="fixed z-50 flex justify-center items-center top-0 w-full h-full bg-black/50 backdrop-blur-sm">
+          <LoaderCircle className="h-9 w-9 animate-spin" />
+        </div>
+      )}
       <section className="fixed z-20 top-0 w-full">
         <div
           className="flex items-center justify-center w-full py-1 border-b shadow-xl gap-x-7 border-white/20 backdrop-blur-md bg-white/10 font-semibold"
