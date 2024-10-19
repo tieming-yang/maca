@@ -4,7 +4,6 @@
 3. キミシダイ列車
 
 # TODO
-
 1. ~~Auto scroll~~
 2. Change `timeStamp` to `start` and `end`
 3. ~~Fix accuracy~~
