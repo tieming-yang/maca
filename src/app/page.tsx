@@ -206,6 +206,7 @@ export default function Home() {
             clearInterval(updateIntervalRef.current);
 
             setCurrentTimeStamp(0);
+            player?.seekTo(0, true);
           }}
           videoId="E-DAUGDEeRA"
           opts={opts}
