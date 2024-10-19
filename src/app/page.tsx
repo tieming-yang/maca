@@ -24,7 +24,9 @@ export default function Home() {
   const [currentLine, setCurrentLine] = useState<Line>();
 
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+
+  const isProgramaticlyScrolling = useRef(true);
 
   useEffect(() => {
     const currentLine = lyric.lines.find((line, index) => {
@@ -60,12 +62,18 @@ export default function Home() {
         activeLineOffsetTop - lyricsContainerHeight / 2 + activeLineHight;
 
       lyricsContainer.scrollTo({ top: offset, behavior: "smooth" });
+      isProgramaticlyScrolling.current = true;
+      setTimeout(() => {
+        isProgramaticlyScrolling.current = false;
+      }, 1000);
     }
   }, [currentLine, isAutoScrolling]);
 
   useEffect(() => {
     const handleScroll = () => {
+      if (isProgramaticlyScrolling.current) return;
       setIsAutoScrolling(false);
+      isProgramaticlyScrolling.current = false;
 
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
@@ -73,7 +81,7 @@ export default function Home() {
 
       scrollTimeoutRef.current = setTimeout(() => {
         setIsAutoScrolling(true);
-      }, 2000);
+      }, 500);
     };
 
     if (!lyricsContianerRef.current) return;
