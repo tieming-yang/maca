@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Youtube from "react-youtube";
 import { Line, lyric } from "./osaka-lover";
 import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
@@ -85,14 +85,30 @@ export default function Home() {
     };
   }, []);
 
-  const handleToggle = () => {
+  const handleToggle = useCallback(() => {
     if (!player) return;
     if (isPlaying) {
       player.pauseVideo();
     } else {
       player.playVideo();
     }
-  };
+  }, [player, isPlaying]);
+
+  useEffect(() => {
+    const handleSpaceKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        handleToggle();
+      }
+    };
+
+    window.addEventListener("keydown", handleSpaceKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleSpaceKeyDown);
+    };
+  }, [handleToggle]);
+
   // keep this console.log for adjust the time
   // console.log("time", currentTimeStamp);
   return (
