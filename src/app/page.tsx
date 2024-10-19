@@ -1,13 +1,13 @@
 "use client";
 
-import type { TLine } from "./lyric";
+import type { TLyric } from "./Song";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Youtube from "react-youtube";
 import { lyric } from "./osaka-lover";
 import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { LoaderCircle } from "lucide-react";
-import { Lyric } from "./lyric";
+import { Song } from "./Song";
 
 const opts = {
   height: "780",
@@ -22,38 +22,43 @@ export default function Home() {
   const [player, setPlayer] = useState<YT.Player | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const [selectedSong, setSelectedSong] =
+    useState<keyof typeof Song.songs>("大阪LOVER");
+
   const lyricsContianerRef = useRef<HTMLDivElement>(null);
   const updateIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [currentTimeStamp, setCurrentTimeStamp] = useState<number>(0);
-  const [currentLine, setCurrentLine] = useState<TLine>();
+  const [currentLyric, setCurrentLyric] = useState<TLyric>();
 
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
 
   const isProgramaticlyScrolling = useRef(true);
 
+  const currentSongLyrics = Song.songs[selectedSong].lyrics;
   useEffect(() => {
-    const currentLine = lyric.lines.find((line, index) => {
-      const nextLyric = lyric.lines[index + 1];
+    const CurrentLyric = currentSongLyrics.find((lyric, index) => {
+      const nextLyric = currentSongLyrics[index + 1];
       return (
-        currentTimeStamp >= line.timeStamp &&
+        currentTimeStamp >= lyric.timeStamp &&
         (!nextLyric || currentTimeStamp < nextLyric.timeStamp)
       );
     });
 
-    if (currentLine) {
-      setCurrentLine({
-        text: currentLine.text,
-        timeStamp: currentLine.timeStamp,
+    if (CurrentLyric) {
+      setCurrentLyric({
+        text: CurrentLyric.text,
+        timeStamp: CurrentLyric.timeStamp,
       });
     }
-  }, [currentTimeStamp]);
+  }, [currentTimeStamp, currentSongLyrics]);
 
   useEffect(() => {
-    if (!currentLine || !lyricsContianerRef.current || !isAutoScrolling) return;
+    if (!currentLyric || !lyricsContianerRef.current || !isAutoScrolling)
+      return;
 
-    const sanitizedId = `#line-${Lyric.sanitizeTimeStamp(
-      currentLine.timeStamp
+    const sanitizedId = `#line-${Song.sanitizeTimeStamp(
+      currentLyric.timeStamp
     )}`;
     const activeLine = document.querySelector(sanitizedId) as HTMLLIElement;
     if (activeLine) {
@@ -63,7 +68,7 @@ export default function Home() {
         isProgramaticlyScrolling.current = false;
       }, 1000);
     }
-  }, [currentLine, isAutoScrolling]);
+  }, [currentLyric, isAutoScrolling]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -186,18 +191,18 @@ export default function Home() {
         ref={lyricsContianerRef}
       >
         <ul className="flex flex-col gap-y-5">
-          {lyric.lines.map((line) => {
+          {lyric.lyrics.map((line) => {
             return (
               <li
                 key={line.timeStamp}
-                id={`line-${Lyric.sanitizeTimeStamp(line.timeStamp)}`}
+                id={`line-${Song.sanitizeTimeStamp(line.timeStamp)}`}
                 onMouseDown={() => {
                   setCurrentTimeStamp(line.timeStamp);
                   player?.seekTo(line.timeStamp, true);
                   player?.playVideo();
                 }}
                 className={`transition-all duration-300 text-2xl font-bold ${
-                  currentLine?.timeStamp === line.timeStamp
+                  currentLyric?.timeStamp === line.timeStamp
                     ? "text-white"
                     : "text-white/50"
                 }`}

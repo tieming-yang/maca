@@ -1,6 +1,6 @@
-import type { TSong } from "./Song";
+import type { TSong } from "@/app/Song";
 
-export const lyric: TSong = {
+const 大阪LOVER: TSong = {
   artist: "DREAMS COME TRUE",
   title: "大阪LOVER",
   lyricist: "吉田美和",
@@ -477,3 +477,5 @@ export const lyric: TSong = {
     },
   ],
 };
+
+export default 大阪LOVER;
