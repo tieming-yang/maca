@@ -53,17 +53,9 @@ export default function Home() {
       currentLine.timeStamp
     )}`;
     const activeLine = document.querySelector(sanitizedId) as HTMLLIElement;
-
     if (activeLine) {
-      const lyricsContainer = lyricsContianerRef.current;
-      const lyricsContainerHeight = lyricsContainer.clientHeight;
-      const activeLineOffsetTop = activeLine.offsetTop;
-      const activeLineHight = activeLine.clientHeight;
-      const offset =
-        activeLineOffsetTop - lyricsContainerHeight / 2 + activeLineHight;
-
-      lyricsContainer.scrollTo({ top: offset, behavior: "smooth" });
       isProgramaticlyScrolling.current = true;
+      activeLine.scrollIntoView({ block: "center", behavior: "smooth" });
       setTimeout(() => {
         isProgramaticlyScrolling.current = false;
       }, 1000);
