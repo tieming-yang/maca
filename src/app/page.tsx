@@ -127,7 +127,7 @@ export default function Home() {
           id="metadata"
         >
           <div>
-            <h1>{lyric.title}</h1>
+            <h1 className="text-xl">{lyric.title}</h1>
             <p>{lyric.artist}</p>
           </div>
           <div>
