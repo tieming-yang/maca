@@ -137,40 +137,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section
-        className="overflow-y-auto py-24 h-full w-full flex flex-col px-5 md:px-0 items-center z-10 min-w-dvw bg-black/70 backdrop-blur-md"
-        ref={lyricsContianerRef}
-      >
-        <ul className="flex flex-col gap-y-5">
-          {lyric.lines.map((line) => {
-            return (
-              <li
-                id={`line-${line.timeStamp}`}
-                className={`transition-all duration-300 text-2xl font-bold ${
-                  currentLine?.timeStamp === line.timeStamp
-                    ? "text-white"
-                    : "text-white/50"
-                }`}
-                key={line.timeStamp}
-              >
-                {line.text.map((part, index) => {
-                  if (typeof part === "string") {
-                    return <span key={index}>{part}</span>;
-                  } else {
-                    return (
-                      <ruby key={index}>
-                        {part.kanji}
-                        <rt>{part.furigana}</rt>
-                      </ruby>
-                    );
-                  }
-                })}
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-
       <section className="fixed z-0 top-32">
         <Youtube
           onReady={(e: YT.PlayerEvent) => {
@@ -213,7 +179,44 @@ export default function Home() {
         />
       </section>
 
+      <section
+        className="overflow-y-auto py-24 h-full w-full flex flex-col px-5 md:px-0 items-center z-10 min-w-dvw bg-black/70 backdrop-blur-md"
+        ref={lyricsContianerRef}
+      >
+        <ul className="flex flex-col gap-y-5">
+          {lyric.lines.map((line) => {
+            return (
+              <li
+                key={line.timeStamp}
                 id={`line-${Lyric.sanitizeTimeStamp(line.timeStamp)}`}
+                onMouseDown={() => {
+                  setCurrentTimeStamp(line.timeStamp);
+                  player?.seekTo(line.timeStamp, true);
+                }}
+                className={`transition-all duration-300 text-2xl font-bold ${
+                  currentLine?.timeStamp === line.timeStamp
+                    ? "text-white"
+                    : "text-white/50"
+                }`}
+              >
+                {line.text.map((part, index) => {
+                  if (typeof part === "string") {
+                    return <span key={index}>{part}</span>;
+                  } else {
+                    return (
+                      <ruby key={index}>
+                        {part.kanji}
+                        <rt>{part.furigana}</rt>
+                      </ruby>
+                    );
+                  }
+                })}
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
       <section className="fixed z-20 bottom-1 w-full">
         <nav className="flex items-center justify-center w-full px-16 py-1 border rounded-full shadow-xl gap-x-7 border-white/20 backdrop-blur-md bg-white/10">
           <button onMouseDown={handleToggle}>
