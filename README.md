@@ -1,3 +1,8 @@
+# Song List
+1. 大阪LOVER
+2. 欲望に満ちた青年団
+3. キミシダイ列車
+
 # TODO
 
 1. ~~Auto scroll~~
