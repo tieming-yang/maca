@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Youtube from "react-youtube";
 import { Line, lyric } from "./osaka-lover";
 import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
+import { Lyric } from "./lyric";
 
 const opts = {
   height: "780",
@@ -48,9 +49,9 @@ export default function Home() {
   useEffect(() => {
     if (!currentLine || !lyricsContianerRef.current || !isAutoScrolling) return;
 
-    const sanitizedId = `#line-${currentLine.timeStamp
-      .toString()
-      .replace(".", "-")}`;
+    const sanitizedId = `#line-${Lyric.sanitizeTimeStamp(
+      currentLine.timeStamp
+    )}`;
     const activeLine = document.querySelector(sanitizedId) as HTMLLIElement;
 
     if (activeLine) {
@@ -213,6 +214,7 @@ export default function Home() {
         />
       </section>
 
+                id={`line-${Lyric.sanitizeTimeStamp(line.timeStamp)}`}
       <section className="fixed z-20 bottom-1 w-full">
         <nav className="flex items-center justify-center w-full px-16 py-1 border rounded-full shadow-xl gap-x-7 border-white/20 backdrop-blur-md bg-white/10">
           <button onMouseDown={handleToggle}>
