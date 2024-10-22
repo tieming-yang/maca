@@ -4,6 +4,7 @@ const 大阪LOVER: TSong = {
   artist: "DREAMS COME TRUE",
   name: "大阪LOVER",
   lyricist: "吉田美和",
+  youtubeId: "E-DAUGDEeRA",
   composer: "吉田美和",
   lyrics: [
     {

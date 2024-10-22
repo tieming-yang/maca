@@ -10,6 +10,7 @@ export type TLyric = {
 export type TSong = {
   artist: string;
   name: string;
+  youtubeId: string;
   lyricist: string;
   composer: string;
   lyrics: TLyric[];

@@ -181,7 +181,7 @@ export default function Learn({ params }: { params: { song: string } }) {
             setCurrentTimeStamp(0);
             player?.seekTo(0, true);
           }}
-          videoId="E-DAUGDEeRA"
+          videoId={currentSong.youtubeId}
           opts={opts}
         />
       </section>
