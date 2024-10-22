@@ -1,4 +1,4 @@
-import { 大阪LOVER } from "@/songs";
+import { 大阪LOVER, 欲望に満ちた青年団 } from "@/songs";
 
 type TextPart = string | { kanji: string; furigana: string };
 
@@ -23,5 +23,6 @@ export const Song = {
 
   songs: {
     大阪LOVER: 大阪LOVER,
+    欲望に満ちた青年団: 欲望に満ちた青年団,
   },
 };
