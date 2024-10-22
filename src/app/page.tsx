@@ -7,7 +7,11 @@ export default function Home() {
       <ul>
         {Object.values(Song.songs).map((song) => {
           return (
-            <li key={song.name}>
+            <li
+              className="text-xl leading-relaxed font-semibold"
+              style={{ filter: "drop-shadow(0 0 15px)" }}
+              key={song.name}
+            >
               <Link href={`learn/${decodeURIComponent(song.name)}`}>
                 {song.name}
               </Link>
