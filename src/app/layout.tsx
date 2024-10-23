@@ -15,7 +15,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Maca",
+  title: "maca",
   description: "Learn Japanese while singing",
 };
 
@@ -30,11 +30,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Link
-          className="fixed top-3 left-7"
-          href="https://github.com/snow-t-m-yang"
-          target="_blank"
+          className="fixed z-50 top-3 left-7 font-mono font-semibold"
+          href="/"
         >
-          @kurogane
+         maca 
         </Link>
         {children}
       </body>
