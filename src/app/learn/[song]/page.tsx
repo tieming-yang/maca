@@ -4,9 +4,10 @@ import type { TLyric } from "@/app/Song";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Youtube from "react-youtube";
-import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
+import { PlayIcon, PauseIcon, HomeIcon } from "@heroicons/react/24/solid";
 import { LoaderCircle } from "lucide-react";
 import { Song } from "@/app/Song";
+import Link from "next/link";
 
 const opts = {
   height: "780",
@@ -226,12 +227,18 @@ export default function Learn({ params }: { params: { song: string } }) {
       </section>
 
       <section className="fixed z-20 bottom-1 w-full">
-        <nav className="flex items-center justify-center w-full px-16 py-1 border rounded-full shadow-xl gap-x-7 border-white/20 backdrop-blur-md bg-white/10">
+          <nav className="flex items-center justify-center w-full px-16 py-1 border rounded-full shadow-xl gap-x-7 border-white/20 backdrop-blur-md bg-white/10">
+          <button>
+            <Link href="/">
+              <HomeIcon className="size-7" />
+            </Link>
+          </button>
+
           <button onMouseDown={handleToggle}>
             {isPlaying ? (
-              <PauseIcon className="size-12" />
+              <PauseIcon className="size-14" />
             ) : (
-              <PlayIcon className="size-12" />
+              <PlayIcon className="size-14" />
             )}
           </button>
         </nav>
