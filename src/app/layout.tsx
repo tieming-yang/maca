@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Link
-          className="fixed z-50 top-3 left-7 font-mono font-semibold"
+          className="fixed z-50 top-3 left-7 font-mono font-semibold hidden md:block"
           href="/"
         >
          maca 
