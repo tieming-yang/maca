@@ -15,8 +15,43 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "maca",
-  description: "Learn Japanese while singing",
+  description: "Learn Japanese by singing",
+  metadataBase: new URL("https://maca-maca.vercel.app/"),
+  title: {
+    default: "maca",
+    template: "%s | maca",
+  },
+  openGraph: {
+    title: "maca",
+    description: "Learn Japanese by singing",
+    url: "https://maca-maca.vercel.app/",
+    siteName: "maca",
+    locale: "en",
+    type: "website",
+    images: [
+      {
+        url: "/public/favicons/android-chrome-512x512.png",
+        width: 1200,
+        height: 630,
+        alt: "maca",
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  twitter: {
+    title: "maca",
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({
