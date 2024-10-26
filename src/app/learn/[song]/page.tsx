@@ -130,7 +130,7 @@ export default function Learn({ params }: { params: { song: string } }) {
       )}
       <section className="fixed z-20 top-0 w-full">
         <div
-          className="flex items-center justify-center w-full py-1 border-b shadow-xl gap-x-7 border-white/20 backdrop-blur-md bg-white/10 font-semibold"
+          className="flex items-center justify-center w-full py-1 border-b shadow-xl gap-x-7 border-white/20 backdrop-blur-sm  font-semibold"
           style={{ filter: "drop-shadow(0 0 7px)" }}
           id="metadata"
         >
@@ -227,7 +227,7 @@ export default function Learn({ params }: { params: { song: string } }) {
       </section>
 
       <section className="fixed z-20 bottom-1 w-full">
-          <nav className="flex items-center justify-center w-full px-16 py-1 border rounded-full shadow-xl gap-x-7 border-white/20 backdrop-blur-md bg-white/10">
+          <nav className="flex items-center justify-center w-full px-16 py-1 border rounded-full shadow-xl gap-x-7 border-white/20 backdrop-blur-md">
           <button>
             <Link href="/">
               <HomeIcon className="size-7" />
