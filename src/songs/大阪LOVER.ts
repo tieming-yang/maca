@@ -1,6 +1,7 @@
 import type { TSong } from "@/app/Song";
 
 const 大阪LOVER: TSong = {
+  id: globalThis.crypto.randomUUID(),
   artist: "DREAMS COME TRUE",
   name: "大阪LOVER",
   lyricist: "吉田美和",

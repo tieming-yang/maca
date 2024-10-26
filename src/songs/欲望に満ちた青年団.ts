@@ -1,6 +1,7 @@
 import type { TSong } from "@/app/Song";
 
 const 欲望に満ちた青年団: TSong = {
+  id: globalThis.crypto.randomUUID(),
   artist: "ONE OK ROCK",
   name: "欲望に満ちた青年団",
   lyricist: "Taka",
@@ -195,7 +196,9 @@ const 欲望に満ちた青年団: TSong = {
     },
     {
       timeStamp: 137,
-      text: ["So I know, you know, you know, I know, we have, we have, we have to run"],
+      text: [
+        "So I know, you know, you know, I know, we have, we have, we have to run",
+      ],
     },
     {
       timeStamp: 143,

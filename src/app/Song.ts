@@ -8,6 +8,7 @@ export type TLyric = {
 };
 
 export type TSong = {
+  id: string;
   artist: string;
   name: string;
   youtubeId: string;

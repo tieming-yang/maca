@@ -227,7 +227,7 @@ export default function Learn({ params }: { params: { song: string } }) {
       </section>
 
       <section className="fixed z-20 bottom-1 w-full">
-          <nav className="flex items-center justify-center w-full px-16 py-1 border rounded-full shadow-xl gap-x-7 border-white/20 backdrop-blur-md">
+        <nav className="flex items-center justify-center w-full px-16 py-1 border rounded-full shadow-xl gap-x-7 border-white/20 backdrop-blur-md">
           <button>
             <Link href="/">
               <HomeIcon className="size-7" />
