@@ -1,4 +1,4 @@
-import { Song } from "./Song";
+import { Song } from "../songs/Song";
 import Link from "next/link";
 
 export default function Home() {

@@ -1,4 +1,4 @@
-import type { TSong } from "@/app/Song";
+import type { TSong } from "@/songs/Song";
 
 const 大阪LOVER: TSong = {
   id: globalThis.crypto.randomUUID(),

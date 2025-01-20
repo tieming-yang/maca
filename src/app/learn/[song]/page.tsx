@@ -1,12 +1,12 @@
 "use client";
 
-import type { TLyric } from "@/app/Song";
+import type { TLyric } from "@/songs/Song";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Youtube from "react-youtube";
 import { PlayIcon, PauseIcon, HomeIcon } from "@heroicons/react/24/solid";
 import { LoaderCircle } from "lucide-react";
-import { Song } from "@/app/Song";
+import { Song } from "@/songs/Song";
 import Link from "next/link";
 
 const opts = {
