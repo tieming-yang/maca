@@ -1,8 +1,3 @@
-# Song List
-1. 大阪LOVER
-2. 欲望に満ちた青年団
-3. キミシダイ列車
-
 # TODO
 1. ~~Auto scroll~~
 2. Change `timeStamp` to `start` and `end`
@@ -11,6 +6,7 @@
 5. ~~Add select and jump~~
 6. ~~press and stop scrolling~~
 7. ~~control bar~~
+8. Add metadata
 
 # Docs
 
