@@ -22,6 +22,13 @@ export const Song = {
     return timeStamp.toString().replace(".", "-");
   },
 
+  timestampToSeconds(timestamp: string | number) {
+    if (typeof timestamp === "number") return timestamp;
+    
+    const [minutes, seconds] = timestamp.split(":");
+    return Number(minutes) * 60 + Number(seconds);
+  },
+
   songs: {
     大阪LOVER: 大阪LOVER,
     欲望に満ちた青年団: 欲望に満ちた青年団,

@@ -196,7 +196,7 @@ export default function Learn({ params }: { params: { song: string } }) {
             return (
               <li
                 key={line.timeStamp}
-                id={`line-${Song.sanitizeTimeStamp(line.timeStamp)}`}
+                id={`line-${Song.timestampToSeconds(line.timeStamp)}`}
                 onMouseDown={() => {
                   setCurrentTimeStamp(line.timeStamp);
                   player?.seekTo(line.timeStamp, true);
