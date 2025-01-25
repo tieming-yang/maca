@@ -24,7 +24,7 @@ export default function Home() {
               style={{ filter: "drop-shadow(0 0 15px)" }}
               key={song.name}
             >
-              <Link href={`learn/${decodeURIComponent(song.name)}`}>
+              <Link href={`learn/${decodeURIComponent(song.name)}`} prefetch>
                 {song.name}
               </Link>
             </li>
