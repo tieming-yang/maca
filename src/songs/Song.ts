@@ -1,4 +1,4 @@
-import { 大阪LOVER, 明日への手紙, 欲望に満ちた青年団 } from "@/songs";
+import { 大阪LOVER, 明日への手紙, 欲望に満ちた青年団, おれの小樽 } from "@/songs";
 
 type TextPart = string | { kanji: string; furigana: string };
 
@@ -26,5 +26,6 @@ export const Song = {
     大阪LOVER: 大阪LOVER,
     欲望に満ちた青年団: 欲望に満ちた青年団,
     明日への手紙: 明日への手紙,
+    おれの小樽: おれの小樽
   },
 };

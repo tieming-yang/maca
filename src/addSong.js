@@ -3,11 +3,11 @@ const path = require("path");
 
 // Arguments: Update these values for each new song
 const songDetails = {
-  artist: "Artist Name", // Replace with the artist's name
-  name: "SongName", // Replace with the song's name (no spaces, for the filename)
-  lyricist: "Lyricist Name", // Replace with the lyricist's name
-  composer: "Composer Name", // Replace with the composer's name
-  youtubeId: "YouTubeID12345", // Replace with the YouTube ID
+  artist: "石原裕次郎",
+  name: "おれの小樽",
+  lyricist: "杉紀彦",
+  composer: "弦哲也",
+  youtubeId: "RFnDn7UpIQc",
 };
 
 // Main function to add a new song
@@ -78,7 +78,7 @@ export const ${name} = {
   if (match) {
     const songsObject = match[1].trim();
     const updatedSongsObject = songsObject
-      ? `${songsObject},\n    ${name}: ${name}`
+      ? `${songsObject}\n    ${name}: ${name}`
       : `${name}: ${name}`;
     const sanitizedSongsObject = updatedSongsObject.replace(/,\s*$/, ""); // Remove trailing comma
     songTsContent = songTsContent.replace(
