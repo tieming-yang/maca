@@ -31,9 +31,9 @@ export const Song = {
   timestampToSeconds(timestamp: string | number): number {
     if (!timestamp) return 0;
     if (typeof timestamp === "number") return Math.round(timestamp);
-
+    
     const [minutes, seconds] = timestamp.split(":");
-    console.log(minutes, seconds);
+
     return Math.round(Number(minutes) * 60 + Number(seconds));
   },
 
