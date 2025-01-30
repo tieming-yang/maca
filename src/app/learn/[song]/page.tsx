@@ -1,6 +1,6 @@
 "use client";
 
-import type { TLyric } from "@/songs/Song";
+import type { TLyric, TSong } from "@/songs/Song";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Youtube from "react-youtube";
@@ -36,7 +36,11 @@ export default function Learn({ params }: { params: { song: string } }) {
 
   const isProgramaticlyScrolling = useRef(true);
 
-  const currentSong = Song.songs[selectedSong];
+  const currentSong = Song.sanitizeCurrentSong(
+    Song.songs[selectedSong] as TSong
+  );
+
+  console.log(currentSong);
   useEffect(() => {
     const CurrentLyric = currentSong.lyrics.find((lyric, index) => {
       const nextLyric = currentSong.lyrics[index + 1];
@@ -196,7 +200,7 @@ export default function Learn({ params }: { params: { song: string } }) {
             return (
               <li
                 key={line.timeStamp}
-                id={`line-${Song.timestampToSeconds(line.timeStamp)}`}
+                id={`line-${Song.sanitizeTimeStamp(line.timeStamp)}`}
                 onMouseDown={() => {
                   setCurrentTimeStamp(line.timeStamp);
                   player?.seekTo(line.timeStamp, true);

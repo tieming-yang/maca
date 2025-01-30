@@ -24,15 +24,27 @@ export type TSong = {
 };
 
 export const Song = {
-  sanitizeTimeStamp: (timeStamp: number) => {
+  sanitizeTimeStamp: (timeStamp: number): string => {
     return timeStamp.toString().replace(".", "-");
   },
 
-  timestampToSeconds(timestamp: string | number) {
-    if (typeof timestamp === "number") return timestamp;
-    
+  timestampToSeconds(timestamp: string | number): number {
+    if (!timestamp) return 0;
+    if (typeof timestamp === "number") return Math.round(timestamp);
+
     const [minutes, seconds] = timestamp.split(":");
-    return Number(minutes) * 60 + Number(seconds);
+    console.log(minutes, seconds);
+    return Math.round(Number(minutes) * 60 + Number(seconds));
+  },
+
+  sanitizeCurrentSong(currentSong: TSong): TSong {
+    return {
+      ...currentSong,
+      lyrics: currentSong.lyrics.map((lyric) => ({
+        ...lyric,
+        timeStamp: Song.timestampToSeconds(lyric.timeStamp),
+      })),
+    };
   },
 
   songs: {
