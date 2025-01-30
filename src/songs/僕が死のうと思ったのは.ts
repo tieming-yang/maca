@@ -100,8 +100,8 @@ export const 僕が死のうと思ったのは = {
     {
       timeStamp: "01:48",
       text: [
-        { kanji: "八日雨", furigana: "ようかあめ" },
-        { kanji: "虚構", furigana: "きょこう" },
+        { kanji: "薄荷飴", furigana: "はっかあめ" },
+        { kanji: "漁港", furigana: "ぎょこう" },
         "の",
         { kanji: "灯台", furigana: "とうだい" },
       ],
@@ -203,10 +203,19 @@ export const 僕が死のうと思ったのは = {
       ],
     },
     {
-      timeStamp: "03:13",
+      timeStamp: "03:12",
       text: [
+        { kanji: "僕", furigana: "ぼく" },
+        "が",
         { kanji: "死", furigana: "し" },
-        "のうとお",
+        "のうと",
+        { kanji: "思", furigana: "おも" },
+        "ったのは",
+      ],
+    },
+    {
+      timeStamp: "03:19",
+      text: [
         { kanji: "靴紐", furigana: "くつひも" },
         "が",
         { kanji: "解", furigana: "と" },
@@ -225,8 +234,28 @@ export const 僕が死のうと思ったのは = {
       ],
     },
     {
-      timeStamp: "03:38",
-      text: [{ kanji: "死", furigana: "し" }, "のうとなのは"],
+      timeStamp: "03:31",
+      text: [
+        { kanji: "人", furigana: "ひと" },
+        "との",
+        { kanji: "繋", furigana: "つな" },
+        "がり",
+        "も",
+        "また",
+        { kanji: "然", furigana: "しか" },
+        "り",
+      ],
+    },
+    {
+      timeStamp: "03:37",
+      text: [
+        { kanji: "僕", furigana: "ぼく" },
+        "が",
+        { kanji: "死", furigana: "し" },
+        "のうと",
+        { kanji: "思", furigana: "おも" },
+        "ったのは",
+      ],
     },
     {
       timeStamp: "03:43",
@@ -250,12 +279,14 @@ export const 僕が死のうと思ったのは = {
       ],
     },
     {
-      timeStamp: "03:55",
+      timeStamp: "03:56",
       text: [
         "あの",
         { kanji: "日", furigana: "ひ" },
         "の",
         { kanji: "僕", furigana: "ぼく" },
+        "に",
+        "ごめなさいと",
       ],
     },
     {
@@ -355,21 +386,39 @@ export const 僕が死のうと思ったのは = {
       ],
     },
     {
+      timeStamp: "05:19",
+      text: [
+        { kanji: "僕", furigana: "ぼく" },
+        "が",
+        { kanji: "死", furigana: "し" },
+        "のうと",
+        { kanji: "思", furigana: "おも" },
+        "ったのは",
+      ],
+    },
+    {
       timeStamp: "05:26",
       text: [
+        "あなたが",
         { kanji: "綺麗", furigana: "きれい" },
-        "には",
-        { kanji: "死", furigana: "し" },
-        "ぬことばかり",
+        "に",
+        { kanji: "笑", furigana: "わ" },
+        "らう",
+        "から",
       ],
+    },
+    {
+      timeStamp: "05:31",
+      text: [{ kanji: "死", furigana: "し" }, "ぬことばかり"],
     },
     {
       timeStamp: "05:34",
       text: [{ kanji: "考", furigana: "かんが" }, "えてしまうのは"],
     },
     {
-      timeStamp: "05:37",
+      timeStamp: "05:38",
       text: [
+        "きっと",
         { kanji: "生", furigana: "い" },
         "きることに",
         { kanji: "真面目", furigana: "まじめ" },
@@ -391,8 +440,7 @@ export const 僕が死のうと思ったのは = {
       timeStamp: "05:50",
       text: [
         "まだ",
-        { kanji: "あなた", furigana: "あなた" },
-        "に",
+        "あなたに",
         { kanji: "出会", furigana: "であ" },
         "ってなかったから",
       ],
@@ -400,8 +448,7 @@ export const 僕が死のうと思ったのは = {
     {
       timeStamp: "05:56",
       text: [
-        { kanji: "あなた", furigana: "あなた" },
-        "のような",
+        "あなたのような",
         { kanji: "人", furigana: "ひと" },
         "が",
         { kanji: "生", furigana: "う" },
@@ -420,21 +467,25 @@ export const 僕が死のうと思ったのは = {
       ],
     },
     {
-      timeStamp: "06:11",
+      timeStamp: "06:08",
       text: [
+        "あなたのような",
         { kanji: "人", furigana: "ひと" },
         "が",
         { kanji: "生", furigana: "い" },
         "きてる",
+      ],
+    },
+    {
+      timeStamp: "06:15",
+      text: [
         { kanji: "世界", furigana: "せかい" },
         "に",
         { kanji: "少", furigana: "すこ" },
         "し",
+        { kanji: "期待", furigana: "きたい" },
+        "するよ",
       ],
-    },
-    {
-      timeStamp: "06:18",
-      text: [{ kanji: "期待", furigana: "きたい" }, "するよ"],
     },
   ],
 };
