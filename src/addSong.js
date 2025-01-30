@@ -3,11 +3,11 @@ const path = require("path");
 
 // Arguments: Update these values for each new song
 const songDetails = {
-  artist: "石原裕次郎",
-  name: "おれの小樽",
-  lyricist: "杉紀彦",
-  composer: "弦哲也",
-  youtubeId: "RFnDn7UpIQc",
+  artist: "中島美嘉",
+  name: "僕が死のうと思ったのは",
+  lyricist: "秋田ひろむ",
+  composer: "秋田ひろむ",
+  youtubeId: "AabAbM_Lmuo",
 };
 
 // Main function to add a new song
