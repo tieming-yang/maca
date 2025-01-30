@@ -40,7 +40,6 @@ export default function Learn({ params }: { params: { song: string } }) {
     Song.songs[selectedSong] as TSong
   );
 
-  console.log(currentSong);
   useEffect(() => {
     const CurrentLyric = currentSong.lyrics.find((lyric, index) => {
       const nextLyric = currentSong.lyrics[index + 1];
