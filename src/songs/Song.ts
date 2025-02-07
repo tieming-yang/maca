@@ -11,6 +11,7 @@ type TextPart = string | { kanji: string; furigana: string };
 export type TLyric = {
   timeStamp: number;
   text: TextPart[];
+  zh?: string;
 };
 
 export type TSong = {
