@@ -4,7 +4,13 @@ import type { TLyric, TSong } from "@/songs/Song";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Youtube from "react-youtube";
-import { PlayIcon, PauseIcon, HomeIcon } from "@heroicons/react/24/solid";
+import {
+  PlayIcon,
+  PauseIcon,
+  HomeIcon,
+  LanguageIcon,
+} from "@heroicons/react/24/solid";
+
 import { LoaderCircle } from "lucide-react";
 import { Song } from "@/songs/Song";
 import Link from "next/link";
@@ -35,6 +41,8 @@ export default function Learn({ params }: { params: { song: string } }) {
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
 
   const isProgramaticlyScrolling = useRef(true);
+
+  const [showZh, setShowZh] = useState(true);
 
   const currentSong = Song.sanitizeCurrentSong(
     Song.songs[selectedSong] as TSong
@@ -223,6 +231,7 @@ export default function Learn({ params }: { params: { song: string } }) {
                     );
                   }
                 })}
+                {showZh && line.zh && <p className="text-xl">{line.zh}</p>}
               </li>
             );
           })}
@@ -242,6 +251,14 @@ export default function Learn({ params }: { params: { song: string } }) {
               <PauseIcon className="size-14" />
             ) : (
               <PlayIcon className="size-14" />
+            )}
+          </button>
+
+          <button onMouseDown={() => setShowZh(!showZh)}>
+            {showZh ? (
+              <LanguageIcon className="size-7 text-white" />
+            ) : (
+              <LanguageIcon className="size-7 text-white/50" />
             )}
           </button>
         </nav>
