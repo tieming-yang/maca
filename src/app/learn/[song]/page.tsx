@@ -135,13 +135,13 @@ export default function Learn({ params }: { params: { song: string } }) {
   return (
     <main className="flex min-h-dvh min-w-dvw flex-col max-h-dvh items-center overflow-y-hidden">
       {!player && (
-        <div className="fixed z-50 flex justify-center items-center top-0 w-full h-full bg-black/50 backdrop-blur-sm">
+        <div className="fixed z-50 flex justify-center items-center top-0 w-full h-full bg-black/50 backdrop-blur-xs">
           <LoaderCircle className="h-9 w-9 animate-spin" />
         </div>
       )}
       <section className="fixed z-20 top-0 w-full">
         <div
-          className="flex items-center justify-center w-full py-1 border-b shadow-xl gap-x-7 border-white/20 backdrop-blur-sm  font-semibold"
+          className="flex items-center justify-center w-full py-1 border-b shadow-xl gap-x-7 border-white/20 backdrop-blur-xs  font-semibold"
           style={{ filter: "drop-shadow(0 0 7px)" }}
           id="metadata"
         >
