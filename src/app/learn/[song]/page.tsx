@@ -2,7 +2,7 @@
 
 import type { TLyric, TSong } from "@/songs/Song";
 
-import { use, useCallback, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Youtube from "react-youtube";
 import {
   PlayIcon,
@@ -47,9 +47,9 @@ export default function Learn(props: { params: Params }) {
 
   const [showZh, setShowZh] = useState(true);
 
-  const currentSong = Song.sanitizeCurrentSong(
-    Song.songs[selectedSong] as TSong
-  );
+  const currentSong = useMemo(() => {
+    return Song.sanitizeCurrentSong(Song.songs[selectedSong] as TSong);
+  }, [selectedSong]);
 
   useEffect(() => {
     const CurrentLyric = currentSong.lyrics.find((lyric, index) => {
@@ -67,6 +67,14 @@ export default function Learn(props: { params: Params }) {
       });
     }
   }, [currentTimeStamp, currentSong]);
+
+  // useEffect(() => {
+  //   return () => {
+  //     if (updateIntervalRef.current) {
+  //       clearInterval(updateIntervalRef.current);
+  //     }
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (!currentLyric || !lyricsContianerRef.current || !isAutoScrolling)
@@ -170,19 +178,25 @@ export default function Learn(props: { params: Params }) {
               return;
             }
 
+            if (updateIntervalRef.current) {
+              clearInterval(updateIntervalRef.current);
+              updateIntervalRef.current = null;
+            }
+
             setIsPlaying(true);
 
             updateIntervalRef.current = setInterval(() => {
+              console.log("currentTimeStamp", player?.getCurrentTime());
               setCurrentTimeStamp(player?.getCurrentTime());
-            }, 100);
+            }, 250);
           }}
           onPause={() => {
-            setIsPlaying(false);
-            if (!updateIntervalRef.current) {
-              console.warn("intervalId is null");
-              return;
+            if (updateIntervalRef.current) {
+              clearInterval(updateIntervalRef.current);
+              updateIntervalRef.current = null;
             }
-            clearInterval(updateIntervalRef.current);
+
+            setIsPlaying(false);
           }}
           onEnd={() => {
             setIsPlaying(false);
@@ -191,7 +205,10 @@ export default function Learn(props: { params: Params }) {
               return;
             }
 
-            clearInterval(updateIntervalRef.current);
+            if (updateIntervalRef.current) {
+              clearInterval(updateIntervalRef.current);
+              updateIntervalRef.current = null;
+            }
 
             setCurrentTimeStamp(0);
             player?.seekTo(0, true);
