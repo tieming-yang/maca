@@ -3,11 +3,11 @@ const path = require("path");
 
 // Arguments: Update these values for each new song
 const songDetails = {
-  artist: "中島美嘉",
-  name: "僕が死のうと思ったのは",
-  lyricist: "秋田ひろむ",
-  composer: "秋田ひろむ",
-  youtubeId: "AabAbM_Lmuo",
+  artist: "米津玄師",
+  name: "打上花火",
+  lyricist: "米津玄師",
+  composer: "米津玄師",
+  youtubeId: "tKVN2mAKRI",
 };
 
 // Main function to add a new song
