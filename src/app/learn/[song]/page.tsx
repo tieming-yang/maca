@@ -68,13 +68,13 @@ export default function Learn(props: { params: Params }) {
     }
   }, [currentTimeStamp, currentSong]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     if (updateIntervalRef.current) {
-  //       clearInterval(updateIntervalRef.current);
-  //     }
-  //   };
-  // }, []);
+  useEffect(() => {
+    return () => {
+      if (updateIntervalRef.current) {
+        clearInterval(updateIntervalRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!currentLyric || !lyricsContianerRef.current || !isAutoScrolling)
