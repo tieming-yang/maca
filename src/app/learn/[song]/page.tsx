@@ -185,10 +185,12 @@ export default function Learn(props: { params: Params }) {
 
             setIsPlaying(true);
 
-            updateIntervalRef.current = setInterval(() => {
-              console.log("currentTimeStamp", player?.getCurrentTime());
-              setCurrentTimeStamp(player?.getCurrentTime());
-            }, 250);
+            if (Youtube.PlayerState.PLAYING) {
+              updateIntervalRef.current = setInterval(() => {
+                console.log("currentTimeStamp", player?.getCurrentTime());
+                setCurrentTimeStamp(player?.getCurrentTime());
+              }, 250);
+            }
           }}
           onPause={() => {
             if (updateIntervalRef.current) {
