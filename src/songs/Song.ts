@@ -1,15 +1,9 @@
-import {
-  大阪LOVER,
-  明日への手紙,
-  欲望に満ちた青年団,
-  おれの小樽,
-  僕が死のうと思ったのは,
-} from "@/songs";
+import { 大阪LOVER, 明日への手紙, 欲望に満ちた青年団, おれの小樽, 僕が死のうと思ったのは, 打上花火 } from "@/songs";
 
 type TextPart = string | { kanji: string; furigana: string };
 
 export type TLyric = {
-  timeStamp: number;
+  timeStamp: number | string;
   text: TextPart[];
   zh?: string;
 };
@@ -54,5 +48,6 @@ export const Song = {
     明日への手紙: 明日への手紙,
     おれの小樽: おれの小樽,
     僕が死のうと思ったのは: 僕が死のうと思ったのは,
+    打上花火: 打上花火
   },
 };
