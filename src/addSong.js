@@ -20,15 +20,15 @@ function addNewSong({ artist, name, lyricist, composer, youtubeId }) {
 
   // Template for the new song file
   const songTemplate = `
-export const ${name} = {
-  id: "${name}",
-  artist: "${artist}",
-  name: "${name}",
-  lyricist: "${lyricist}",
-  composer: "${composer}",
-  youtubeId: "${youtubeId}",
-  lyrics: [],
-};
+    export const ${name} = {
+      id: "${name}",
+      artist: "${artist}",
+      name: "${name}",
+      lyricist: "${lyricist}",
+      composer: "${composer}",
+      youtubeId: "${youtubeId}",
+      lyrics: [],
+    };
   `;
 
   // Create the new song file
