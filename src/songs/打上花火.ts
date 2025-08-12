@@ -189,7 +189,7 @@ const 打上花火: TSong = {
       zh: "焦躁 末班列車的聲音",
     },
     {
-      timeStamp: "01:54",
+      timeStamp: "01:53",
       text: [
         { kanji: "何度", furigana: "なんど" },
         "でも　",
@@ -203,7 +203,7 @@ const 打上花火: TSong = {
       zh: "無論幾次 我都會化作話語呼喚你",
     },
     {
-      timeStamp: "01:59",
+      timeStamp: "01:58",
       text: [
         { kanji: "波間", furigana: "なみま" },
         "を",
@@ -214,7 +214,7 @@ const 打上花火: TSong = {
       zh: "待浪退時 再一次",
     },
     {
-      timeStamp: "02:04",
+      timeStamp: "02:03",
       text: [
         "もう",
         { kanji: "二度", furigana: "にど" },
@@ -227,7 +227,7 @@ const 打上花火: TSong = {
       zh: "是為了讓悲傷不再繼續就此而終",
     },
     {
-      timeStamp: "02:21",
+      timeStamp: "02:20",
       text: [
         "はっと",
         { kanji: "息", furigana: "いき" },
@@ -242,7 +242,7 @@ const 打上花火: TSong = {
       zh: "深深倒吸一口氣 那即將消失的光芒",
     },
     {
-      timeStamp: "02:25",
+      timeStamp: "02:26",
       text: ["きっとまだ　", { kanji: "胸", furigana: "むね" }, "に", {
         kanji: "住",
         furigana: "す",
@@ -250,7 +250,7 @@ const 打上花火: TSong = {
       zh: "一定仍會 久留在胸中",
     },
     {
-      timeStamp: "02:31",
+      timeStamp: "02:30",
       text: [
         { kanji: "手", furigana: "て" },
         "を",
@@ -264,7 +264,7 @@ const 打上花火: TSong = {
       zh: "只要伸出手便能觸碰 那溫暖的未來",
     },
     {
-      timeStamp: "02:35",
+      timeStamp: "02:36",
       text: ["ひそかに", { kanji: "二人", furigana: "ふたり" }, "を", {
         kanji: "見",
         furigana: "み",
@@ -277,7 +277,7 @@ const 打上花火: TSong = {
       zh: "啪一聲煙花",
     },
     {
-      timeStamp: "02:45",
+      timeStamp: "02:44",
       text: [{ kanji: "夜", furigana: "よる" }, "に", {
         kanji: "咲",
         furigana: "さ",
@@ -285,7 +285,7 @@ const 打上花火: TSong = {
       zh: "於夜裡綻放",
     },
     {
-      timeStamp: "02:47",
+      timeStamp: "02:46",
       text: [{ kanji: "夜", furigana: "よる" }, "に", {
         kanji: "咲",
         furigana: "さ",
@@ -311,7 +311,7 @@ const 打上花火: TSong = {
       zh: "再一下下就好",
     },
     {
-      timeStamp: "02:57",
+      timeStamp: "02:56",
       text: ["もう", { kanji: "少", furigana: "すこ" }, "しだけ"],
       zh: "再一下下就好",
     },
@@ -339,7 +339,7 @@ const 打上花火: TSong = {
       zh: "那日眺望過的海岸　如今仍能憶起",
     },
     {
-      timeStamp: "03:21",
+      timeStamp: "03:20",
       text: [
         { kanji: "砂", furigana: "すな" },
         "の",
@@ -356,7 +356,7 @@ const 打上花火: TSong = {
       zh: "沙灘上刻劃下的文字　你的背影",
     },
     {
-      timeStamp: "03:31",
+      timeStamp: "03:30",
       text: [
         "パッと",
         { kanji: "光", furigana: "ひか" },
@@ -371,7 +371,7 @@ const 打上花火: TSong = {
       zh: "啪一聲綻放光芒　我們看著煙花",
     },
     {
-      timeStamp: "03:36",
+      timeStamp: "03:35",
       text: [
         "きっとまだ　",
         { kanji: "終", furigana: "お" },
@@ -382,7 +382,7 @@ const 打上花火: TSong = {
       zh: "還未結束的夏天　一定會將",
     },
     {
-      timeStamp: "03:41",
+      timeStamp: "03:40",
       text: [
         { kanji: "曖昧", furigana: "あいまい" },
         "な",
@@ -396,7 +396,7 @@ const 打上花火: TSong = {
       zh: "曖昧的心　融化後相繫一起",
     },
     {
-      timeStamp: "03:46",
+      timeStamp: "03:45",
       text: [
         "この",
         { kanji: "夜", furigana: "よる" },
