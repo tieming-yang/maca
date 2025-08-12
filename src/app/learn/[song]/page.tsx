@@ -2,7 +2,7 @@
 
 import type { TLyric, TSong } from "@/songs/Song";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import Youtube from "react-youtube";
 import {
   PlayIcon,
@@ -24,7 +24,10 @@ const opts = {
   },
 };
 
-export default function Learn({ params }: { params: { song: string } }) {
+type Params = Promise<{ song: string }>;
+
+export default function Learn(props: { params: Params }) {
+  const params = use(props.params);
   const [player, setPlayer] = useState<YT.Player | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
