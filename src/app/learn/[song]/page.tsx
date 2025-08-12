@@ -171,6 +171,10 @@ export default function Learn(props: { params: Params }) {
         <Youtube
           onReady={(e: YT.PlayerEvent) => {
             setPlayer(e.target);
+
+            if (player) {
+              player.setPlaybackQuality("small");
+            }
           }}
           onPlay={() => {
             if (!player) {
