@@ -70,7 +70,7 @@ export default function Learn({ params }: { params: { song: string } }) {
       return;
 
     const sanitizedId = `#line-${Song.sanitizeTimeStamp(
-      currentLyric.timeStamp
+      currentLyric.timeStamp as number
     )}`;
     const activeLine = document.querySelector(sanitizedId) as HTMLLIElement;
     if (activeLine) {
