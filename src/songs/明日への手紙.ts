@@ -7,11 +7,12 @@ const 明日への手紙: TSong = {
   lyricist: "池田綾子",
   composer: "池田綾子",
   youtubeId: "ytQ3Hs3WjQ4",
+  end: "5:31",
   lyrics: [
     {
       timeStamp: 36,
       text: [{ kanji: "元気", furigana: "げんき" }, " でいますか"],
-      zh: "你還好嗎"
+      zh: "你還好嗎",
     },
     {
       timeStamp: 40,
@@ -21,7 +22,7 @@ const 明日への手紙: TSong = {
         { kanji: "人", furigana: "ひと" },
         "はできましたか",
       ],
-      zh: "你遇到重要的人了嗎"
+      zh: "你遇到重要的人了嗎",
     },
     {
       timeStamp: 46,
@@ -32,7 +33,7 @@ const 明日への手紙: TSong = {
         { kanji: "叶", furigana: "かな" },
         "いますか",
       ],
-      zh: "你的夢想有一天會實現嗎"
+      zh: "你的夢想有一天會實現嗎",
     },
     {
       timeStamp: 53,
@@ -43,12 +44,12 @@ const 明日への手紙: TSong = {
         { kanji: "先", furigana: "さき" },
         "で",
       ],
-      zh: "在這條路的盡頭"
+      zh: "在這條路的盡頭",
     },
     {
       timeStamp: 60,
       text: [{ kanji: "覚", furigana: "おぼ" }, "えていますか"],
-      zh: "你還記得嗎"
+      zh: "你還記得嗎",
     },
     {
       timeStamp: 65,
@@ -62,7 +63,7 @@ const 明日への手紙: TSong = {
         { kanji: "夕映", furigana: "ゆうば" },
         "え",
       ],
-      zh: "搖曳的麥穗 那份夕陽"
+      zh: "搖曳的麥穗 那份夕陽",
     },
     {
       timeStamp: 72,
@@ -73,7 +74,7 @@ const 明日への手紙: TSong = {
         { kanji: "空", furigana: "そら" },
         "を",
       ],
-      zh: "那延綿地平線的天空"
+      zh: "那延綿地平線的天空",
     },
     {
       timeStamp: 78,
@@ -83,7 +84,7 @@ const 明日への手紙: TSong = {
         { kanji: "続", furigana: "つづ" },
         "けていた",
       ],
-      zh: "一直在尋找"
+      zh: "一直在尋找",
     },
     {
       timeStamp: 86,
@@ -93,7 +94,7 @@ const 明日への手紙: TSong = {
         { kanji: "描", furigana: "えが" },
         "こうともがきながら",
       ],
-      zh: "在掙扎著描繪明天"
+      zh: "在掙扎著描繪明天",
     },
     {
       timeStamp: 94,
@@ -104,7 +105,7 @@ const 明日への手紙: TSong = {
         { kanji: "中", furigana: "なか" },
         "へ",
       ],
-      zh: "進入夢中"
+      zh: "進入夢中",
     },
     {
       timeStamp: 99,
@@ -114,12 +115,12 @@ const 明日への手紙: TSong = {
         { kanji: "輝", furigana: "かがや" },
         "きを",
       ],
-      zh: "把無形事物的光芒"
+      zh: "把無形事物的光芒",
     },
     {
       timeStamp: 105,
       text: ["そっとそっと"],
-      zh: "輕輕地 輕輕地"
+      zh: "輕輕地 輕輕地",
     },
     {
       timeStamp: 110,
@@ -129,17 +130,17 @@ const 明日への手紙: TSong = {
         { kanji: "進", furigana: "すす" },
         "むの",
       ],
-      zh: "緊緊擁抱著前行"
+      zh: "緊緊擁抱著前行",
     },
     {
       timeStamp: 129,
       text: [{ kanji: "笑", furigana: "わら" }, "っていますか"],
-      zh: "你在笑嗎"
+      zh: "你在笑嗎",
     },
     {
       timeStamp: 135,
       text: ["あの", { kanji: "日", furigana: "ひ" }, "のように"],
-      zh: "像那一天"
+      zh: "像那一天",
     },
     {
       timeStamp: 138,
@@ -149,7 +150,7 @@ const 明日への手紙: TSong = {
         { kanji: "目", furigana: "め" },
         "で",
       ],
-      zh: "以純真的目光"
+      zh: "以純真的目光",
     },
     {
       timeStamp: 141,
@@ -163,17 +164,17 @@ const 明日への手紙: TSong = {
         { kanji: "朝", furigana: "あさ" },
         "も",
       ],
-      zh: "寒冷的夜晚 雨中的早晨"
+      zh: "寒冷的夜晚 雨中的早晨",
     },
     {
       timeStamp: 148,
       text: ["きっとあったでしょう"],
-      zh: "一定曾有過"
+      zh: "一定曾有過",
     },
     {
       timeStamp: 154,
       text: ["ふるさとの", { kanji: "街", furigana: "まち" }, "は"],
-      zh: "故鄉的街道"
+      zh: "故鄉的街道",
     },
     {
       timeStamp: 160,
@@ -183,17 +184,17 @@ const 明日への手紙: TSong = {
         { kanji: "場所", furigana: "ばしょ" },
         "ならここにあると",
       ],
-      zh: "若是可以回歸的地方 就在這裡"
+      zh: "若是可以回歸的地方 就在這裡",
     },
     {
       timeStamp: 167,
       text: ["いつだって", { kanji: "変", furigana: "か" }, "わらずに"],
-      zh: "總是那樣不變"
+      zh: "總是那樣不變",
     },
     {
       timeStamp: 173,
       text: ["あなたを", { kanji: "待", furigana: "ま" }, "っている"],
-      zh: "在等著你"
+      zh: "在等著你",
     },
     {
       timeStamp: 181,
@@ -203,7 +204,7 @@ const 明日への手紙: TSong = {
         { kanji: "描", furigana: "えが" },
         "くことをやめないで",
       ],
-      zh: "不要停止描繪明天"
+      zh: "不要停止描繪明天",
     },
     {
       timeStamp: 188,
@@ -214,7 +215,7 @@ const 明日への手紙: TSong = {
         { kanji: "中", furigana: "なか" },
         "へ",
       ],
-      zh: "進入夢中"
+      zh: "進入夢中",
     },
     {
       timeStamp: 193,
@@ -224,12 +225,12 @@ const 明日への手紙: TSong = {
         { kanji: "人", furigana: "ひと" },
         "のぬくもりを",
       ],
-      zh: "摯愛之人的溫暖"
+      zh: "摯愛之人的溫暖",
     },
     {
       timeStamp: 199,
       text: ["ずっとずっと"],
-      zh: "一直一直"
+      zh: "一直一直",
     },
     {
       timeStamp: 205,
@@ -239,7 +240,7 @@ const 明日への手紙: TSong = {
         { kanji: "進", furigana: "すす" },
         "むよ",
       ],
-      zh: "不忘前行"
+      zh: "不忘前行",
     },
     {
       timeStamp: 238,
@@ -251,12 +252,12 @@ const 明日への手紙: TSong = {
         { kanji: "揺", furigana: "ゆ" },
         "れながら",
       ],
-      zh: "人們徬徨動搖之中"
+      zh: "人們徬徨動搖之中",
     },
     {
       timeStamp: 246,
       text: [{ kanji: "歩", furigana: "ある" }, "いていく"],
-      zh: "走下去"
+      zh: "走下去",
     },
     {
       timeStamp: 250,
@@ -268,12 +269,12 @@ const 明日への手紙: TSong = {
         { kanji: "輝", furigana: "かがや" },
         "きを",
       ],
-      zh: "那再也不會有的時刻之光輝"
+      zh: "那再也不會有的時刻之光輝",
     },
     {
       timeStamp: 256,
       text: [{ kanji: "見", furigana: "み" }, "つめていたい"],
-      zh: "想要一直凝望"
+      zh: "想要一直凝望",
     },
     {
       timeStamp: 263,
@@ -283,7 +284,7 @@ const 明日への手紙: TSong = {
         { kanji: "描", furigana: "えが" },
         "こうともがきながら",
       ],
-      zh: "在掙扎著描繪明天"
+      zh: "在掙扎著描繪明天",
     },
     {
       timeStamp: 271,
@@ -294,7 +295,7 @@ const 明日への手紙: TSong = {
         { kanji: "中", furigana: "なか" },
         "で",
       ],
-      zh: "進入夢中"
+      zh: "進入夢中",
     },
     {
       timeStamp: 276,
@@ -304,12 +305,12 @@ const 明日への手紙: TSong = {
         { kanji: "輝", furigana: "かがや" },
         "きを",
       ],
-      zh: "把無形事物的光芒"
+      zh: "把無形事物的光芒",
     },
     {
       timeStamp: 282,
       text: ["そっとそっと"],
-      zh: "輕輕地 輕輕地"
+      zh: "輕輕地 輕輕地",
     },
     {
       timeStamp: 287,
@@ -319,7 +320,7 @@ const 明日への手紙: TSong = {
         { kanji: "進", furigana: "すす" },
         "むの",
       ],
-      zh: "緊緊擁抱著前行"
+      zh: "緊緊擁抱著前行",
     },
   ],
 };

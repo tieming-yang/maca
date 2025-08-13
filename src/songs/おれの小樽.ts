@@ -1,4 +1,3 @@
-
 export const おれの小樽 = {
   id: "おれの小樽",
   artist: "石原裕次郎",
@@ -6,6 +5,7 @@ export const おれの小樽 = {
   lyricist: "杉紀彦",
   composer: "弦哲也",
   youtubeId: "RFnDn7UpIQc",
+  end: "3:37",
   lyrics: [
     {
       "timeStamp": 22,
@@ -16,8 +16,8 @@ export const おれの小樽 = {
         { "kanji": "海", "furigana": "うみ" },
         "に",
         { "kanji": "染", "furigana": "そ" },
-        "められて"
-      ]
+        "められて",
+      ],
     },
     {
       "timeStamp": 33,
@@ -28,8 +28,8 @@ export const おれの小樽 = {
         { "kanji": "家路", "furigana": "いえじ" },
         "を",
         { "kanji": "駆", "furigana": "か" },
-        "けてゆく"
-      ]
+        "けてゆく",
+      ],
     },
     {
       "timeStamp": 43,
@@ -41,8 +41,8 @@ export const おれの小樽 = {
         { "kanji": "夢", "furigana": "ゆめ" },
         "を",
         { "kanji": "見", "furigana": "み" },
-        "るような"
-      ]
+        "るような",
+      ],
     },
     {
       "timeStamp": 54,
@@ -52,8 +52,8 @@ export const おれの小樽 = {
         { "kanji": "小樽", "furigana": "おたる" },
         { "kanji": "港町", "furigana": "みなとまち" },
         " ",
-        { "kanji": "おふくろ", "furigana": "おふくろ" }
-      ]
+        { "kanji": "おふくろ", "furigana": "おふくろ" },
+      ],
     },
     {
       "timeStamp": 63,
@@ -63,8 +63,8 @@ export const おれの小樽 = {
         { "kanji": "名", "furigana": "な" },
         " ",
         { "kanji": "呼", "furigana": "よ" },
-        "んでくれ"
-      ]
+        "んでくれ",
+      ],
     },
     {
       "timeStamp": 80,
@@ -76,8 +76,8 @@ export const おれの小樽 = {
         { "kanji": "語", "furigana": "かた" },
         "る",
         { "kanji": "運河", "furigana": "うんが" },
-        "には"
-      ]
+        "には",
+      ],
     },
     {
       "timeStamp": 90,
@@ -90,8 +90,8 @@ export const おれの小樽 = {
         "を",
         { "kanji": "映", "furigana": "うつ" },
         "す",
-        { "kanji": "影", "furigana": "かげ" }
-      ]
+        { "kanji": "影", "furigana": "かげ" },
+      ],
     },
     {
       "timeStamp": 101,
@@ -103,8 +103,8 @@ export const おれの小樽 = {
         { "kanji": "変", "furigana": "かわ" },
         "り",
         { "kanji": "果", "furigana": "は" },
-        "てたまま"
-      ]
+        "てたまま",
+      ],
     },
     {
       "timeStamp": 112,
@@ -115,8 +115,8 @@ export const おれの小樽 = {
         { "kanji": "年月", "furigana": "としつき" },
         "を ",
         { "kanji": "辿", "furigana": "たど" },
-        "れば"
-      ]
+        "れば",
+      ],
     },
     {
       "timeStamp": 120,
@@ -126,8 +126,8 @@ export const おれの小樽 = {
         { "kanji": "雪", "furigana": "ゆき" },
         "が",
         { "kanji": "降", "furigana": "ふ" },
-        "る"
-      ]
+        "る",
+      ],
     },
     {
       "timeStamp": 148,
@@ -139,8 +139,8 @@ export const おれの小樽 = {
         { "kanji": "胸", "furigana": "むね" },
         "が",
         { "kanji": "痛", "furigana": "いた" },
-        "むのは"
-      ]
+        "むのは",
+      ],
     },
     {
       "timeStamp": 159,
@@ -152,16 +152,16 @@ export const おれの小樽 = {
         { "kanji": "恋", "furigana": "こい" },
         "した",
         { "kanji": "暖", "furigana": "あたた" },
-        "かさ"
-      ]
+        "かさ",
+      ],
     },
     {
       "timeStamp": 169,
       "text": [
         "さすらい",
         { "kanji": "流", "furigana": "なが" },
-        "れて"
-      ]
+        "れて",
+      ],
     },
     {
       "timeStamp": 175,
@@ -171,8 +171,8 @@ export const おれの小樽 = {
         { "kanji": "立", "furigana": "た" },
         "ち",
         { "kanji": "止", "furigana": "ど" },
-        "まる"
-      ]
+        "まる",
+      ],
     },
     {
       "timeStamp": 180,
@@ -183,8 +183,8 @@ export const おれの小樽 = {
         "は ",
         { "kanji": "坂", "furigana": "さか" },
         "の",
-        { "kanji": "町", "furigana": "まち" }
-      ]
+        { "kanji": "町", "furigana": "まち" },
+      ],
     },
     {
       "timeStamp": 186,
@@ -196,9 +196,8 @@ export const おれの小樽 = {
         { "kanji": "見", "furigana": "み" },
         "え",
         { "kanji": "隠", "furigana": "かく" },
-        "れ"
-      ]
-    }
+        "れ",
+      ],
+    },
   ],
 };
-  

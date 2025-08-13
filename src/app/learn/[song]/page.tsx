@@ -150,9 +150,9 @@ export default function Learn(props: { params: Params }) {
           <LoaderCircle className="h-9 w-9 animate-spin" />
         </div>
       )}
-      <section className="fixed z-20 top-0 w-full">
+      <section className="fixed z-20 top-0 w-full backdrop-blur-xs shadow-xl">
         <div
-          className="flex items-center justify-center w-full py-1 border-b shadow-xl gap-x-7 border-white/20 backdrop-blur-xs  font-semibold"
+          className="flex items-center justify-center w-full py-1 gap-x-7 font-semibold"
           style={{ filter: "drop-shadow(0 0 7px)" }}
           id="metadata"
         >
@@ -164,6 +164,11 @@ export default function Learn(props: { params: Params }) {
             <p>作詞家: {currentSong.lyricist}</p>
             <p>作曲家: {currentSong.composer}</p>
           </div>
+        </div>
+
+        <div className="flex px-5 justify-between font-mono">
+          <div>{Song.secondsToTimestamp(currentTimeStamp)}</div>
+          <div>{currentSong.end}</div>
         </div>
       </section>
 

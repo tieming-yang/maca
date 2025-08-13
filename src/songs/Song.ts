@@ -23,6 +23,7 @@ export type TSong = {
   lyricist: string;
   composer: string;
   lyrics: TLyric[];
+  end: number | string;
 };
 
 type SanitizedLyric = Omit<TLyric, "timeStamp"> & { timeStamp: number };
@@ -40,6 +41,12 @@ export const Song = {
     const [minutes, seconds] = timestamp.split(":");
 
     return Math.round(Number(minutes) * 60 + Number(seconds));
+  },
+
+  secondsToTimestamp(seconds: number): string {
+    const minutes = Math.floor(seconds / 60);
+    seconds = Math.floor(seconds % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   },
 
   sanitizeCurrentSong(currentSong: TSong): SanitizedSong {

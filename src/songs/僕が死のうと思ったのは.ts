@@ -5,6 +5,7 @@ export const 僕が死のうと思ったのは = {
   lyricist: "秋田ひろむ",
   composer: "秋田ひろむ",
   youtubeId: "AabAbM_Lmuo",
+  end: "7:34",
   lyrics: [
     {
       timeStamp: "00:34",

@@ -7,6 +7,7 @@ const 大阪LOVER: TSong = {
   lyricist: "吉田美和",
   youtubeId: "E-DAUGDEeRA",
   composer: "吉田美和",
+  end: "4:28",
   lyrics: [
     {
       timeStamp: 0.7,
