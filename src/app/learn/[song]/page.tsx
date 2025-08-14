@@ -37,6 +37,7 @@ export default function Learn(props: { params: Params }) {
 
   const lyricsContianerRef = useRef<HTMLDivElement>(null);
   const updateIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [songDuration, setSongDuration] = useState<number | null>(null);
   const [currentTimeStamp, setCurrentTimeStamp] = useState<number>(0);
   const [currentLyric, setCurrentLyric] = useState<TLyric>();
 
@@ -168,17 +169,20 @@ export default function Learn(props: { params: Params }) {
 
         <div className="flex px-5 justify-between font-mono">
           <div>{Song.secondsToTimestamp(currentTimeStamp)}</div>
-          <div>{currentSong.end}</div>
+          {songDuration && <div>{Song.secondsToTimestamp(songDuration)}</div>}
         </div>
       </section>
 
       <section className="fixed z-0 top-32">
         <Youtube
           onReady={(e: YT.PlayerEvent) => {
-            setPlayer(e.target);
+            const p = e.target;
+            setPlayer(p);
+            p.setPlaybackQuality("small");
 
-            if (player) {
-              player.setPlaybackQuality("small");
+            const duration = Math.floor(p.getDuration() ?? 0);
+            if (duration) {
+              setSongDuration(duration);
             }
           }}
           onPlay={() => {
