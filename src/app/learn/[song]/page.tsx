@@ -228,6 +228,10 @@ export default function Learn(props: { params: Params }) {
             setCurrentTimeStamp(0);
             player?.seekTo(0, true);
           }}
+          onStateChange={(e: { data: number; target: YT.Player }) => {
+            const duration = Math.floor(e.target.getDuration() ?? 0);
+            if (duration && duration !== songDuration) setSongDuration(duration);
+          }}
           videoId={currentSong.youtubeId}
           opts={opts}
         />
