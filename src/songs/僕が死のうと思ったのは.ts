@@ -8,7 +8,7 @@ export const 僕が死のうと思ったのは = {
   end: "7:34",
   lyrics: [
     {
-      timeStamp: "00:34",
+      timeStamp: "00:57",
       text: [
         { kanji: "僕", furigana: "ぼく" },
         "が",
