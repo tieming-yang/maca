@@ -11,7 +11,7 @@ import {
   LanguageIcon,
 } from "@heroicons/react/24/solid";
 
-import { LoaderCircle } from "lucide-react";
+import { ListIcon, LoaderCircle } from "lucide-react";
 import { Song } from "@/songs/Song";
 import Link from "next/link";
 
@@ -341,29 +341,31 @@ export default function Learn(props: { params: Params }) {
       {/* Toolbar */}
       <section className="fixed z-20 bottom-0 w-full rounded-t-3xl border-t shadow-xl border-white/10 backdrop-blur-md font-mono">
         <nav className="w-full">
-          <div className="flex items-center justify-center w-full gap-x-7 pb-3">
+          <div className="w-full flex items-center px-5">
             <span>{currentTimestamp}</span>
-            <button>
-              <Link href="/">
-                <HomeIcon className="size-7" />
-              </Link>
-            </button>
+            <div className="flex items-center justify-center w-full gap-x-7 pb-3">
+              <button>
+                <Link href="/">
+                  <ListIcon className="size-7" />
+                </Link>
+              </button>
 
-            <button onMouseDown={handleToggle}>
-              {isPlaying ? (
-                <PauseIcon className="size-14" />
-              ) : (
-                <PlayIcon className="size-14" />
-              )}
-            </button>
+              <button onMouseDown={handleToggle}>
+                {isPlaying ? (
+                  <PauseIcon className="size-14" />
+                ) : (
+                  <PlayIcon className="size-14" />
+                )}
+              </button>
 
-            <button onMouseDown={() => setShowZh(!showZh)}>
-              {currentSong.lyrics[0].zh && showZh ? (
-                <LanguageIcon className="size-7 text-white" />
-              ) : (
-                <LanguageIcon className="size-7 text-white/50" />
-              )}
-            </button>
+              <button onMouseDown={() => setShowZh(!showZh)}>
+                {currentSong.lyrics[0].zh && showZh ? (
+                  <LanguageIcon className="size-7 text-white" />
+                ) : (
+                  <LanguageIcon className="size-7 text-white/50" />
+                )}
+              </button>
+            </div>
             <span>{songDuration && durationTimestamp}</span>
           </div>
           <div className="flex justify-center">
