@@ -293,13 +293,13 @@ export default function Learn(props: { params: Params }) {
             )}
           </button>
 
-          <button onMouseDown={() => setShowZh(!showZh)}>
-            {showZh ? (
-              <LanguageIcon className="size-7 text-white" />
-            ) : (
-              <LanguageIcon className="size-7 text-white/50" />
-            )}
-          </button>
+            <button onMouseDown={() => setShowZh(!showZh)}>
+              {currentSong.lyrics[0].zh && showZh ? (
+                <LanguageIcon className="size-7 text-white" />
+              ) : (
+                <LanguageIcon className="size-7 text-white/50" />
+              )}
+            </button>
         </nav>
       </section>
     </main>
