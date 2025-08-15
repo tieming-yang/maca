@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen:types": "supabase gen types typescript --linked --schema public,storage,auth > src/types/database.types.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
