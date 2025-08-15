@@ -7,7 +7,6 @@ import Youtube from "react-youtube";
 import {
   PlayIcon,
   PauseIcon,
-  HomeIcon,
   LanguageIcon,
 } from "@heroicons/react/24/solid";
 
@@ -26,7 +25,7 @@ const opts = {
 
 type Params = Promise<{ song: string }>;
 
-export default function Learn(props: { params: Params }) {
+export default function LearnPage(props: { params: Params }) {
   const params = use(props.params);
   const [player, setPlayer] = useState<YT.Player | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
