@@ -238,7 +238,7 @@ export default function Learn(props: { params: Params }) {
       </section>
 
       <section
-        className="overflow-y-auto py-24 h-full w-full flex flex-col px-5 xl:px-0 items-center z-10 min-w-dvw bg-black/70 backdrop-blur-md"
+        className="overflow-y-auto py-24 h-full w-full flex flex-col px-5 xl:px-0 items-center z-10 min-w-dvw bg-black/70 backdrop-blur-sm"
         ref={lyricsContianerRef}
       >
         <ul className="flex flex-col gap-y-5">
