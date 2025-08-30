@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center py-24 space-y-12 px-5 md:px-0">
+    <main className="">
       <Link
         className="fixed z-30 top-4 left-7 font-mono text-xl font-semibold"
         href="/"
