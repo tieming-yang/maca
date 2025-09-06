@@ -3,6 +3,6 @@ export const QueryKey = {
   song: (slug: string, lang?: string) => ["song", slug, lang ?? "none"] as const,
 
   // auth/session & profile
-  authSession: ["auth", "session"] as const,
+  authUser: ["auth", "user"] as const,
   profile: (id: string) => ["profile", id] as const,
 };
