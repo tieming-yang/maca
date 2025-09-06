@@ -275,6 +275,51 @@ export type Database = {
           },
         ]
       }
+      oauth_clients: {
+        Row: {
+          client_id: string
+          client_name: string | null
+          client_secret_hash: string
+          client_uri: string | null
+          created_at: string
+          deleted_at: string | null
+          grant_types: string
+          id: string
+          logo_uri: string | null
+          redirect_uris: string
+          registration_type: Database["auth"]["Enums"]["oauth_registration_type"]
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          client_name?: string | null
+          client_secret_hash: string
+          client_uri?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          grant_types: string
+          id: string
+          logo_uri?: string | null
+          redirect_uris: string
+          registration_type: Database["auth"]["Enums"]["oauth_registration_type"]
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          client_name?: string | null
+          client_secret_hash?: string
+          client_uri?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          grant_types?: string
+          id?: string
+          logo_uri?: string | null
+          redirect_uris?: string
+          registration_type?: Database["auth"]["Enums"]["oauth_registration_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       one_time_tokens: {
         Row: {
           created_at: string
@@ -708,6 +753,7 @@ export type Database = {
       code_challenge_method: "s256" | "plain"
       factor_status: "unverified" | "verified"
       factor_type: "totp" | "webauthn" | "phone"
+      oauth_registration_type: "dynamic" | "manual"
       one_time_token_type:
         | "confirmation_token"
         | "reauthentication_token"
@@ -746,6 +792,33 @@ export type Database = {
           furigana?: string | null
           id?: string
           romaji?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          username?: string | null
         }
         Relationships: []
       }
@@ -1095,9 +1168,32 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      current_role: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      get_my_profile: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
+          username: string | null
+        }
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      promote_user_to_admin: {
+        Args: { p_email: string }
+        Returns: undefined
+      }
     }
     Enums: {
+      app_role: "user" | "editor" | "admin"
       credit_role:
         | "primary_artist"
         | "featured_artist"
@@ -1548,6 +1644,7 @@ export const Constants = {
       code_challenge_method: ["s256", "plain"],
       factor_status: ["unverified", "verified"],
       factor_type: ["totp", "webauthn", "phone"],
+      oauth_registration_type: ["dynamic", "manual"],
       one_time_token_type: [
         "confirmation_token",
         "reauthentication_token",
@@ -1560,6 +1657,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      app_role: ["user", "editor", "admin"],
       credit_role: [
         "primary_artist",
         "featured_artist",
