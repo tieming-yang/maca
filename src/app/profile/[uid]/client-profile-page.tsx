@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import { Profile } from "@/data/Profile";
+import { Profile } from "@/data/models/Profile";
 import { createClient } from "@/utils/supabase/client";
 import Loading from "../../components/loading";
 import { QueryKey } from "@/data/query-keys";

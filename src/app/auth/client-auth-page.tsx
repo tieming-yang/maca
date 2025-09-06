@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Profile } from "@/data/Profile";
+import { Profile } from "@/data/models/Profile";
 import { QueryKey } from "@/data/query-keys";
 
 export default function ClientAuthPage() {
