@@ -6,8 +6,7 @@ import { LoaderCircle } from "lucide-react";
 import { LanguageIcon, PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/data/query-keys";
-import { Song, SongBundle, Credits } from "@/data/Song";
-import Error from "next/error";
+import { Song, SongBundle, Credits } from "@/data/models/Song";
 
 const opts = { height: "780", width: "1280", playerVars: { autoplay: 1 } };
 
