@@ -140,9 +140,7 @@ export const Song = {
     };
     for (const row of data ?? []) {
       const role = row.role as keyof Credits;
-      console.log({ role });
       const p = row.person as CreditPerson | null;
-      console.log({ p });
       if (!p || !role) continue;
       if (credits[role]) credits[role].push(p);
     }
