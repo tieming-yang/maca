@@ -52,6 +52,19 @@ export type Credits = {
 const db = createClient();
 
 export const Song = {
+  async getAll(): Promise<TableRow[]> {
+    const { data, error } = await db
+      .from("songs")
+      .select("*");
+
+    if (error) {
+      console.error(error);
+      throw Error("getAll Error:", error);
+    }
+
+    return data as TableRow[];
+  },
+
   async getViewBySlug(slug: string): Promise<ViewRow> {
     const { data, error } = await db
       .from("song_with_base_json")
@@ -155,5 +168,18 @@ export const Song = {
       .single<TableRow>();
     if (error) throw error;
     return data;
+  },
+
+  //? Utils
+  toSlug(input: string): string {
+    if (!input) return "";
+    return input
+      .normalize("NFKD") // split accents from letters
+      .replace(/[\u0300-\u036f]/g, "") // remove diacritics
+      .toLowerCase()
+      .trim()
+      .replace(/&/g, " and ") // common readability tweak
+      .replace(/[^a-z0-9]+/g, "-") // non-alphanumerics -> hyphen
+      .replace(/^-+|-+$/g, ""); // trim leading/trailing hyphens
   },
 } as const;

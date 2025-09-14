@@ -1,6 +1,8 @@
 export const QueryKey = {
   // songs
-  song: (slug: string, lang?: string) => ["song", slug, lang ?? "none"] as const,
+  song: (slug: string, lang?: string) =>
+    ["song", slug, lang ?? "none"] as const,
+  songs: () => ["songs"] as const,
 
   // auth/session & profile
   authUser: ["auth", "user"] as const,
