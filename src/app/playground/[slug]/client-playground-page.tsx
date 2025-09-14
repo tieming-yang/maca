@@ -276,7 +276,7 @@ export default function PlayerClient({ slug }: { slug: string }) {
 
       {/* Lines */}
       <section
-        className="overflow-y-auto py-24 h-full w-full flex flex-col px-5 xl:px-0 items-center z-10 min-w-dvw bg-black/70 backdrop-blur-sm"
+        className="overflow-y-auto py-24 flex flex-col px-5 xl:px-0 items-center z-10 min-w-dvw h-full bg-black/70 backdrop-blur-sm"
         ref={lyricsContainerRef}
       >
         <ul className="flex flex-col gap-y-5">
