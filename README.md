@@ -1,13 +1,3 @@
-# TODO
-1. ~~Auto scroll~~
-2. Change `timeStamp` to `start` and `end`
-3. ~~Fix accuracy~~
-4. Add Translations
-5. ~~Add select and jump~~
-6. ~~press and stop scrolling~~
-7. ~~control bar~~
-8. Add metadata
-
 # Docs
 
 ## Github markdown
