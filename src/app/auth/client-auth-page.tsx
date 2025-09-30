@@ -1,20 +1,39 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  redirect,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { Profile } from "@/data/models/Profile";
 import { QueryKey } from "@/data/query-keys";
+import { createClient } from "@/utils/supabase/client";
 
 export default function ClientAuthPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const supabase = createClient();
 
   // --- form state ---
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState(""); // signup only
+
+  const { data: authUser } = useQuery({
+    queryKey: QueryKey.authUser,
+    queryFn: async () => (await supabase.auth.getUser()).data.user,
+    staleTime: 0,
+    refetchOnMount: "always",
+  });
+
+  if (authUser) {
+    console.warn("You already signd in!");
+    redirect(`/profile/${authUser.id}`);
+  }
 
   const query = useQueryClient();
 
