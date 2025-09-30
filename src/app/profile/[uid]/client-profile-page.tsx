@@ -7,6 +7,7 @@ import { Profile } from "@/data/models/Profile";
 import { createClient } from "@/utils/supabase/client";
 import Loading from "../../components/loading";
 import { QueryKey } from "@/data/query-keys";
+import Link from "next/link";
 
 export default function ClientProfilePage() {
   const router = useRouter();
@@ -101,6 +102,12 @@ export default function ClientProfilePage() {
         <div>
           <span className="opacity-70">Role:</span> {profile.role}
         </div>
+        {profile.role === "admin" && (
+          //TODO: Put it to the navbar
+          <button>
+            <Link href="/edit">Edit</Link>
+          </button>
+        )}
         <div>
           <span className="opacity-70">Joined:</span>{" "}
           {profile.created_at?.slice(0, 10) ?? "—"}
