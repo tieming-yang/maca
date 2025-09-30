@@ -9,7 +9,7 @@ export default async function Home(props: { searchParams: SearchParams }) {
   const isStaging = searchParams.isStaging === "true";
 
   return (
-    <main className="">
+    <main className="px-3">
       <Link
         className="fixed z-30 top-4 left-7 font-mono text-xl font-semibold"
         href="/"
