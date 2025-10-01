@@ -50,7 +50,7 @@ type SongFormData = {
 type FormErrors = Partial<Record<keyof SongFormData | "base", string>>;
 
 type WorkAction =
-  | { kind: "none"; work_id: string | null }
+  | { kind: "none"; workId: string | null }
   | { kind: "create"; payload: WorkInsert }
   | { kind: "update"; id: string; payload: WorkUpdate }
   | { kind: "unlink" };
@@ -66,7 +66,7 @@ type WorkFormSnapshot = {
 
 type ValidationOptions = {
   isNew: boolean;
-  initialWork_id: string | null;
+  initialWorkId: string | null;
   initialWorkSnapshot: WorkFormSnapshot | null;
   hasWork: boolean;
 };
@@ -224,21 +224,21 @@ function determineWorkAction(
   }
 
   if (!options.hasWork) {
-    if (options.initialWork_id) {
+    if (options.initialWorkId) {
       return { kind: "unlink" };
     }
-    return { kind: "none", work_id: null };
+    return { kind: "none", workId: null };
   }
 
-  const work_id = values.work_id.trim();
-  const work_title = values.work_title.trim();
-  const work_romaji = values.work_romaji.trim();
-  const work_furigana = values.work_furigana.trim();
-  const work_yearRaw = values.work_year.trim();
+  const workId = values.work_id.trim();
+  const workTitle = values.work_title.trim();
+  const workRomaji = values.work_romaji.trim();
+  const workFurigana = values.work_furigana.trim();
+  const workYearRaw = values.work_year.trim();
 
   let work_year: number | null = null;
-  if (work_yearRaw.length > 0) {
-    const parsedYear = Number(work_yearRaw);
+  if (workYearRaw.length > 0) {
+    const parsedYear = Number(workYearRaw);
     if (Number.isNaN(parsedYear)) {
       errors.work_year = "Year must be a number.";
     } else {
@@ -247,40 +247,40 @@ function determineWorkAction(
   }
 
   const hasDetails =
-    work_title.length > 0 ||
-    work_romaji.length > 0 ||
-    work_furigana.length > 0 ||
-    work_yearRaw.length > 0;
+    workTitle.length > 0 ||
+    workRomaji.length > 0 ||
+    workFurigana.length > 0 ||
+    workYearRaw.length > 0;
 
   const snapshot = options.initialWorkSnapshot;
   const matchesSnapshot = Boolean(
     snapshot &&
-      snapshot.id === work_id &&
-      snapshot.title === work_title &&
-      snapshot.romaji === work_romaji &&
-      snapshot.furigana === work_furigana &&
+      snapshot.id === workId &&
+      snapshot.title === workTitle &&
+      snapshot.romaji === workRomaji &&
+      snapshot.furigana === workFurigana &&
       snapshot.kind === values.work_kind &&
-      snapshot.year === work_yearRaw
+      snapshot.year === workYearRaw
   );
 
-  if (work_id.length > 0) {
+  if (workId.length > 0) {
     if (!hasDetails || matchesSnapshot) {
-      return { kind: "none", work_id: toNullable(work_id) };
+      return { kind: "none", workId: toNullable(workId) };
     }
 
-    if (!work_title) {
+    if (!workTitle) {
       errors.work_title =
         "Work title is required when editing an existing work.";
-      return { kind: "none", work_id: toNullable(work_id) };
+      return { kind: "none", workId: toNullable(workId) };
     }
 
     return {
       kind: "update",
-      id: work_id,
+      id: workId,
       payload: {
-        title: work_title || undefined,
-        romaji: work_romaji || null,
-        furigana: work_furigana || null,
+        title: workTitle || undefined,
+        romaji: workRomaji || null,
+        furigana: workFurigana || null,
         kind: values.work_kind,
         year: work_year,
       },
@@ -288,20 +288,20 @@ function determineWorkAction(
   }
 
   if (!hasDetails) {
-    return { kind: "none", work_id: toNullable(options.initialWork_id) };
+    return { kind: "none", workId: toNullable(options.initialWorkId) };
   }
 
-  if (!work_title) {
+  if (!workTitle) {
     errors.work_title = "Work title is required.";
-    return { kind: "none", work_id: toNullable(options.initialWork_id) };
+    return { kind: "none", workId: toNullable(options.initialWorkId) };
   }
 
   return {
     kind: "create",
     payload: {
-      title: work_title,
-      romaji: work_romaji || null,
-      furigana: work_furigana || null,
+      title: workTitle,
+      romaji: workRomaji || null,
+      furigana: workFurigana || null,
       kind: values.work_kind,
       year: work_year,
     },
@@ -317,7 +317,7 @@ function validateForm(
   const songSection = validateSongSection(values, errors);
   const workAction = determineWorkAction(values, options, errors);
 
-  if (options.isNew && workAction.kind === "none" && !workAction.work_id) {
+  if (options.isNew && workAction.kind === "none" && !workAction.workId) {
     errors.work_title = "Provide a new work or link an existing work ID.";
   }
 
@@ -342,7 +342,7 @@ function validateForm(
         : workAction.kind === "update"
         ? workAction.id
         : workAction.kind === "none"
-        ? workAction.work_id ?? null
+        ? workAction.workId ?? null
         : null,
   };
 
@@ -354,7 +354,7 @@ function validateForm(
         : workAction.kind === "update"
         ? workAction.id
         : workAction.kind === "none"
-        ? workAction.work_id ?? null
+        ? workAction.workId ?? null
         : null,
   };
 
@@ -446,46 +446,46 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
   const saveMutation = useMutation({
     mutationFn: async (input: SaveInput) => {
-      let work_id: string | null = null;
+      let workId: string | null = null;
 
       switch (input.workAction.kind) {
         case "create": {
           if (!hasWork) {
-            work_id = null;
+            workId = null;
             break;
           }
           const created = await Work.create(input.workAction.payload);
-          work_id = created.id;
+          workId = created.id;
           break;
         }
         case "update": {
           if (hasWork) {
             await Work.update(input.workAction.id, input.workAction.payload);
           }
-          work_id = input.workAction.id;
+          workId = input.workAction.id;
           break;
         }
         case "none": {
-          work_id = input.workAction.work_id ?? null;
+          workId = input.workAction.workId ?? null;
           break;
         }
         case "unlink":
         default: {
-          work_id = null;
+          workId = null;
         }
       }
 
       if (input.kind === "create") {
         const created = await Song.insertSong({
           ...input.song,
-          work_id: work_id,
+          work_id: workId,
         });
         return Song.getBundle(created.slug);
       }
 
       const updated = await Song.updateSong(input.id, {
         ...input.song,
-        work_id: work_id,
+        work_id: workId,
       });
       const slugToFetch = updated.slug ?? input.song.slug ?? input.previousSlug;
       return Song.getBundle(slugToFetch);
@@ -597,7 +597,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
     const validation = validateForm(formData, {
       isNew,
-      initialWork_id,
+      initialWorkId: initialWork_id,
       initialWorkSnapshot,
       hasWork,
     });
