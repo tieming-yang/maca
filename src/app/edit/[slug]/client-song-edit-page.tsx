@@ -13,6 +13,7 @@ import {
 import { Work, WorkInsert, WorkKind, WorkUpdate } from "@/data/models/Work";
 import { QueryKey } from "@/data/query-keys";
 import { Song as LegacySong } from "@/songs/Song";
+import Loading from "@/app/components/loading";
 
 const NEW_SLUG_SENTINEL = "new";
 const PANEL_CLASS =
@@ -671,6 +672,10 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     return "Edit Song";
   }, [isNew, song]);
 
+  if (isLoading) {
+    return <Loading isFullScreen />;
+  }
+
   return (
     <section className="w-full max-w-3xl space-y-6 py-8 text-zinc-100 px-3">
       <button
@@ -1016,10 +1021,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           )}
         </div>
       </form>
-
-      {isLoading && !isNew && (
-        <p className="text-sm text-zinc-400">Loading song data…</p>
-      )}
     </section>
   );
 }
