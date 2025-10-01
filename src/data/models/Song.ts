@@ -1,12 +1,17 @@
 // src/data/Song.ts
 import { createClient } from "@/utils/supabase/client";
 import type { Database } from "@/types/database.types";
+import type { WorkRow } from "./Work";
 
 export type TableRow = Database["public"]["Tables"]["songs"]["Row"];
 export type ViewRow = Database["public"]["Views"]["song_with_base_json"]["Row"];
 export type VersionRow =
   Database["public"]["Tables"]["translation_versions"]["Row"];
 export type LineRow = Database["public"]["Tables"]["translation_lines"]["Row"];
+export type InsertRow = Database["public"]["Tables"]["songs"]["Insert"];
+export type UpdateRow = Database["public"]["Tables"]["songs"]["Update"];
+export type SongWithWorkRow = TableRow & { work: WorkRow | null };
+export type CreditRole = Database["public"]["Enums"]["credit_role"];
 
 export type JaToken = string | { kanji: string; furigana?: string };
 export type BaseLine = {
@@ -63,6 +68,23 @@ export const Song = {
     }
 
     return data as TableRow[];
+  },
+
+  async getBySlug(slug: string): Promise<SongWithWorkRow> {
+    const { data, error } = await db
+      .from("songs")
+      .select(
+        "*, work:works(id, title, romaji, furigana, kind, notes, year, created_at)",
+      )
+      .eq("slug", slug)
+      .single<SongWithWorkRow>();
+
+    if (error) {
+      console.error(error);
+      throw Error("getBySlug Error:", error);
+    }
+
+    return data;
   },
 
   async getViewBySlug(slug: string): Promise<ViewRow> {
@@ -160,7 +182,7 @@ export const Song = {
     return credits;
   },
 
-  async insertSong(input: Database["public"]["Tables"]["songs"]["Insert"]) {
+  async insertSong(input: InsertRow) {
     const { data, error } = await db
       .from("songs")
       .insert(input)
@@ -168,6 +190,68 @@ export const Song = {
       .single<TableRow>();
     if (error) throw error;
     return data;
+  },
+
+  async updateSong(id: string, updates: UpdateRow) {
+    const { data, error } = await db
+      .from("songs")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single<TableRow>();
+
+    if (error) throw error;
+
+    return data;
+  },
+
+  async deleteSong(id: string) {
+    const { error } = await db.from("songs").delete().eq("id", id);
+
+    if (error) throw error;
+  },
+
+  async setCredits(
+    songId: string,
+    credits: Record<keyof Credits, string[]>,
+  ): Promise<void> {
+    const { error: deleteError } = await db
+      .from("song_credits")
+      .delete()
+      .eq("song_id", songId);
+
+    if (deleteError) {
+      console.error(deleteError);
+      throw deleteError;
+    }
+
+    const entries: Array<Database["public"]["Tables"]["song_credits"]["Insert"]> = [];
+
+    (Object.entries(credits) as Array<[
+      keyof Credits,
+      string[]
+    ]>).forEach(([role, personIds]) => {
+      personIds.forEach((personId, index) => {
+        if (!personId) return;
+        entries.push({
+          song_id: songId,
+          person_id: personId,
+          role: role as CreditRole,
+          position: index,
+        });
+      });
+    });
+
+    if (entries.length === 0) return;
+
+    const { error: insertError } = await db
+      .from("song_credits")
+      .insert(entries);
+
+    if (insertError) {
+      console.error(insertError);
+      throw insertError;
+    }
   },
 
   //? Utils

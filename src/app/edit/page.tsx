@@ -1,5 +1,5 @@
 import { Profile } from "@/data/models/Profile.server";
-import ClientEditPage from "./client-add-page";
+import ClientEditPage from "./client-edit-page";
 import { redirect } from "next/navigation";
 
 export default async function EditPage() {
