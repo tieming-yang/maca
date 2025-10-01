@@ -1,7 +1,7 @@
 // src/data/Song.ts
 import { createClient } from "@/utils/supabase/client";
 import type { Database } from "@/types/database.types";
-import type { WorkRow } from "./Work";
+import { Work, type WorkRow } from "./Work";
 
 export type TableRow = Database["public"]["Tables"]["songs"]["Row"];
 export type ViewRow = Database["public"]["Views"]["song_with_base_json"]["Row"];
@@ -28,7 +28,7 @@ export type Translation = {
 };
 
 export type SongBundle = {
-  credit: Credits;
+  credit: Credit;
   id: string;
   slug: string;
   name: string; // view column is `name`
@@ -38,6 +38,9 @@ export type SongBundle = {
   furigana: string | null;
   base_lines: BaseLine[];
   translation?: Translation;
+  work: WorkRow | null;
+  created_at: string | null;
+  created_by: string | null;
 };
 
 export type CreditPerson = {
@@ -47,7 +50,7 @@ export type CreditPerson = {
   furigana: string | null;
 };
 
-export type Credits = {
+export type Credit = {
   primary_artist: CreditPerson[];
   featured_artist: CreditPerson[];
   composer: CreditPerson[];
@@ -135,6 +138,11 @@ export const Song = {
 
     const credit = await Song.getCredits(view.id!);
 
+    let work = null;
+    if (view.work_id) {
+      work = await Work.getById(view.work_id);
+    }
+
     // jsonb → narrow for UI
     const base = (view.base_lines ?? []) as unknown as BaseLine[];
 
@@ -155,26 +163,29 @@ export const Song = {
       romaji: view.romaji ?? "",
       end_seconds: view.end_seconds ?? null,
       furigana: view.furigana ?? null,
+      created_at: view.created_at,
+      created_by: view.created_by,
       base_lines: base,
       translation,
+      work,
     };
   },
 
-  async getCredits(songId: string): Promise<Credits> {
+  async getCredits(songId: string): Promise<Credit> {
     const { data, error } = await db
       .from("song_credits")
       .select("role, person:people(id, display_name, romaji, furigana)")
       .eq("song_id", songId);
     if (error) throw error;
 
-    const credits: Credits = {
+    const credits: Credit = {
       primary_artist: [],
       featured_artist: [],
       composer: [],
       lyricist: [],
     };
     for (const row of data ?? []) {
-      const role = row.role as keyof Credits;
+      const role = row.role as keyof Credit;
       const p = row.person as CreditPerson | null;
       if (!p || !role) continue;
       if (credits[role]) credits[role].push(p);
@@ -213,7 +224,7 @@ export const Song = {
 
   async setCredits(
     songId: string,
-    credits: Record<keyof Credits, string[]>,
+    credits: Record<keyof Credit, string[]>,
   ): Promise<void> {
     const { error: deleteError } = await db
       .from("song_credits")
@@ -225,11 +236,13 @@ export const Song = {
       throw deleteError;
     }
 
-    const entries: Array<Database["public"]["Tables"]["song_credits"]["Insert"]> = [];
+    const entries: Array<
+      Database["public"]["Tables"]["song_credits"]["Insert"]
+    > = [];
 
     (Object.entries(credits) as Array<[
-      keyof Credits,
-      string[]
+      keyof Credit,
+      string[],
     ]>).forEach(([role, personIds]) => {
       personIds.forEach((personId, index) => {
         if (!personId) return;

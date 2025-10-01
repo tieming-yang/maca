@@ -4,9 +4,10 @@ import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  Credit,
   InsertRow,
   Song,
-  SongWithWorkRow,
+  SongBundle,
   UpdateRow,
 } from "@/data/models/Song";
 import { Work, WorkInsert, WorkKind, WorkUpdate } from "@/data/models/Work";
@@ -37,18 +38,18 @@ type SongFormData = {
   youtube_id: string;
   end_seconds: string;
   furigana: string;
-  workId: string;
-  workTitle: string;
-  workRomaji: string;
-  workFurigana: string;
-  workKind: WorkKind;
-  workYear: string;
-};
+  work_id: string;
+  work_title: string;
+  work_romaji: string;
+  work_furigana: string;
+  work_kind: WorkKind;
+  work_year: string;
+} & Credit;
 
 type FormErrors = Partial<Record<keyof SongFormData | "base", string>>;
 
 type WorkAction =
-  | { kind: "none"; workId: string | null }
+  | { kind: "none"; work_id: string | null }
   | { kind: "create"; payload: WorkInsert }
   | { kind: "update"; id: string; payload: WorkUpdate }
   | { kind: "unlink" };
@@ -64,7 +65,7 @@ type WorkFormSnapshot = {
 
 type ValidationOptions = {
   isNew: boolean;
-  initialWorkId: string | null;
+  initialWork_id: string | null;
   initialWorkSnapshot: WorkFormSnapshot | null;
   hasWork: boolean;
 };
@@ -85,18 +86,23 @@ function blankSong(): SongFormData {
     youtube_id: "",
     end_seconds: "",
     furigana: "",
-    workId: "",
-    workTitle: "",
-    workRomaji: "",
-    workFurigana: "",
-    workKind: "single",
-    workYear: "",
+    work_id: "",
+    work_title: "",
+    work_romaji: "",
+    work_furigana: "",
+    work_kind: "single",
+    work_year: "",
+    primary_artist: [],
+    featured_artist: [],
+    composer: [],
+    lyricist: [],
   };
 }
 
-function mapRowToForm(row: SongWithWorkRow): SongFormData {
+function mapRowToForm(row: SongBundle): SongFormData {
   const endSeconds = row.end_seconds;
   const work = row.work;
+  const credit = row.credit;
 
   return {
     id: row.id,
@@ -109,12 +115,16 @@ function mapRowToForm(row: SongWithWorkRow): SongFormData {
         ? LegacySong.secondsToTimestamp(endSeconds)
         : "",
     furigana: row.furigana ?? "",
-    workId: row.work_id ?? "",
-    workTitle: work?.title ?? "",
-    workRomaji: work?.romaji ?? "",
-    workFurigana: work?.furigana ?? "",
-    workKind: work?.kind ?? "single",
-    workYear: work?.year ? String(work.year) : "",
+    work_id: row.work?.id ?? "",
+    work_title: work?.title ?? "",
+    work_romaji: work?.romaji ?? "",
+    work_furigana: work?.furigana ?? "",
+    work_kind: work?.kind ?? "single",
+    work_year: work?.year ? String(work.year) : "",
+    primary_artist: credit.primary_artist,
+    featured_artist: credit.featured_artist,
+    composer: credit.composer,
+    lyricist: credit.lyricist,
   };
 }
 
@@ -213,86 +223,86 @@ function determineWorkAction(
   }
 
   if (!options.hasWork) {
-    if (options.initialWorkId) {
+    if (options.initialWork_id) {
       return { kind: "unlink" };
     }
-    return { kind: "none", workId: null };
+    return { kind: "none", work_id: null };
   }
 
-  const workId = values.workId.trim();
-  const workTitle = values.workTitle.trim();
-  const workRomaji = values.workRomaji.trim();
-  const workFurigana = values.workFurigana.trim();
-  const workYearRaw = values.workYear.trim();
+  const work_id = values.work_id.trim();
+  const work_title = values.work_title.trim();
+  const work_romaji = values.work_romaji.trim();
+  const work_furigana = values.work_furigana.trim();
+  const work_yearRaw = values.work_year.trim();
 
-  let workYear: number | null = null;
-  if (workYearRaw.length > 0) {
-    const parsedYear = Number(workYearRaw);
+  let work_year: number | null = null;
+  if (work_yearRaw.length > 0) {
+    const parsedYear = Number(work_yearRaw);
     if (Number.isNaN(parsedYear)) {
-      errors.workYear = "Year must be a number.";
+      errors.work_year = "Year must be a number.";
     } else {
-      workYear = parsedYear;
+      work_year = parsedYear;
     }
   }
 
   const hasDetails =
-    workTitle.length > 0 ||
-    workRomaji.length > 0 ||
-    workFurigana.length > 0 ||
-    workYearRaw.length > 0;
+    work_title.length > 0 ||
+    work_romaji.length > 0 ||
+    work_furigana.length > 0 ||
+    work_yearRaw.length > 0;
 
   const snapshot = options.initialWorkSnapshot;
   const matchesSnapshot = Boolean(
     snapshot &&
-      snapshot.id === workId &&
-      snapshot.title === workTitle &&
-      snapshot.romaji === workRomaji &&
-      snapshot.furigana === workFurigana &&
-      snapshot.kind === values.workKind &&
-      snapshot.year === workYearRaw
+      snapshot.id === work_id &&
+      snapshot.title === work_title &&
+      snapshot.romaji === work_romaji &&
+      snapshot.furigana === work_furigana &&
+      snapshot.kind === values.work_kind &&
+      snapshot.year === work_yearRaw
   );
 
-  if (workId.length > 0) {
+  if (work_id.length > 0) {
     if (!hasDetails || matchesSnapshot) {
-      return { kind: "none", workId: toNullable(workId) };
+      return { kind: "none", work_id: toNullable(work_id) };
     }
 
-    if (!workTitle) {
-      errors.workTitle =
+    if (!work_title) {
+      errors.work_title =
         "Work title is required when editing an existing work.";
-      return { kind: "none", workId: toNullable(workId) };
+      return { kind: "none", work_id: toNullable(work_id) };
     }
 
     return {
       kind: "update",
-      id: workId,
+      id: work_id,
       payload: {
-        title: workTitle || undefined,
-        romaji: workRomaji || null,
-        furigana: workFurigana || null,
-        kind: values.workKind,
-        year: workYear,
+        title: work_title || undefined,
+        romaji: work_romaji || null,
+        furigana: work_furigana || null,
+        kind: values.work_kind,
+        year: work_year,
       },
     };
   }
 
   if (!hasDetails) {
-    return { kind: "none", workId: toNullable(options.initialWorkId) };
+    return { kind: "none", work_id: toNullable(options.initialWork_id) };
   }
 
-  if (!workTitle) {
-    errors.workTitle = "Work title is required.";
-    return { kind: "none", workId: toNullable(options.initialWorkId) };
+  if (!work_title) {
+    errors.work_title = "Work title is required.";
+    return { kind: "none", work_id: toNullable(options.initialWork_id) };
   }
 
   return {
     kind: "create",
     payload: {
-      title: workTitle,
-      romaji: workRomaji || null,
-      furigana: workFurigana || null,
-      kind: values.workKind,
-      year: workYear,
+      title: work_title,
+      romaji: work_romaji || null,
+      furigana: work_furigana || null,
+      kind: values.work_kind,
+      year: work_year,
     },
   };
 }
@@ -306,8 +316,8 @@ function validateForm(
   const songSection = validateSongSection(values, errors);
   const workAction = determineWorkAction(values, options, errors);
 
-  if (options.isNew && workAction.kind === "none" && !workAction.workId) {
-    errors.workTitle = "Provide a new work or link an existing work ID.";
+  if (options.isNew && workAction.kind === "none" && !workAction.work_id) {
+    errors.work_title = "Provide a new work or link an existing work ID.";
   }
 
   if (Object.keys(errors).length > 0 || !songSection.sanitizedSlug) {
@@ -331,7 +341,7 @@ function validateForm(
         : workAction.kind === "update"
         ? workAction.id
         : workAction.kind === "none"
-        ? workAction.workId ?? null
+        ? workAction.work_id ?? null
         : null,
   };
 
@@ -343,7 +353,7 @@ function validateForm(
         : workAction.kind === "update"
         ? workAction.id
         : workAction.kind === "none"
-        ? workAction.workId ?? null
+        ? workAction.work_id ?? null
         : null,
   };
 
@@ -380,7 +390,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   const [formData, setFormData] = useState<SongFormData>(blankSong);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isDirty, setIsDirty] = useState<boolean>(false);
-  const [initialWorkId, setInitialWorkId] = useState<string | null>(null);
+  const [initialWork_id, setInitialWork_id] = useState<string | null>(null);
   const [initialWorkSnapshot, setInitialWorkSnapshot] =
     useState<WorkFormSnapshot | null>(null);
   const [hasWork, setHasWork] = useState<boolean>(false);
@@ -389,9 +399,9 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     data: song,
     isLoading,
     error: fetchError,
-  } = useQuery<SongWithWorkRow>({
+  } = useQuery<SongBundle>({
     queryKey: QueryKey.song(slug),
-    queryFn: () => Song.getBySlug(slug),
+    queryFn: () => Song.getBundle(slug),
     enabled: !isNew,
     staleTime: 60_000,
   });
@@ -404,17 +414,17 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       setFormData(mapped);
       setErrors({});
       setIsDirty(false);
-      setInitialWorkId(song.work_id ?? null);
-      setHasWork(Boolean(song.work_id));
+      setInitialWork_id(song.work?.id ?? null);
+      setHasWork(Boolean(song.work?.id));
       setInitialWorkSnapshot(
-        song.work_id
+        song.work?.id
           ? {
-              id: song.work_id,
-              title: mapped.workTitle,
-              romaji: mapped.workRomaji,
-              furigana: mapped.workFurigana,
-              kind: mapped.workKind,
-              year: mapped.workYear,
+              id: song.work.id,
+              title: mapped.work_title,
+              romaji: mapped.work_romaji,
+              furigana: mapped.work_furigana,
+              kind: mapped.work_kind,
+              year: mapped.work_year,
             }
           : null
       );
@@ -427,7 +437,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       setFormData(initial);
       setErrors({});
       setIsDirty(false);
-      setInitialWorkId(null);
+      setInitialWork_id(null);
       setHasWork(false);
       setInitialWorkSnapshot(null);
     }
@@ -435,56 +445,56 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
   const saveMutation = useMutation({
     mutationFn: async (input: SaveInput) => {
-      let workId: string | null = null;
+      let work_id: string | null = null;
 
       switch (input.workAction.kind) {
         case "create": {
           if (!hasWork) {
-            workId = null;
+            work_id = null;
             break;
           }
           const created = await Work.create(input.workAction.payload);
-          workId = created.id;
+          work_id = created.id;
           break;
         }
         case "update": {
           if (hasWork) {
             await Work.update(input.workAction.id, input.workAction.payload);
           }
-          workId = input.workAction.id;
+          work_id = input.workAction.id;
           break;
         }
         case "none": {
-          workId = input.workAction.workId ?? null;
+          work_id = input.workAction.work_id ?? null;
           break;
         }
         case "unlink":
         default: {
-          workId = null;
+          work_id = null;
         }
       }
 
       if (input.kind === "create") {
         const created = await Song.insertSong({
           ...input.song,
-          work_id: workId,
+          work_id: work_id,
         });
-        return Song.getBySlug(created.slug);
+        return Song.getBundle(created.slug);
       }
 
       const updated = await Song.updateSong(input.id, {
         ...input.song,
-        work_id: workId,
+        work_id: work_id,
       });
       const slugToFetch = updated.slug ?? input.song.slug ?? input.previousSlug;
-      return Song.getBySlug(slugToFetch);
+      return Song.getBundle(slugToFetch);
     },
     onSuccess: (refreshed, input) => {
       queryClient.invalidateQueries({ queryKey: QueryKey.songs() });
       queryClient.setQueryData(QueryKey.song(refreshed.slug), refreshed);
-      if (refreshed.work_id) {
+      if (refreshed.work?.id) {
         queryClient.invalidateQueries({
-          queryKey: QueryKey.work(refreshed.work_id),
+          queryKey: QueryKey.work(refreshed.work.id),
         });
       }
 
@@ -492,17 +502,17 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       setFormData(mapped);
       setErrors({});
       setIsDirty(false);
-      setInitialWorkId(refreshed.work_id ?? null);
-      setHasWork(Boolean(refreshed.work_id));
+      setInitialWork_id(refreshed.work?.id ?? null);
+      setHasWork(Boolean(refreshed.work?.id));
       setInitialWorkSnapshot(
-        refreshed.work_id
+        refreshed.work?.id
           ? {
-              id: refreshed.work_id,
-              title: mapped.workTitle,
-              romaji: mapped.workRomaji,
-              furigana: mapped.workFurigana,
-              kind: mapped.workKind,
-              year: mapped.workYear,
+              id: refreshed.work.id,
+              title: mapped.work_title,
+              romaji: mapped.work_romaji,
+              furigana: mapped.work_furigana,
+              kind: mapped.work_kind,
+              year: mapped.work_year,
             }
           : null
       );
@@ -559,10 +569,10 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       setIsDirty(true);
     };
 
-  const handleWorkKindChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  const handleWork_kindChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value as WorkKind;
-    setFormData((prev) => ({ ...prev, workKind: value }));
-    setErrors((prev) => ({ ...prev, workKind: undefined }));
+    setFormData((prev) => ({ ...prev, work_kind: value }));
+    setErrors((prev) => ({ ...prev, work_kind: undefined }));
     setIsDirty(true);
   };
 
@@ -571,12 +581,12 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     setHasWork(checked);
     setErrors((prev) => ({
       ...prev,
-      workId: undefined,
-      workTitle: undefined,
-      workRomaji: undefined,
-      workFurigana: undefined,
-      workKind: undefined,
-      workYear: undefined,
+      work_id: undefined,
+      work_title: undefined,
+      work_romaji: undefined,
+      work_furigana: undefined,
+      work_kind: undefined,
+      work_year: undefined,
     }));
     setIsDirty(true);
   };
@@ -586,7 +596,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
     const validation = validateForm(formData, {
       isNew,
-      initialWorkId,
+      initialWork_id,
       initialWorkSnapshot,
       hasWork,
     });
@@ -675,7 +685,8 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         <h1 className="text-3xl font-semibold">{pageTitle}</h1>
         {!isNew && song && (
           <p className="text-sm text-zinc-400">
-            ID: {song.id} · Created {new Date(song.created_at).toLocaleString()}
+            ID: {song.id} · Created{" "}
+            {new Date(song.created_at!).toLocaleString()}
           </p>
         )}
       </header>
@@ -855,79 +866,79 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
             <div className="grid gap-1">
               <label
-                htmlFor="workId"
+                htmlFor="work_id"
                 className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
               >
                 Existing Work ID
               </label>
               <input
-                id="workId"
-                name="workId"
+                id="work_id"
+                name="work_id"
                 type="text"
-                value={formData.workId}
-                onChange={handleInputChange("workId")}
+                value={formData.work_id}
+                onChange={handleInputChange("work_id")}
                 className={INPUT_CLASS}
                 placeholder="UUID from Supabase"
                 disabled={disableInputs}
               />
-              {errors.workId && (
-                <p className="text-xs text-rose-400">{errors.workId}</p>
+              {errors.work_id && (
+                <p className="text-xs text-rose-400">{errors.work_id}</p>
               )}
             </div>
 
             <div className="grid gap-1">
               <label
-                htmlFor="workTitle"
+                htmlFor="work_title"
                 className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
               >
                 Work Title
               </label>
               <input
-                id="workTitle"
-                name="workTitle"
+                id="work_title"
+                name="work_title"
                 type="text"
-                value={formData.workTitle}
-                onChange={handleInputChange("workTitle")}
+                value={formData.work_title}
+                onChange={handleInputChange("work_title")}
                 className={INPUT_CLASS}
                 placeholder="Title of the work"
                 disabled={disableInputs}
               />
-              {errors.workTitle && (
-                <p className="text-xs text-rose-400">{errors.workTitle}</p>
+              {errors.work_title && (
+                <p className="text-xs text-rose-400">{errors.work_title}</p>
               )}
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="grid gap-1">
                 <label
-                  htmlFor="workRomaji"
+                  htmlFor="work_romaji"
                   className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
                 >
                   Work Romaji
                 </label>
                 <input
-                  id="workRomaji"
-                  name="workRomaji"
+                  id="work_romaji"
+                  name="work_romaji"
                   type="text"
-                  value={formData.workRomaji}
-                  onChange={handleInputChange("workRomaji")}
+                  value={formData.work_romaji}
+                  onChange={handleInputChange("work_romaji")}
                   className={INPUT_CLASS}
                   disabled={disableInputs}
                 />
               </div>
               <div className="grid gap-1">
                 <label
-                  htmlFor="workFurigana"
+                  htmlFor="work_furigana"
                   className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
                 >
                   Work Furigana
                 </label>
                 <input
-                  id="workFurigana"
-                  name="workFurigana"
+                  id="work_furigana"
+                  name="work_furigana"
                   type="text"
-                  value={formData.workFurigana}
-                  onChange={handleInputChange("workFurigana")}
+                  value={formData.work_furigana}
+                  onChange={handleInputChange("work_furigana")}
                   className={INPUT_CLASS}
                   disabled={disableInputs}
                 />
@@ -937,16 +948,16 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="grid gap-1">
                 <label
-                  htmlFor="workKind"
+                  htmlFor="work_kind"
                   className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
                 >
                   Work Kind
                 </label>
                 <select
-                  id="workKind"
-                  name="workKind"
-                  value={formData.workKind}
-                  onChange={handleWorkKindChange}
+                  id="work_kind"
+                  name="work_kind"
+                  value={formData.work_kind}
+                  onChange={handleWork_kindChange}
                   className={`${INPUT_CLASS} pr-8`}
                   disabled={disableInputs}
                 >
@@ -959,23 +970,23 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
               </div>
               <div className="grid gap-1">
                 <label
-                  htmlFor="workYear"
+                  htmlFor="work_year"
                   className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
                 >
                   Work Year
                 </label>
                 <input
-                  id="workYear"
-                  name="workYear"
+                  id="work_year"
+                  name="work_year"
                   type="text"
                   inputMode="numeric"
-                  value={formData.workYear}
-                  onChange={handleInputChange("workYear")}
+                  value={formData.work_year}
+                  onChange={handleInputChange("work_year")}
                   className={INPUT_CLASS}
                   disabled={disableInputs}
                 />
-                {errors.workYear && (
-                  <p className="text-xs text-rose-400">{errors.workYear}</p>
+                {errors.work_year && (
+                  <p className="text-xs text-rose-400">{errors.work_year}</p>
                 )}
               </div>
             </div>
