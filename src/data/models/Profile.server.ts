@@ -33,8 +33,14 @@ export const Profile = {
   },
 
   async isAdmain(): Promise<boolean> {
-    const currentUser = await Profile.getMy();
+    const supabase = await serverDB();
+    const { data, error } = await supabase.rpc("is_admin");
 
-    return currentUser?.role === "admin";
+    if (error) {
+      console.error(error);
+      throw error;
+    }
+
+    return data;
   },
 };
