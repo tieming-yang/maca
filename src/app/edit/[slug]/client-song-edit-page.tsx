@@ -549,13 +549,14 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
       switch (input.kind) {
         case "create":
-          const created = await Song.insertSong({
+          const inserted = await Song.insertSong({
             ...input.song,
             work_id: workId,
           });
-          const insetedCredit = await Credit.insert(created.id, input.credit);
-          console.log(insetedCredit);
-          return Song.getBundle(created.slug);
+      
+          const insetedCredit = await Credit.insert(inserted.id, input.credit);
+
+          return Song.getBundle(inserted.slug);
         case "update":
           const updated = await Song.updateSong(input.id, {
             ...input.song,
@@ -563,7 +564,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           });
 
           const updatedCredit = await Credit.update(input.credit);
-          console.log(updatedCredit);
+
           slugToFetch = updated.slug ?? input.song.slug ?? input.previousSlug;
       }
 
