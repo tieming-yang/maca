@@ -3,17 +3,19 @@
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Credit,
-  InsertRow,
-  Song,
-  SongBundle,
-  UpdateRow,
-} from "@/data/models/Song";
+import { InsertRow, Song, SongBundle, UpdateRow } from "@/data/models/Song";
 import { Work, WorkInsert, WorkKind, WorkUpdate } from "@/data/models/Work";
 import { QueryKey } from "@/data/query-keys";
 import { Song as LegacySong } from "@/songs/Song";
 import Loading from "@/app/components/loading";
+import { People, PeopleRow } from "@/data/models/People";
+import {
+  Credit,
+  CreditRole,
+  CreditRow,
+  CreditUpdate,
+  FormattedCredit,
+} from "@/data/models/Credit";
 
 const NEW_SLUG_SENTINEL = "new";
 const PANEL_CLASS =
@@ -45,7 +47,7 @@ type SongFormData = {
   work_furigana: string;
   work_kind: WorkKind;
   work_year: string;
-} & Credit;
+} & FormattedCredit;
 
 type FormErrors = Partial<Record<keyof SongFormData | "base", string>>;
 
@@ -77,6 +79,7 @@ type ValidationResult = {
   songInsert?: InsertRow;
   songUpdate?: UpdateRow;
   workAction: WorkAction;
+  credit: FormattedCredit | CreditUpdate[];
 };
 
 function blankSong(): SongFormData {
@@ -308,6 +311,51 @@ function determineWorkAction(
   };
 }
 
+function validateCreditSection(
+  values: SongFormData,
+  options: ValidationOptions,
+  errors: FormErrors
+) {
+  const { primary_artist, featured_artist, composer, lyricist } = values;
+  if (primary_artist.length <= 0) {
+    errors.primary_artist = "We need at least one primary artist";
+  }
+  if (composer.length <= 0) {
+    errors.composer = "We need at least one composer";
+  }
+  if (lyricist.length <= 0) {
+    errors.lyricist = "We need at least one lyricist";
+  }
+
+  const formattedCredit: FormattedCredit = {
+    primary_artist,
+    featured_artist,
+    composer,
+    lyricist,
+  };
+
+  if (options.isNew) {
+    return formattedCredit;
+  }
+
+  const updates: CreditUpdate[] = [];
+  Object.entries(formattedCredit).forEach(([role, people]) => {
+    people?.forEach((person, index) => {
+      if (!person) return;
+
+      updates.push({
+        song_id: values.id,
+        person_id: person.id,
+        role: role as CreditRole,
+        position: index,
+        id: person.creditId,
+      });
+    });
+  });
+
+  return updates;
+}
+
 function validateForm(
   values: SongFormData,
   options: ValidationOptions
@@ -316,13 +364,19 @@ function validateForm(
 
   const songSection = validateSongSection(values, errors);
   const workAction = determineWorkAction(values, options, errors);
+  const credit = validateCreditSection(values, options, errors);
 
   if (options.isNew && workAction.kind === "none" && !workAction.workId) {
     errors.work_title = "Provide a new work or link an existing work ID.";
   }
 
   if (Object.keys(errors).length > 0 || !songSection.sanitizedSlug) {
-    return { errors, sanitizedSlug: songSection.sanitizedSlug, workAction };
+    return {
+      errors,
+      sanitizedSlug: songSection.sanitizedSlug,
+      workAction,
+      credit,
+    };
   }
 
   const basePayload = {
@@ -369,17 +423,24 @@ function validateForm(
     songInsert,
     songUpdate,
     workAction,
+    credit,
   };
 }
 
 type SaveInput =
-  | { kind: "create"; song: InsertRow; workAction: WorkAction }
+  | {
+      kind: "create";
+      song: InsertRow;
+      workAction: WorkAction;
+      credit: FormattedCredit;
+    }
   | {
       kind: "update";
       id: string;
       previousSlug: string;
       song: UpdateRow;
       workAction: WorkAction;
+      credit: CreditUpdate[];
     };
 
 export default function ClientSongEditPage({ slug }: { slug: string }) {
@@ -395,7 +456,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   const [initialWorkSnapshot, setInitialWorkSnapshot] =
     useState<WorkFormSnapshot | null>(null);
   const [hasWork, setHasWork] = useState<boolean>(false);
-
   const {
     data: song,
     isLoading,
@@ -404,6 +464,16 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     queryKey: QueryKey.song(slug),
     queryFn: () => Song.getBundle(slug),
     enabled: !isNew,
+    staleTime: 60_000,
+  });
+
+  const {
+    data: people,
+    isLoading: isPeopleLoading,
+    error: fetchPeopleError,
+  } = useQuery<PeopleRow[]>({
+    queryKey: QueryKey.people(),
+    queryFn: () => People.getAll(),
     staleTime: 60_000,
   });
 
@@ -475,19 +545,28 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         }
       }
 
-      if (input.kind === "create") {
-        const created = await Song.insertSong({
-          ...input.song,
-          work_id: workId,
-        });
-        return Song.getBundle(created.slug);
+      let slugToFetch = null;
+
+      switch (input.kind) {
+        case "create":
+          const created = await Song.insertSong({
+            ...input.song,
+            work_id: workId,
+          });
+          const insetedCredit = await Credit.insert(created.id, input.credit);
+          console.log(insetedCredit);
+          return Song.getBundle(created.slug);
+        case "update":
+          const updated = await Song.updateSong(input.id, {
+            ...input.song,
+            work_id: workId,
+          });
+
+          const updatedCredit = await Credit.update(input.credit);
+          console.log(updatedCredit);
+          slugToFetch = updated.slug ?? input.song.slug ?? input.previousSlug;
       }
 
-      const updated = await Song.updateSong(input.id, {
-        ...input.song,
-        work_id: workId,
-      });
-      const slugToFetch = updated.slug ?? input.song.slug ?? input.previousSlug;
       return Song.getBundle(slugToFetch);
     },
     onSuccess: (refreshed, input) => {
@@ -551,26 +630,31 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     },
   });
 
-  const handleInputChange =
-    (field: keyof SongFormData) =>
-    (
+  function handleInputChange(field: keyof SongFormData) {
+    return function (
       event: ChangeEvent<
         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
       >
-    ) => {
+    ) {
       const value = event.target.value;
       setFormData((prev) => {
-        if (field === "romaji") {
-          const nextSlug = Song.toSlug(value);
-          return { ...prev, romaji: value, slug: nextSlug };
+        switch (field) {
+          case "romaji":
+            const nextSlug = Song.toSlug(value);
+            return { ...prev, romaji: value, slug: nextSlug };
+          case "primary_artist":
+
+          default:
+            return { ...prev, [field]: value };
         }
-        return { ...prev, [field]: value };
       });
+
       setErrors((prev) => ({ ...prev, [field]: undefined }));
       setIsDirty(true);
     };
+  }
 
-  const handleWork_kindChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  const handleWorkKindChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value as WorkKind;
     setFormData((prev) => ({ ...prev, work_kind: value }));
     setErrors((prev) => ({ ...prev, work_kind: undefined }));
@@ -626,6 +710,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         kind: "create",
         song: validation.songInsert,
         workAction: validation.workAction,
+        credit: validation.credit as FormattedCredit,
       });
       return;
     }
@@ -649,6 +734,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       previousSlug: slug,
       song: validation.songUpdate,
       workAction: validation.workAction,
+      credit: validation.credit as CreditUpdate[],
     });
   };
 
@@ -841,6 +927,91 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           )}
         </div>
 
+        {/* Credit */}
+        <div className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">
+            Credit Details
+          </h2>
+          <p className="text-xs text-zinc-500">Provide a new credit</p>
+
+          {formData.primary_artist.length > 0 &&
+            formData.primary_artist.map((artist, index) => {
+              const { id, display_name } = artist;
+
+              return (
+                <div className="grid gap-1" key={id}>
+                  <label
+                    htmlFor="primary_artist.display_name"
+                    className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
+                  >
+                    primary_artist.display_name
+                  </label>
+                  <input
+                    id="primary_artist.display_name"
+                    name="primary_artist.display_name"
+                    type="text"
+                    value={display_name!}
+                    onChange={handleInputChange("primary_artist")}
+                    className={INPUT_CLASS}
+                    placeholder=""
+                    disabled={disableInputs}
+                  />
+                  {errors.primary_artist && (
+                    <p className="text-xs text-rose-400">
+                      {errors.primary_artist}
+                    </p>
+                  )}
+
+                  <select
+                    name="primary_artist_options"
+                    id="primary_artist_options"
+                    className={INPUT_CLASS}
+                    value={display_name!}
+                    onChange={(e) => {
+                      if (isPeopleLoading) {
+                        return;
+                      }
+                      const selected = people?.find(
+                        (p) => p.display_name === e.target.value
+                      );
+                      if (!selected) return;
+
+                      setFormData((prev) => {
+                        const next = [...prev.primary_artist];
+                        const previous = next[index];
+                        const { id, display_name, romaji, furigana } = selected;
+                        next[index] = {
+                          id,
+                          display_name,
+                          romaji,
+                          furigana,
+                          creditId: previous?.creditId,
+                        };
+
+                        return {
+                          ...prev,
+                          primary_artist: next,
+                        };
+                      });
+
+                      setErrors((prev) => ({
+                        ...prev,
+                        primary_artist: undefined,
+                      }));
+                      setIsDirty(true);
+                    }}
+                  >
+                    {people?.map((p) => (
+                      <option value={p.display_name} key={p.id}>
+                        {p.display_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              );
+            })}
+        </div>
+
         {/* Work */}
         <div className="flex items-center gap-2 pt-2">
           <input
@@ -962,7 +1133,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                   id="work_kind"
                   name="work_kind"
                   value={formData.work_kind}
-                  onChange={handleWork_kindChange}
+                  onChange={handleWorkKindChange}
                   className={`${INPUT_CLASS} pr-8`}
                   disabled={disableInputs}
                 >

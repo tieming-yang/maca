@@ -6,7 +6,7 @@ import { LoaderCircle } from "lucide-react";
 import { LanguageIcon, PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/data/query-keys";
-import { Song, SongBundle, Credit } from "@/data/models/Song";
+import { Song, SongBundle, CreditRow } from "@/data/models/Song";
 
 const opts = { height: "780", width: "1280", playerVars: { autoplay: 1 } };
 
@@ -34,7 +34,7 @@ export default function PlayerClient({ slug }: { slug: string }) {
   });
 
   // credits (artist / lyricist / composer)
-  const { data: credits } = useQuery<Credit>({
+  const { data: credits } = useQuery<CreditRow>({
     queryKey: ["song-credits", data?.id],
     queryFn: () => Song.getCredits(data!.id),
     enabled: !!data?.id,
