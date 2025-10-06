@@ -6,6 +6,7 @@ export const QueryKey = {
   work: (id: string) => ["work", id] as const,
   songCredits: (songId: string) => ["song", songId, "credits"] as const,
   people: () => ["people"] as const,
+  person: (id: string) => ["person", id] as const,
 
   // auth/session & profile
   authUser: ["auth", "user"] as const,
