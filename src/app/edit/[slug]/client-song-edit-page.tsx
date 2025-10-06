@@ -16,6 +16,8 @@ import {
   CreditUpdate,
   FormattedCredit,
 } from "@/data/models/Credit";
+import { Button } from "@/app/components/ui/button";
+import { X } from "lucide-react";
 
 const NEW_SLUG_SENTINEL = "new";
 const PANEL_CLASS =
