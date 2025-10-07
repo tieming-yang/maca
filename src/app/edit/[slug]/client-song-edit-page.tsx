@@ -8,7 +8,7 @@ import { Work, WorkInsert, WorkKind, WorkUpdate } from "@/data/models/Work";
 import { QueryKey } from "@/data/query-keys";
 import { Song as LegacySong } from "@/songs/Song";
 import Loading from "@/app/components/loading";
-import { People, PeopleRow } from "@/data/models/People";
+import { People, PeopleInsert, PeopleRow } from "@/data/models/People";
 import {
   Credit,
   CreditRole,
@@ -52,6 +52,7 @@ type SongFormData = {
 } & FormattedCredit;
 
 type FormErrors = Partial<Record<keyof SongFormData | "base", string>>;
+type PersonFormErrors = Partial<Record<keyof PeopleInsert | "base", string>>;
 
 type WorkAction =
   | { kind: "none"; workId: string | null }
@@ -102,6 +103,15 @@ function blankSong(): SongFormData {
     featured_artist: [],
     composer: [],
     lyricist: [],
+  };
+}
+
+function blankPerson(): PeopleInsert {
+  return {
+    alt_names: "",
+    display_name: "",
+    furigana: "",
+    romaji: "",
   };
 }
 
@@ -445,6 +455,8 @@ type SaveInput =
       credit: CreditUpdate[];
     };
 
+type ModelStatus = "AddPerson" | "idel";
+
 export default function ClientSongEditPage({ slug }: { slug: string }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -458,6 +470,11 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   const [initialWorkSnapshot, setInitialWorkSnapshot] =
     useState<WorkFormSnapshot | null>(null);
   const [hasWork, setHasWork] = useState<boolean>(false);
+  const [model, setModel] = useState<ModelStatus>("idel");
+
+  const [personData, setPersonData] = useState<PeopleInsert>(blankPerson);
+  const [personErrors, setPersonErrors] = useState<PersonFormErrors>({});
+
   const {
     data: song,
     isLoading,
@@ -555,7 +572,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             ...input.song,
             work_id: workId,
           });
-      
+
           const insetedCredit = await Credit.insert(inserted.id, input.credit);
 
           return Song.getBundle(inserted.slug);
@@ -620,6 +637,25 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     },
   });
 
+  const addPersonMutation = useMutation({
+    mutationFn: async (input: PeopleInsert) => {
+      const person = await People.create(input);
+      return person;
+    },
+    onSuccess: (refreshed) => {
+      queryClient.setQueryData(QueryKey.person(refreshed.id), refreshed);
+
+      setModel("idel");
+
+      window.alert("Added");
+    },
+    onError: (err: unknown) => {
+      const message =
+        err instanceof Error ? err.message : "Unable to add the person.";
+      setErrors((prev) => ({ ...prev, base: message }));
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => Song.deleteSong(id),
     onSuccess: () => {
@@ -654,6 +690,29 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
       setErrors((prev) => ({ ...prev, [field]: undefined }));
       setIsDirty(true);
+    };
+  }
+
+  function handlePersonInputChange(field: keyof PeopleInsert) {
+    return (
+      event: ChangeEvent<
+        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      >
+    ) => {
+      const value = event.target.value;
+
+      setPersonData((prev) => {
+        switch (field) {
+          case "display_name":
+            return { ...prev, display_name: value };
+          case "furigana":
+            return { ...prev, furigana: value };
+          case "romaji":
+            return { ...prev, romaji: value };
+          default:
+            return prev;
+        }
+      });
     };
   }
 
@@ -784,7 +843,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           </p>
         )}
       </header>
-
       {fetchError && !isNew && (
         <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
           Failed to load song data. Please try again.
@@ -932,9 +990,127 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
         {/* Credit */}
         <div className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">
-            Credit Details
-          </h2>
+          <div className="flex justify-between">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">
+              Credit Details
+            </h2>
+            <Button
+              type="button"
+              variant="primary"
+              onMouseDown={() =>
+                setModel((model) =>
+                  model === "AddPerson" ? "idel" : "AddPerson"
+                )
+              }
+            >
+              Add
+            </Button>
+
+            {/* Person */}
+            <dialog
+              open={model === "AddPerson"}
+              className={`${PANEL_CLASS} text-white space-y-5 p-6 mx-auto w-full max-w-3xl backdrop-blur-2xl`}
+            >
+              <div className="flex justify-between">
+                <p>Add Person</p>
+                <Button
+                  type="button"
+                  variant="icon"
+                  onMouseDown={() =>
+                    setModel((model) =>
+                      model === "AddPerson" ? "idel" : "AddPerson"
+                    )
+                  }
+                >
+                  <X />
+                </Button>
+              </div>
+
+              <div className="space-y-5">
+                <div className="grid gap-1">
+                  <label
+                    htmlFor="display_name"
+                    className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
+                  >
+                    Display Name
+                  </label>
+                  <input
+                    id="display_name"
+                    name="display_name"
+                    type="text"
+                    value={personData.display_name}
+                    onChange={handlePersonInputChange("display_name")}
+                    className={INPUT_CLASS}
+                    placeholder="Artist Name"
+                    disabled={disableInputs}
+                  />
+                  {personErrors.display_name && (
+                    <p className="text-xs text-rose-400">
+                      {personErrors.display_name}
+                    </p>
+                  )}
+                </div>
+                <div className="grid gap-1">
+                  <label
+                    htmlFor="furigana"
+                    className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
+                  >
+                    Furigana
+                  </label>
+                  <input
+                    id="furigana"
+                    name="furigana"
+                    type="text"
+                    value={personData.furigana ?? ""}
+                    onChange={handlePersonInputChange("furigana")}
+                    className={INPUT_CLASS}
+                    placeholder="Furigana"
+                    disabled={disableInputs}
+                  />
+                  {personErrors.furigana && (
+                    <p className="text-xs text-rose-400">
+                      {personErrors.furigana}
+                    </p>
+                  )}
+                </div>
+                <div className="grid gap-1">
+                  <label
+                    htmlFor="romaji"
+                    className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
+                  >
+                    Romaji
+                  </label>
+                  <input
+                    id="romaji"
+                    name="romaji"
+                    type="text"
+                    value={personData.romaji ?? ""}
+                    onChange={handlePersonInputChange("romaji")}
+                    className={INPUT_CLASS}
+                    placeholder="Romaji"
+                    disabled={disableInputs}
+                  />
+                  {personErrors.romaji && (
+                    <p className="text-xs text-rose-400">
+                      {personErrors.romaji}
+                    </p>
+                  )}
+                </div>
+
+                <Button
+                  variant="primary"
+                  onMouseDown={() => {
+                    console.log("add person");
+                    addPersonMutation.mutate(personData);
+                  }}
+                >
+                  Add
+                </Button>
+              </div>
+            </dialog>
+          </div>
+
+          {/* Credit */}
           <p className="text-xs text-zinc-500">Provide a new credit</p>
 
           {formData.primary_artist.length > 0 &&
@@ -949,7 +1125,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                   >
                     primary_artist.display_name
                   </label>
-                  <input
+                  {/* <input
                     id="primary_artist.display_name"
                     name="primary_artist.display_name"
                     type="text"
@@ -958,7 +1134,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                     className={INPUT_CLASS}
                     placeholder=""
                     disabled={disableInputs}
-                  />
+                  /> */}
                   {errors.primary_artist && (
                     <p className="text-xs text-rose-400">
                       {errors.primary_artist}
@@ -967,7 +1143,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
                   <select
                     name="primary_artist_options"
-                    id="primary_artist_options"
+                    id="primary_artist.display_name"
                     className={INPUT_CLASS}
                     value={display_name!}
                     onChange={(e) => {
@@ -1173,25 +1349,25 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         )}
 
         <div className="flex flex-wrap items-center gap-3 pt-4">
-          <button
+          <Button
             type="submit"
             disabled={
               disableInputs || saveMutation.isPending || (!isDirty && !isNew)
             }
-            className="rounded bg-teal-500 px-4 py-2 text-sm font-semibold text-white shadow transition enabled:hover:bg-teal-400 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-teal-300 disabled:cursor-not-allowed disabled:opacity-60"
+            variant="primary"
           >
             {saveMutation.isPending ? "Saving…" : "Save"}
-          </button>
+          </Button>
 
           {!isNew && (
-            <button
+            <Button
               type="button"
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
-              className="rounded border border-rose-500/60 px-4 py-2 text-sm font-semibold text-rose-300 transition enabled:hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+              variant="danger"
             >
               {deleteMutation.isPending ? "Deleting…" : "Delete"}
-            </button>
+            </Button>
           )}
         </div>
       </form>
