@@ -5,6 +5,7 @@ import { QueryKey } from "@/data/query-keys";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Loading from "../components/loading";
 
 export default function ClientEditPage() {
   const router = useRouter();
@@ -24,6 +25,10 @@ export default function ClientEditPage() {
     router.push("/edit/new");
   };
 
+  if (isLoading) {
+    return <Loading isFullScreen />;
+  }
+
   return (
     <section className="w-full max-w-5xl space-y-6 py-8 px-3 text-zinc-100">
       <header className="flex flex-col gap-4 rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 shadow-[0_20px_45px_-35px_rgba(12,12,12,1)] sm:flex-row sm:items-center sm:justify-between">
@@ -42,7 +47,6 @@ export default function ClientEditPage() {
         </button>
       </header>
 
-      {isLoading && <p className="text-sm text-zinc-400">Loading…</p>}
       {error && (
         <p className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
           Failed to load songs. Please refresh the page.
