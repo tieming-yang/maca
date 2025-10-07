@@ -9,6 +9,20 @@ export type CreditUpdate =
 
 export type CreditRole = Database["public"]["Enums"]["credit_role"];
 
+const CREDIT_ROLE_VALUES = [
+  "primary_artist",
+  "featured_artist",
+  "composer",
+  "lyricist",
+] as const satisfies ReadonlyArray<CreditRole>;
+
+const CREDIT_ROLE_LABELS: Record<CreditRole, string> = {
+  primary_artist: "primary_artist",
+  featured_artist: "featured_artist",
+  composer: "composer",
+  lyricist: "lyricist",
+};
+
 export type CreditPerson = {
   id: string;
   display_name: string | null;
@@ -27,6 +41,9 @@ export type FormattedCredit = {
 const db = createClient();
 
 export const Credit = {
+  CREDIT_ROLE_VALUES,
+  CREDIT_ROLE_LABELS,
+
   async getAll(): Promise<CreditRow[]> {
     const { data, error } = await db
       .from("song_credits")

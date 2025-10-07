@@ -18,11 +18,12 @@ import {
 } from "@/data/models/Credit";
 import { Button } from "@/app/components/ui/button";
 import { X } from "lucide-react";
+import PeopleSelect from "../components/people-select";
 
 const NEW_SLUG_SENTINEL = "new";
 const PANEL_CLASS =
   "rounded-2xl border border-zinc-800 bg-zinc-950/60 shadow-[0_25px_55px_-40px_rgba(12,12,12,1)]";
-const INPUT_CLASS =
+export const INPUT_CLASS =
   "rounded-full border border-zinc-700 bg-zinc-950/60 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 disabled:cursor-not-allowed disabled:border-zinc-800 disabled:bg-zinc-900/50";
 const WORK_KIND_OPTIONS: WorkKind[] = [
   "movie",
@@ -35,7 +36,7 @@ const WORK_KIND_OPTIONS: WorkKind[] = [
   "other",
 ];
 
-type SongFormData = {
+export type SongFormData = {
   id?: string;
   name: string;
   romaji: string;
@@ -51,7 +52,7 @@ type SongFormData = {
   work_year: string;
 } & FormattedCredit;
 
-type FormErrors = Partial<Record<keyof SongFormData | "base", string>>;
+export type FormErrors = Partial<Record<keyof SongFormData | "base", string>>;
 type PersonFormErrors = Partial<Record<keyof PeopleInsert | "base", string>>;
 
 type WorkAction =
@@ -820,12 +821,12 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     return "Edit Song";
   }, [isNew, song]);
 
-  if (isLoading) {
+  if (isLoading || saveMutation.isPending) {
     return <Loading isFullScreen />;
   }
 
   return (
-    <section className="w-full max-w-3xl space-y-6 py-8 text-zinc-100 px-3">
+    <section className="w-full max-w-3xl mx-auto space-y-6 py-8 text-zinc-100 px-3">
       <button
         type="button"
         onClick={() => router.push("/edit")}
@@ -988,7 +989,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           )}
         </div>
 
-        {/* Credit */}
+        {/* Add Person */}
         <div className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
           <div className="flex justify-between">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">
@@ -1006,7 +1007,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
               Add
             </Button>
 
-            {/* Person */}
             <dialog
               open={model === "AddPerson"}
               className={`${PANEL_CLASS} text-white space-y-5 p-6 mx-auto w-full max-w-3xl backdrop-blur-2xl`}
@@ -1100,7 +1100,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                 <Button
                   variant="primary"
                   onMouseDown={() => {
-                    console.log("add person");
                     addPersonMutation.mutate(personData);
                   }}
                 >
@@ -1112,83 +1111,20 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
           {/* Credit */}
           <p className="text-xs text-zinc-500">Provide a new credit</p>
-
-          {formData.primary_artist.length > 0 &&
-            formData.primary_artist.map((artist, index) => {
-              const { id, display_name } = artist;
-
-              return (
-                <div className="grid gap-1" key={id}>
-                  <label
-                    htmlFor="primary_artist.display_name"
-                    className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
-                  >
-                    primary_artist.display_name
-                  </label>
-                  {/* <input
-                    id="primary_artist.display_name"
-                    name="primary_artist.display_name"
-                    type="text"
-                    value={display_name!}
-                    onChange={handleInputChange("primary_artist")}
-                    className={INPUT_CLASS}
-                    placeholder=""
-                    disabled={disableInputs}
-                  /> */}
-                  {errors.primary_artist && (
-                    <p className="text-xs text-rose-400">
-                      {errors.primary_artist}
-                    </p>
-                  )}
-
-                  <select
-                    name="primary_artist_options"
-                    id="primary_artist.display_name"
-                    className={INPUT_CLASS}
-                    value={display_name!}
-                    onChange={(e) => {
-                      if (isPeopleLoading) {
-                        return;
-                      }
-                      const selected = people?.find(
-                        (p) => p.display_name === e.target.value
-                      );
-                      if (!selected) return;
-
-                      setFormData((prev) => {
-                        const next = [...prev.primary_artist];
-                        const previous = next[index];
-                        const { id, display_name, romaji, furigana } = selected;
-                        next[index] = {
-                          id,
-                          display_name,
-                          romaji,
-                          furigana,
-                          creditId: previous?.creditId,
-                        };
-
-                        return {
-                          ...prev,
-                          primary_artist: next,
-                        };
-                      });
-
-                      setErrors((prev) => ({
-                        ...prev,
-                        primary_artist: undefined,
-                      }));
-                      setIsDirty(true);
-                    }}
-                  >
-                    {people?.map((p) => (
-                      <option value={p.display_name} key={p.id}>
-                        {p.display_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              );
-            })}
+          {Credit.CREDIT_ROLE_VALUES.map((role) => (
+            <div key={role}>
+              <PeopleSelect
+                formData={formData}
+                role={role}
+                errors={errors}
+                people={people!}
+                isPeopleLoading={isPeopleLoading}
+                setFormData={setFormData}
+                setErrors={setErrors}
+                setIsDirty={setIsDirty}
+              />
+            </div>
+          ))}
         </div>
 
         {/* Work */}

@@ -63,7 +63,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen flex-col items-center px-5 md:px-0`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased px-5 md:px-0`}
       >
         <Providers>{children}</Providers>
       </body>
