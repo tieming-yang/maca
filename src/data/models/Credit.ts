@@ -111,7 +111,7 @@ export const Credit = {
 
     Object.entries(credits).forEach(([role, people]) => {
       people?.forEach((person, index) => {
-        if (!person) return;
+        if (!person || !person.id) return;
 
         entries.push({
           song_id: songId,

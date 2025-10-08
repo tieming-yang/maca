@@ -36,7 +36,10 @@ export default function PeopleSelect({
       {artists.map((artist, index) => {
         const { id, display_name } = artist;
         return (
-          <div className="grid gap-1" key={id}>
+          <div
+            className="grid gap-1"
+            key={id ? `${role}-${id}` : `${role}-placeholder-${index}`}
+          >
             <label
               htmlFor={`${role}.display_name`}
               className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
@@ -91,7 +94,7 @@ export default function PeopleSelect({
                   Select a person…
                 </option>
               )}
-
+              
               {people?.map((p) => (
                 <option value={p.display_name} key={p.id}>
                   {p.display_name}

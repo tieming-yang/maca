@@ -88,7 +88,7 @@ type ValidationResult = {
 };
 
 const makeBlankCreditPerson = (): CreditPerson => ({
-  id: crypto.randomUUID(),
+  id: "",
   display_name: "",
   furigana: "",
   romaji: "",
@@ -329,14 +329,14 @@ function validateCreditSection(
   errors: FormErrors
 ) {
   const { primary_artist, featured_artist, composer, lyricist } = values;
-  if (primary_artist.length <= 0 || primary_artist[0].display_name === "") {
-    errors.primary_artist = "We need at least one primary artist";
+  if (primary_artist.length <= 0 || primary_artist.some((person) => !person.id)) {
+    errors.primary_artist = "Select at least one primary artist.";
   }
-  if (composer.length <= 0 || composer[0].display_name === "") {
-    errors.composer = "We need at least one composer";
+  if (composer.length <= 0 || composer.some((person) => !person.id)) {
+    errors.composer = "Select at least one composer.";
   }
-  if (lyricist.length <= 0 || lyricist[0].display_name) {
-    errors.lyricist = "We need at least one lyricist";
+  if (lyricist.length <= 0 || lyricist.some((person) => !person.id)) {
+    errors.lyricist = "Select at least one lyricist.";
   }
 
   const formattedCredit: FormattedCredit = {
@@ -645,6 +645,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       return person;
     },
     onSuccess: (refreshed) => {
+      queryClient.invalidateQueries({ queryKey: QueryKey.people() });
       queryClient.setQueryData(QueryKey.person(refreshed.id), refreshed);
 
       setModel("idel");
