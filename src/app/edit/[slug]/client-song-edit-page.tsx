@@ -11,6 +11,7 @@ import Loading from "@/app/components/loading";
 import { People, PeopleInsert, PeopleRow } from "@/data/models/People";
 import {
   Credit,
+  CreditPerson,
   CreditRole,
   CreditRow,
   CreditUpdate,
@@ -86,7 +87,14 @@ type ValidationResult = {
   credit: FormattedCredit | CreditUpdate[];
 };
 
-function blankSong(): SongFormData {
+const makeBlankCreditPerson = (): CreditPerson => ({
+  id: crypto.randomUUID(),
+  display_name: "",
+  furigana: "",
+  romaji: "",
+});
+
+function makeBlankSong(): SongFormData {
   return {
     name: "",
     romaji: "",
@@ -100,19 +108,10 @@ function blankSong(): SongFormData {
     work_furigana: "",
     work_kind: "single",
     work_year: "",
-    primary_artist: [],
-    featured_artist: [],
-    composer: [],
-    lyricist: [],
-  };
-}
-
-function blankPerson(): PeopleInsert {
-  return {
-    alt_names: "",
-    display_name: "",
-    furigana: "",
-    romaji: "",
+    primary_artist: [makeBlankCreditPerson()],
+    featured_artist: [makeBlankCreditPerson()],
+    composer: [makeBlankCreditPerson()],
+    lyricist: [makeBlankCreditPerson()],
   };
 }
 
@@ -330,13 +329,13 @@ function validateCreditSection(
   errors: FormErrors
 ) {
   const { primary_artist, featured_artist, composer, lyricist } = values;
-  if (primary_artist.length <= 0) {
+  if (primary_artist.length <= 0 || primary_artist[0].display_name === "") {
     errors.primary_artist = "We need at least one primary artist";
   }
-  if (composer.length <= 0) {
+  if (composer.length <= 0 || composer[0].display_name === "") {
     errors.composer = "We need at least one composer";
   }
-  if (lyricist.length <= 0) {
+  if (lyricist.length <= 0 || lyricist[0].display_name) {
     errors.lyricist = "We need at least one lyricist";
   }
 
@@ -464,7 +463,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
   const isNew = slug === NEW_SLUG_SENTINEL;
 
-  const [formData, setFormData] = useState<SongFormData>(blankSong);
+  const [formData, setFormData] = useState<SongFormData>(makeBlankSong);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [initialWork_id, setInitialWork_id] = useState<string | null>(null);
@@ -473,7 +472,9 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   const [hasWork, setHasWork] = useState<boolean>(false);
   const [model, setModel] = useState<ModelStatus>("idel");
 
-  const [personData, setPersonData] = useState<PeopleInsert>(blankPerson);
+  const [personData, setPersonData] = useState<CreditPerson>(
+    makeBlankCreditPerson
+  );
   const [personErrors, setPersonErrors] = useState<PersonFormErrors>({});
 
   const {
@@ -524,7 +525,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (isNew) {
-      const initial = blankSong();
+      const initial = makeBlankSong();
       setFormData(initial);
       setErrors({});
       setIsDirty(false);
@@ -569,7 +570,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
       switch (input.kind) {
         case "create":
-          const inserted = await Song.insertSong({
+          const inserted = await Song.insert({
             ...input.song,
             work_id: workId,
           });
@@ -578,7 +579,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
           return Song.getBundle(inserted.slug);
         case "update":
-          const updated = await Song.updateSong(input.id, {
+          const updated = await Song.update(input.id, {
             ...input.song,
             work_id: workId,
           });
@@ -1038,7 +1039,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                     id="display_name"
                     name="display_name"
                     type="text"
-                    value={personData.display_name}
+                    value={personData.display_name!}
                     onChange={handlePersonInputChange("display_name")}
                     className={INPUT_CLASS}
                     placeholder="Artist Name"
@@ -1100,7 +1101,14 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                 <Button
                   variant="primary"
                   onMouseDown={() => {
-                    addPersonMutation.mutate(personData);
+                    const payload: PeopleInsert = {
+                      display_name: personData.display_name ?? "",
+                      romaji: personData.romaji ?? "",
+                      furigana: personData.furigana ?? null,
+                      alt_names: null,
+                    };
+
+                    addPersonMutation.mutate(payload);
                   }}
                 >
                   Add
@@ -1119,6 +1127,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                 errors={errors}
                 people={people!}
                 isPeopleLoading={isPeopleLoading}
+                isNew={isNew}
                 setFormData={setFormData}
                 setErrors={setErrors}
                 setIsDirty={setIsDirty}
