@@ -157,7 +157,7 @@ export const Song = {
     };
   },
 
-  async insertSong(input: InsertRow) {
+  async insert(input: InsertRow) {
     const { data, error } = await db
       .from("songs")
       .insert(input)
@@ -167,7 +167,7 @@ export const Song = {
     return data;
   },
 
-  async updateSong(id: string, update: UpdateRow) {
+  async update(id: string, update: UpdateRow) {
     const { data, error } = await db
       .from("songs")
       .update(update)
