@@ -28,7 +28,7 @@ export type CreditPerson = {
   display_name: string | null;
   romaji: string | null;
   furigana: string | null;
-  creditId: number;
+  creditId?: number;
 };
 
 export type FormattedCredit = {
