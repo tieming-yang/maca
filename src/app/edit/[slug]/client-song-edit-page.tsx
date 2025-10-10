@@ -875,11 +875,8 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         </div>
       )}
 
-      <form
-        className={`${PANEL_CLASS} space-y-5 p-6`}
-        onSubmit={handleSave}
-        noValidate
-      >
+      <form className={`${PANEL_CLASS} space-y-5 p-6`} onSubmit={handleSave}>
+        {/* Basic Info */}
         <div className="grid gap-1">
           <label
             htmlFor="name"
@@ -1313,7 +1310,8 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           </div>
         )}
 
-        <div className="flex flex-wrap items-center gap-3 pt-4">
+        {/* Tool bar */}
+        <div className="fixed bottom-7 inset-x-0 flex flex-wrap w-full justify-center items-center gap-3">
           <Button
             type="submit"
             disabled={
