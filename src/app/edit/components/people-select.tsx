@@ -19,6 +19,9 @@ type Props = {
   setIsDirty: Dispatch<SetStateAction<boolean>>;
 };
 
+const NONE_ARTIST = "none";
+const PLACE_HOLDER = "placeholder";
+
 export default function PeopleSelect({
   formData,
   role,
@@ -31,79 +34,106 @@ export default function PeopleSelect({
   setIsDirty,
 }: Props) {
   const artists = formData[role];
+
+  if (artists.length === 0) {
+    artists.push({
+      display_name: "",
+      id: "",
+      romaji: "",
+      furigana: "",
+    });
+  }
+
   return (
     <>
-      {artists.map((artist, index) => {
-        const { id, display_name } = artist;
-        return (
-          <div
-            className="grid gap-1"
-            key={id ? `${role}-${id}` : `${role}-placeholder-${index}`}
-          >
-            <label
-              htmlFor={`${role}.display_name`}
-              className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
+      {!isPeopleLoading &&
+        artists.map((artist, index) => {
+          const { id, display_name } = artist;
+          return (
+            <div
+              className="grid gap-1"
+              key={id ? `${role}-${id}` : `${role}-placeholder-${index}`}
             >
-              <p>{role}</p>
-            </label>
-            {errors[role] && (
-              <p className="text-xs text-rose-400">{errors[role]}</p>
-            )}
-
-            <select
-              name={`${role}_options`}
-              id={`${role}.display_name`}
-              className={INPUT_CLASS}
-              value={display_name ?? ""}
-              onChange={(e) => {
-                if (isPeopleLoading) {
-                  return;
-                }
-                const selected = people?.find(
-                  (p) => p.display_name === e.target.value
-                );
-                if (!selected) return;
-
-                setFormData((prev) => {
-                  const next = [...prev[role]];
-                  const previous = next[index];
-                  const { id, display_name, romaji, furigana } = selected;
-                  next[index] = {
-                    id,
-                    display_name,
-                    romaji,
-                    furigana,
-                    creditId: previous?.creditId,
-                  };
-
-                  return {
-                    ...prev,
-                    [role]: next,
-                  };
-                });
-
-                setErrors((prev) => ({
-                  ...prev,
-                  [role]: undefined,
-                }));
-                setIsDirty(true);
-              }}
-            >
-              {isNew && (
-                <option value="" disabled>
-                  Select a person…
-                </option>
+              <label
+                htmlFor={`${role}.display_name`}
+                className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
+              >
+                <p>{role}</p>
+              </label>
+              {errors[role] && (
+                <p className="text-xs text-rose-400">{errors[role]}</p>
               )}
-              
-              {people?.map((p) => (
-                <option value={p.display_name} key={p.id}>
-                  {p.display_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        );
-      })}
+
+              <select
+                name={`${role}_options`}
+                id={`${role}.display_name`}
+                className={INPUT_CLASS}
+                value={
+                  display_name && display_name.length > 0
+                    ? display_name
+                    : NONE_ARTIST
+                }
+                onChange={(e) => {
+                  const value = e.target.value;
+
+                  setFormData((prev) => {
+                    const next = [...prev[role]];
+                    const previous = next[index];
+
+                    if (value === NONE_ARTIST) {
+                      next[index] = {
+                        id: "",
+                        display_name: "",
+                        romaji: "",
+                        furigana: "",
+                        creditId: previous?.creditId,
+                      };
+                    } else {
+                      const selected = people.find(
+                        (person) => person.display_name === value
+                      );
+
+                      if (!selected) {
+                        return prev;
+                      }
+                      next[index] = {
+                        id: selected.id,
+                        display_name: selected.display_name,
+                        romaji: selected.romaji,
+                        furigana: selected.furigana,
+                        creditId: previous?.creditId,
+                      };
+                    }
+                    return {
+                      ...prev,
+                      [role]: next,
+                    };
+                  });
+
+                  setErrors((prev) => ({
+                    ...prev,
+                    [role]: undefined,
+                  }));
+                  setIsDirty(true);
+                }}
+              >
+                {isNew && (
+                  <option value={PLACE_HOLDER} disabled>
+                    Select a person…
+                  </option>
+                )}
+
+                {people.map((p) => (
+                  <option value={p.display_name} key={p.id}>
+                    {p.display_name}
+                  </option>
+                ))}
+
+                <option value={NONE_ARTIST}>{"None"}</option>
+              </select>
+            </div>
+          );
+        })}
     </>
   );
 }

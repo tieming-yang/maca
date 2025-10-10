@@ -137,7 +137,6 @@ export const Credit = {
   async update(
     updates: CreditUpdate[],
   ): Promise<CreditRow[]> {
-    console.log("updates", updates);
     const updated = [];
     for (const update of updates) {
       const { data, error } = await db

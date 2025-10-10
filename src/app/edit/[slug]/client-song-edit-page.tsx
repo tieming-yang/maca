@@ -11,6 +11,7 @@ import Loading from "@/app/components/loading";
 import { People, PeopleInsert, PeopleRow } from "@/data/models/People";
 import {
   Credit,
+  CreditInsert,
   CreditPerson,
   CreditRole,
   CreditRow,
@@ -84,7 +85,7 @@ type ValidationResult = {
   songInsert?: InsertRow;
   songUpdate?: UpdateRow;
   workAction: WorkAction;
-  credit: FormattedCredit | CreditUpdate[];
+  credit: CreditMutationPlan;
 };
 
 const makeBlankCreditPerson = (): CreditPerson => ({
@@ -92,6 +93,14 @@ const makeBlankCreditPerson = (): CreditPerson => ({
   display_name: "",
   furigana: "",
   romaji: "",
+  creditId: undefined,
+});
+
+const makeEmptyCreditBuckets = (): FormattedCredit => ({
+  primary_artist: [],
+  featured_artist: [],
+  composer: [],
+  lyricist: [],
 });
 
 function makeBlankSong(): SongFormData {
@@ -323,13 +332,20 @@ function determineWorkAction(
   };
 }
 
+type CreditMutationPlan = {
+  inserts: FormattedCredit;
+  updates: CreditUpdate[];
+};
 function validateCreditSection(
   values: SongFormData,
-  options: ValidationOptions,
+  _options: ValidationOptions,
   errors: FormErrors
-) {
-  const { primary_artist, featured_artist, composer, lyricist } = values;
-  if (primary_artist.length <= 0 || primary_artist.some((person) => !person.id)) {
+): CreditMutationPlan {
+  const { primary_artist, composer, lyricist } = values;
+  if (
+    primary_artist.length <= 0 ||
+    primary_artist.some((person) => !person.id)
+  ) {
     errors.primary_artist = "Select at least one primary artist.";
   }
   if (composer.length <= 0 || composer.some((person) => !person.id)) {
@@ -339,33 +355,33 @@ function validateCreditSection(
     errors.lyricist = "Select at least one lyricist.";
   }
 
-  const formattedCredit: FormattedCredit = {
-    primary_artist,
-    featured_artist,
-    composer,
-    lyricist,
+  const plan: CreditMutationPlan = {
+    inserts: makeEmptyCreditBuckets(),
+    updates: [],
   };
 
-  if (options.isNew) {
-    return formattedCredit;
-  }
+  Credit.CREDIT_ROLE_VALUES.forEach((role) => {
+    const bucket = values[role];
+    bucket.forEach((person, index) => {
+      if (!person) {
+        return;
+      }
+      if (person.creditId) {
+        plan.updates.push({
+          song_id: values.id,
+          person_id: person.id,
+          role,
+          position: index,
+          id: person.creditId,
+        });
+        return;
+      }
 
-  const updates: CreditUpdate[] = [];
-  Object.entries(formattedCredit).forEach(([role, people]) => {
-    people?.forEach((person, index) => {
-      if (!person) return;
-
-      updates.push({
-        song_id: values.id,
-        person_id: person.id,
-        role: role as CreditRole,
-        position: index,
-        id: person.creditId,
-      });
+      plan.inserts[role][index] = person;
     });
   });
 
-  return updates;
+  return plan;
 }
 
 function validateForm(
@@ -452,7 +468,7 @@ type SaveInput =
       previousSlug: string;
       song: UpdateRow;
       workAction: WorkAction;
-      credit: CreditUpdate[];
+      credit: CreditMutationPlan;
     };
 
 type ModelStatus = "AddPerson" | "idel";
@@ -584,7 +600,11 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             work_id: workId,
           });
 
-          const updatedCredit = await Credit.update(input.credit);
+          const { inserts, updates } = input.credit;
+          const insertedCredit = await Credit.insert(input.id, inserts);
+          if (updates.length > 0) {
+            await Credit.update(updates);
+          }
 
           slugToFetch = updated.slug ?? input.song.slug ?? input.previousSlug;
       }
@@ -775,7 +795,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         kind: "create",
         song: validation.songInsert,
         workAction: validation.workAction,
-        credit: validation.credit as FormattedCredit,
+        credit: validation.credit.inserts,
       });
       return;
     }
@@ -799,7 +819,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       previousSlug: slug,
       song: validation.songUpdate,
       workAction: validation.workAction,
-      credit: validation.credit as CreditUpdate[],
+      credit: validation.credit,
     });
   };
 
@@ -1120,21 +1140,23 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
           {/* Credit */}
           <p className="text-xs text-zinc-500">Provide a new credit</p>
-          {Credit.CREDIT_ROLE_VALUES.map((role) => (
-            <div key={role}>
-              <PeopleSelect
-                formData={formData}
-                role={role}
-                errors={errors}
-                people={people!}
-                isPeopleLoading={isPeopleLoading}
-                isNew={isNew}
-                setFormData={setFormData}
-                setErrors={setErrors}
-                setIsDirty={setIsDirty}
-              />
-            </div>
-          ))}
+          {Credit.CREDIT_ROLE_VALUES.map((role) => {
+            return (
+              <div key={role}>
+                <PeopleSelect
+                  formData={formData}
+                  role={role}
+                  errors={errors}
+                  people={people!}
+                  isPeopleLoading={isPeopleLoading}
+                  isNew={isNew}
+                  setFormData={setFormData}
+                  setErrors={setErrors}
+                  setIsDirty={setIsDirty}
+                />
+              </div>
+            );
+          })}
         </div>
 
         {/* Work */}
