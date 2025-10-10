@@ -843,12 +843,9 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     return "Edit Song";
   }, [isNew, song]);
 
-  if (isLoading || saveMutation.isPending) {
-    return <Loading isFullScreen />;
-  }
-
   return (
     <section className="w-full max-w-3xl mx-auto space-y-6 py-8 text-zinc-100 px-3">
+      {(isLoading || saveMutation.isPending) && <Loading isFullScreen />}
       <button
         type="button"
         onClick={() => router.push("/edit")}
