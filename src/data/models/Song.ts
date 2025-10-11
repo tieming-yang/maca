@@ -3,23 +3,19 @@ import { createClient } from "@/utils/supabase/client";
 import type { Database } from "@/types/database.types";
 import { Work, type WorkRow } from "./Work";
 import { Credit, FormattedCredit } from "./Credit";
+import { Line, LineRow } from "./Line";
 
 export type TableRow = Database["public"]["Tables"]["songs"]["Row"];
-export type ViewRow = Database["public"]["Views"]["song_with_base_json"]["Row"];
+export type ViewRow = Database["public"]["Tables"]["songs"]["Row"];
 export type VersionRow =
   Database["public"]["Tables"]["translation_versions"]["Row"];
-export type LineRow = Database["public"]["Tables"]["translation_lines"]["Row"];
+export type TranslationLineRow =
+  Database["public"]["Tables"]["translation_lines"]["Row"];
 export type InsertRow = Database["public"]["Tables"]["songs"]["Insert"];
 export type UpdateRow = Database["public"]["Tables"]["songs"]["Update"];
 export type SongWithWorkRow = TableRow & { work: WorkRow | null };
 
 export type JaToken = string | { kanji: string; furigana?: string };
-export type BaseLine = {
-  line_index: number;
-  timestamp_sec: number;
-  ja_tokens: JaToken[];
-  romaji?: string;
-};
 
 export type Translation = {
   language_code: string;
@@ -36,7 +32,7 @@ export type SongBundle = {
   romaji: string;
   end_seconds: number | null; // view column is `end_seconds`
   furigana: string | null;
-  base_lines: BaseLine[];
+  lines: LineRow[];
   translation?: Translation;
   work: WorkRow | null;
   created_at: string | null;
@@ -46,6 +42,21 @@ export type SongBundle = {
 const db = createClient();
 
 export const Song = {
+  secondsToTimestamp(seconds: number): string {
+    const minutes = Math.floor(seconds / 60);
+    seconds = Math.floor(seconds % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  },
+
+  timestampToSeconds(timestamp: string | number): number {
+    if (!timestamp) return 0;
+    if (typeof timestamp === "number") return Math.round(timestamp);
+
+    const [minutes, seconds] = timestamp.split(":");
+
+    return Math.round(Number(minutes) * 60 + Number(seconds));
+  },
+
   async getAll(): Promise<TableRow[]> {
     const { data, error } = await db
       .from("songs")
@@ -120,20 +131,18 @@ export const Song = {
   },
 
   async getBundle(slug: string, lang: string = "en"): Promise<SongBundle> {
-    const view = await Song.getViewBySlug(slug);
+    const song = await Song.getBySlug(slug);
 
-    const credit = await Credit.get(view.id!);
+    const credit = await Credit.get(song.id!);
+    const lines = await Line.get(song.id);
 
     let work = null;
-    if (view.work_id) {
-      work = await Work.getById(view.work_id);
+    if (song.work_id) {
+      work = await Work.getById(song.work_id);
     }
 
-    // jsonb → narrow for UI
-    const base = (view.base_lines ?? []) as unknown as BaseLine[];
-
     let translation: Translation | undefined;
-    const version = await Song.getDefaultVersion(view.id!, lang);
+    const version = await Song.getDefaultVersion(song.id!, lang);
 
     if (version) {
       const lines = await Song.getTranslationLines(version.id);
@@ -141,17 +150,17 @@ export const Song = {
     }
 
     return {
-      credit: credit,
-      id: view.id!,
-      slug: view.slug!,
-      name: view.name ?? "",
-      youtube_id: view.youtube_id ?? null,
-      romaji: view.romaji ?? "",
-      end_seconds: view.end_seconds ?? null,
-      furigana: view.furigana ?? null,
-      created_at: view.created_at,
-      created_by: view.created_by,
-      base_lines: base,
+      id: song.id!,
+      slug: song.slug!,
+      name: song.name ?? "",
+      youtube_id: song.youtube_id ?? null,
+      romaji: song.romaji ?? "",
+      end_seconds: song.end_seconds ?? null,
+      furigana: song.furigana ?? null,
+      created_at: song.created_at,
+      created_by: song.created_by,
+      credit,
+      lines,
       translation,
       work,
     };

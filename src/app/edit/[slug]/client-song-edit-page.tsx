@@ -5,21 +5,19 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { InsertRow, Song, SongBundle, UpdateRow } from "@/data/models/Song";
 import { Work, WorkInsert, WorkKind, WorkUpdate } from "@/data/models/Work";
+import { Line, LineInsert, LineRow, LinesUpdate } from "@/data/models/Line";
 import { QueryKey } from "@/data/query-keys";
 import { Song as LegacySong } from "@/songs/Song";
 import Loading from "@/app/components/loading";
 import { People, PeopleInsert, PeopleRow } from "@/data/models/People";
 import {
   Credit,
-  CreditInsert,
   CreditPerson,
-  CreditRole,
-  CreditRow,
   CreditUpdate,
   FormattedCredit,
 } from "@/data/models/Credit";
 import { Button } from "@/app/components/ui/button";
-import { X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import PeopleSelect from "../components/people-select";
 
 const NEW_SLUG_SENTINEL = "new";
@@ -52,6 +50,7 @@ export type SongFormData = {
   work_furigana: string;
   work_kind: WorkKind;
   work_year: string;
+  lines: LineRow[];
 } & FormattedCredit;
 
 export type FormErrors = Partial<Record<keyof SongFormData | "base", string>>;
@@ -86,6 +85,7 @@ type ValidationResult = {
   songUpdate?: UpdateRow;
   workAction: WorkAction;
   credit: CreditMutationPlan;
+  lines: LinesMutationPlan;
 };
 
 const makeBlankCreditPerson = (): CreditPerson => ({
@@ -121,6 +121,7 @@ function makeBlankSong(): SongFormData {
     featured_artist: [makeBlankCreditPerson()],
     composer: [makeBlankCreditPerson()],
     lyricist: [makeBlankCreditPerson()],
+    lines: [],
   };
 }
 
@@ -150,6 +151,7 @@ function mapRowToForm(row: SongBundle): SongFormData {
     featured_artist: credit.featured_artist,
     composer: credit.composer,
     lyricist: credit.lyricist,
+    lines: row.lines,
   };
 }
 
@@ -384,6 +386,54 @@ function validateCreditSection(
   return plan;
 }
 
+type LinesMutationPlan = {
+  inserts: LineInsert[];
+  updates: LinesUpdate[];
+};
+
+function validateLinesSection(
+  values: SongFormData,
+  _options: ValidationOptions,
+  errors: FormErrors
+): LinesMutationPlan {
+  const { lines } = values;
+  if (lines.length === 0) {
+    errors.lines = "No lines";
+  }
+  if (!values.id) {
+    errors.lines = "No Song Id";
+  }
+
+  const plan: LinesMutationPlan = {
+    inserts: [],
+    updates: [],
+  };
+
+  for (const line of lines) {
+    if (line.id) {
+      const { lyric, timestamp_sec } = line;
+      const update = {
+        ...line,
+        lyric,
+        timestamp_sec,
+      };
+
+      plan.updates.push(update);
+    } else {
+      const { lyric, timestamp_sec } = line;
+      const insert = {
+        lyric,
+        timestamp_sec,
+        song_id: values.id!,
+      };
+
+      plan.inserts.push(insert);
+    }
+  }
+
+  return plan;
+}
+
 function validateForm(
   values: SongFormData,
   options: ValidationOptions
@@ -393,6 +443,7 @@ function validateForm(
   const songSection = validateSongSection(values, errors);
   const workAction = determineWorkAction(values, options, errors);
   const credit = validateCreditSection(values, options, errors);
+  const lines = validateLinesSection(values, options, errors);
 
   if (options.isNew && workAction.kind === "none" && !workAction.workId) {
     errors.work_title = "Provide a new work or link an existing work ID.";
@@ -404,6 +455,7 @@ function validateForm(
       sanitizedSlug: songSection.sanitizedSlug,
       workAction,
       credit,
+      lines,
     };
   }
 
@@ -452,6 +504,7 @@ function validateForm(
     songUpdate,
     workAction,
     credit,
+    lines,
   };
 }
 
@@ -461,6 +514,7 @@ type SaveInput =
       song: InsertRow;
       workAction: WorkAction;
       credit: FormattedCredit;
+      lines: LineInsert[];
     }
   | {
       kind: "update";
@@ -469,6 +523,7 @@ type SaveInput =
       song: UpdateRow;
       workAction: WorkAction;
       credit: CreditMutationPlan;
+      lines: LinesUpdate[];
     };
 
 type ModelStatus = "AddPerson" | "idel";
@@ -591,9 +646,12 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             work_id: workId,
           });
 
-          const insetedCredit = await Credit.insert(inserted.id, input.credit);
+          await Credit.insert(inserted.id, input.credit);
+
+          await Line.insertMany(input.lines);
 
           return Song.getBundle(inserted.slug);
+
         case "update":
           const updated = await Song.update(input.id, {
             ...input.song,
@@ -601,10 +659,12 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           });
 
           const { inserts, updates } = input.credit;
-          const insertedCredit = await Credit.insert(input.id, inserts);
+          await Credit.insert(input.id, inserts);
           if (updates.length > 0) {
             await Credit.update(updates);
           }
+
+          await Line.updateMany(input.lines);
 
           slugToFetch = updated.slug ?? input.song.slug ?? input.previousSlug;
       }
@@ -796,6 +856,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         song: validation.songInsert,
         workAction: validation.workAction,
         credit: validation.credit.inserts,
+        lines: validation.lines.inserts,
       });
       return;
     }
@@ -820,6 +881,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       song: validation.songUpdate,
       workAction: validation.workAction,
       credit: validation.credit,
+      lines: validation.lines.updates,
     });
   };
 
@@ -846,13 +908,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   return (
     <section className="w-full max-w-3xl mx-auto space-y-6 py-8 text-zinc-100 px-3">
       {(isLoading || saveMutation.isPending) && <Loading isFullScreen />}
-      <button
-        type="button"
-        onClick={() => router.push("/edit")}
-        className="text-sm font-medium text-teal-300 transition hover:text-teal-200"
-      >
-        ← Back to list
-      </button>
 
       <header className={`${PANEL_CLASS} space-y-1 p-6`}>
         <h1 className="text-3xl font-semibold">{pageTitle}</h1>
@@ -1310,28 +1365,98 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           </div>
         )}
 
+        {/* Lines */}
+        <section className="grid gap-1">
+          <h2>Lyrics</h2>
+          {formData.lines &&
+            formData.lines.map((line, index) => {
+              const { lyric, timestamp_sec, id } = line;
+              const timestamp = Song.secondsToTimestamp(timestamp_sec);
+              const matches = (current: typeof line) => id !== null ? current.id === id : current.timestamp_sec === timestamp_sec
+
+              return (
+                <div key={id ?? timestamp_sec} className="flex gap-x-3">
+                  <input
+                    className={`${INPUT_CLASS} w-fit`}
+                    value={timestamp ?? ""}
+                    onChange={(e) => {
+                      const newTimestamp = Song.timestampToSeconds(
+                        e.target.value
+                      );
+
+                      setFormData((prev) => ({
+                        ...prev,
+                        lines: prev.lines.map((line) =>
+                          matches(line)
+                            ? {
+                                ...line,
+                                timestamp_sec: newTimestamp,
+                              }
+                            : line
+                        ),
+                      }));
+
+                      setIsDirty(true);
+                    }}
+                  ></input>
+                  <input
+                    className={`${INPUT_CLASS} w-full`}
+                    value={lyric ?? ""}
+                    onChange={(e) => {
+                      const nextLyric = e.target.value;
+
+                      setFormData((prev) => ({
+                        ...prev,
+                        lines: prev.lines.map((line) =>
+                          matches(line)
+                            ? {
+                                ...line,
+                                lyric: nextLyric,
+                              }
+                            : line
+                        ),
+                      }));
+
+                      setIsDirty(true);
+                    }}
+                  ></input>
+                </div>
+              );
+            })}
+        </section>
+
         {/* Tool bar */}
-        <div className="fixed bottom-7 inset-x-0 flex flex-wrap w-full justify-center items-center gap-3">
+        <div className="fixed bottom-7 inset-x-0 flex flex-wrap w-full justify-center items-center gap-7">
           <Button
-            type="submit"
-            disabled={
-              disableInputs || saveMutation.isPending || (!isDirty && !isNew)
-            }
-            variant="primary"
+            variant="icon"
+            type="button"
+            onClick={() => router.push("/edit")}
           >
-            {saveMutation.isPending ? "Saving…" : "Save"}
+            <ArrowLeft />
           </Button>
 
-          {!isNew && (
+          <div className="flex gap-3">
             <Button
-              type="button"
-              onClick={handleDelete}
-              disabled={deleteMutation.isPending}
-              variant="danger"
+              type="submit"
+              disabled={
+                disableInputs || saveMutation.isPending || (!isDirty && !isNew)
+              }
+              variant="primary"
             >
-              {deleteMutation.isPending ? "Deleting…" : "Delete"}
+              {saveMutation.isPending ? "Saving…" : "Save"}
             </Button>
-          )}
+
+            {!isNew && (
+              <Button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleteMutation.isPending}
+                variant="danger"
+              >
+                {deleteMutation.isPending ? "Deleting…" : "Delete"}
+              </Button>
+            )}
+          </div>
         </div>
       </form>
     </section>

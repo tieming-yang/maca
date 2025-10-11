@@ -28,7 +28,7 @@ export default function PlayerClient({ slug }: { slug: string }) {
   // song bundle from DB
   const { data, isLoading, error } = useQuery<SongBundle>({
     queryKey: QueryKey.song(slug, lang),
-    queryFn: () => Song.getBundle(slug, lang),
+    queryFn: () => Song.getJsonBundle(slug, lang),
     staleTime: 60_000,
     placeholderData: (prev) => prev,
   });
