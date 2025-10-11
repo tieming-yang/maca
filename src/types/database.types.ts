@@ -1118,34 +1118,6 @@ export type Database = {
       }
     }
     Views: {
-      song_base_lines_view: {
-        Row: {
-          id: number | null
-          line_index: number | null
-          lyric: string | null
-          name: string | null
-          slug: string | null
-          song_id: string | null
-          timestamp_sec: number | null
-          youtube_id: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "song_base_lines_song_id_fkey"
-            columns: ["song_id"]
-            isOneToOne: false
-            referencedRelation: "song_with_base_json"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "song_base_lines_song_id_fkey"
-            columns: ["song_id"]
-            isOneToOne: false
-            referencedRelation: "songs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       song_with_base_json: {
         Row: {
           base_lines: Json | null
