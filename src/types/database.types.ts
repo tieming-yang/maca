@@ -826,7 +826,7 @@ export type Database = {
         Row: {
           id: number
           ja_tokens: Json | null
-          line_index: number
+          line_index: number | null
           lyric: string
           romaji: string | null
           song_id: string
@@ -835,7 +835,7 @@ export type Database = {
         Insert: {
           id?: number
           ja_tokens?: Json | null
-          line_index: number
+          line_index?: number | null
           lyric: string
           romaji?: string | null
           song_id: string
@@ -844,7 +844,7 @@ export type Database = {
         Update: {
           id?: number
           ja_tokens?: Json | null
-          line_index?: number
+          line_index?: number | null
           lyric?: string
           romaji?: string | null
           song_id?: string
