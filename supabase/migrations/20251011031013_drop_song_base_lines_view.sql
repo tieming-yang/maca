@@ -1,0 +1,1 @@
+drop view if exists public.song_base_lines_view;
