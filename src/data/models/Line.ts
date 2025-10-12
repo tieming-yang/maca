@@ -85,4 +85,16 @@ export const Line = {
 
     return results;
   },
+
+  async delete(id: number): Promise<void> {
+    const { error } = await db
+      .from("song_base_lines")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.error(error);
+      throw error;
+    }
+  },
 };
