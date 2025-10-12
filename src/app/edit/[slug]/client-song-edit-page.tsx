@@ -1,6 +1,13 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { InsertRow, Song, SongBundle, UpdateRow } from "@/data/models/Song";
@@ -17,12 +24,12 @@ import {
   FormattedCredit,
 } from "@/data/models/Credit";
 import { Button } from "@/app/components/ui/button";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft, Plus, X, FilePlus } from "lucide-react";
 import PeopleSelect from "../components/people-select";
 
 const NEW_SLUG_SENTINEL = "new";
 const PANEL_CLASS =
-  "rounded-2xl border border-zinc-800 bg-zinc-950/60 shadow-[0_25px_55px_-40px_rgba(12,12,12,1)]";
+  "rounded-2xl border border-zinc-800 bg-zinc-950/10 shadow-[0_25px_55px_-40px_rgba(12,12,12,1)]";
 export const INPUT_CLASS =
   "rounded-full border border-zinc-700 bg-zinc-950/60 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 disabled:cursor-not-allowed disabled:border-zinc-800 disabled:bg-zinc-900/50";
 const WORK_KIND_OPTIONS: WorkKind[] = [
@@ -50,7 +57,7 @@ export type SongFormData = {
   work_furigana: string;
   work_kind: WorkKind;
   work_year: string;
-  lines: LineRow[];
+  lines: LineRow[] | LineInsert[];
 } & FormattedCredit;
 
 export type FormErrors = Partial<Record<keyof SongFormData | "base", string>>;
@@ -404,6 +411,15 @@ function validateLinesSection(
     errors.lines = "No Song Id";
   }
 
+  const hasDuplicateTimestamp = lines.some(
+    (line, index, array) =>
+      array.findIndex((other) => other.timestamp_sec === line.timestamp_sec) !==
+      index
+  );
+  if (hasDuplicateTimestamp) {
+    errors.lines = "Each line needs a unique timestamp.";
+  }
+
   const plan: LinesMutationPlan = {
     inserts: [],
     updates: [],
@@ -523,10 +539,10 @@ type SaveInput =
       song: UpdateRow;
       workAction: WorkAction;
       credit: CreditMutationPlan;
-      lines: LinesUpdate[];
+      lines: LinesMutationPlan;
     };
 
-type ModelStatus = "AddPerson" | "idel";
+type ModelStatus = "addPerson" | "idel" | "batchAddLyrics";
 
 export default function ClientSongEditPage({ slug }: { slug: string }) {
   const router = useRouter();
@@ -547,6 +563,8 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     makeBlankCreditPerson
   );
   const [personErrors, setPersonErrors] = useState<PersonFormErrors>({});
+
+  const lyricsTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const {
     data: song,
@@ -664,7 +682,13 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             await Credit.update(updates);
           }
 
-          await Line.updateMany(input.lines);
+          const { inserts: lineInserts, updates: lineUpdates } = input.lines;
+          console.log({ lineInserts, updates });
+          await Line.insertMany(lineInserts);
+
+          if (lineUpdates.length > 0) {
+            await Line.updateMany(lineUpdates);
+          }
 
           slugToFetch = updated.slug ?? input.song.slug ?? input.previousSlug;
       }
@@ -748,6 +772,19 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     onError: (err: unknown) => {
       const message =
         err instanceof Error ? err.message : "Unable to delete the song.";
+      setErrors((prev) => ({ ...prev, base: message }));
+    },
+  });
+
+  const deleteLineMutation = useMutation({
+    mutationFn: async (id: number) => Line.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QueryKey.song(slug) });
+      window.alert("Line Deleted");
+    },
+    onError: (err: unknown) => {
+      const message =
+        err instanceof Error ? err.message : "Unable to add the person.";
       setErrors((prev) => ({ ...prev, base: message }));
     },
   });
@@ -881,7 +918,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       song: validation.songUpdate,
       workAction: validation.workAction,
       credit: validation.credit,
-      lines: validation.lines.updates,
+      lines: validation.lines,
     });
   };
 
@@ -1071,7 +1108,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
               variant="primary"
               onMouseDown={() =>
                 setModel((model) =>
-                  model === "AddPerson" ? "idel" : "AddPerson"
+                  model === "addPerson" ? "idel" : "addPerson"
                 )
               }
             >
@@ -1079,7 +1116,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             </Button>
 
             <dialog
-              open={model === "AddPerson"}
+              open={model === "addPerson"}
               className={`${PANEL_CLASS} text-white space-y-5 p-6 mx-auto w-full max-w-3xl backdrop-blur-2xl`}
             >
               <div className="flex justify-between">
@@ -1089,7 +1126,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                   variant="icon"
                   onMouseDown={() =>
                     setModel((model) =>
-                      model === "AddPerson" ? "idel" : "AddPerson"
+                      model === "addPerson" ? "idel" : "addPerson"
                     )
                   }
                 >
@@ -1368,18 +1405,30 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         {/* Lines */}
         <section className="grid gap-1">
           <h2>Lyrics</h2>
+
           {formData.lines &&
-            formData.lines.map((line, index) => {
+            formData.lines.map((line) => {
               const { lyric, timestamp_sec, id } = line;
               const timestamp = Song.secondsToTimestamp(timestamp_sec);
-              const matches = (current: typeof line) => id !== null ? current.id === id : current.timestamp_sec === timestamp_sec
+              const matches = (current: typeof line) =>
+                id !== null && id !== undefined
+                  ? current.id === id
+                  : current.timestamp_sec === timestamp_sec;
 
               return (
-                <div key={id ?? timestamp_sec} className="flex gap-x-3">
+                <div key={timestamp_sec} className="flex gap-x-3">
                   <input
                     className={`${INPUT_CLASS} w-fit`}
                     value={timestamp ?? ""}
                     onChange={(e) => {
+                      if (Number.isNaN(Number(e.target.value))) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          lines: "Not a Number",
+                        }));
+                        console.warn("Not a number");
+                        return;
+                      }
                       const newTimestamp = Song.timestampToSeconds(
                         e.target.value
                       );
@@ -1418,11 +1467,123 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                       }));
 
                       setIsDirty(true);
+                      setErrors({});
                     }}
                   ></input>
+                  <Button
+                    variant="icon"
+                    className="bg-red-500 size-7"
+                    onClick={() => {
+                      if (!id) {
+                        console.warn("No Line Id");
+                        return;
+                      }
+                      deleteLineMutation.mutate(id);
+                      // setFormData((prev) => {
+                      //   const currentLine = prev.lines.find(
+                      //     (line) => line.timestamp_sec === timestamp_sec
+                      //   );
+
+                      //   return {};
+                      // });
+                    }}
+                  >
+                    <X />
+                  </Button>
                 </div>
               );
             })}
+          {errors.lines && (
+            <p className="text-xs text-rose-400">{errors.lines}</p>
+          )}
+          <div className="flex justify-center w-full gap-5">
+            <Button
+              variant="icon"
+              onMouseDown={() => {
+                setFormData((prev) => {
+                  return {
+                    ...prev,
+                    lines: [
+                      ...prev.lines,
+                      {
+                        lyric: "",
+                        timestamp_sec:
+                          prev.lines.length > 0 &&
+                          prev.lines.at(-1) !== undefined
+                            ? prev.lines.at(-1)!.timestamp_sec + 1
+                            : 0,
+                        song_id: formData.id ?? "",
+                      },
+                    ],
+                  };
+                });
+
+                setErrors({});
+              }}
+            >
+              <Plus />
+            </Button>
+            <Button
+              variant="icon"
+              onMouseDown={() => setModel("batchAddLyrics")}
+            >
+              <FilePlus />
+            </Button>
+          </div>
+
+          <dialog
+            open={model === "batchAddLyrics"}
+            // open={true}
+            className={`${PANEL_CLASS} text-white space-y-5 p-3 mx-auto w-full max-w-3xl backdrop-blur-2xl fixed top-0 my-9`}
+          >
+            <textarea
+              ref={lyricsTextareaRef}
+              name="lyrics"
+              id="lyrics"
+              className="bg-zinc-400/5 rounded-2xl min-h-72 max-h-svh overflow-y-auto resize-none w-full px-9 py-5"
+              onChange={(e) => {
+                const el = e.target;
+                el.style.height = "auto";
+                el.style.height = `${Math.min(
+                  el.scrollHeight,
+                  window.innerHeight * 0.8
+                )}px`;
+                const lines = el.value.split("\n");
+
+                setFormData((prev) => {
+                  const lastTimestamp = prev.lines.at(-1)?.timestamp_sec ?? -1;
+                  const batchedLines = lines.map((lyric, idx) => ({
+                    lyric,
+                    timestamp_sec: lastTimestamp + idx + 1,
+                    song_id: prev.id ?? "",
+                  }));
+
+                  const newLines = [...prev.lines, ...batchedLines];
+
+                  return {
+                    ...prev,
+                    lines: newLines,
+                  };
+                });
+
+                setIsDirty(true);
+              }}
+            ></textarea>
+            <div className="flex justify-between">
+              <p>Batch Add Lyrics</p>
+              <Button
+                type="button"
+                variant="icon"
+                onMouseDown={() =>
+                  setModel((model) =>
+                    model === "batchAddLyrics" ? "idel" : "batchAddLyrics"
+                  )
+                }
+              >
+                <X />
+              </Button>
+            </div>
+          </dialog>
         </section>
 
         {/* Tool bar */}
