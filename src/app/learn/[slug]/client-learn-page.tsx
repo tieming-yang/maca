@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/data/query-keys";
 import { Song, SongBundle } from "@/data/models/Song";
 import { Credit, FormattedCredit } from "@/data/models/Credit";
+import { Button } from "@/app/components/ui/button";
 
 const opts = { height: "780", width: "1280", playerVars: { autoplay: 1 } };
 
@@ -25,7 +26,6 @@ function idFor(sec: number) {
 export default function ClientLearnPage({ slug }: { slug: string }) {
   // language overlay toggle (start with zh-TW to match your old UI)
   const [lang, setLang] = useState<string | undefined>("zh-TW");
-  console.log({slug});
   // song bundle from DB
   const { data, isLoading, error } = useQuery<SongBundle>({
     queryKey: QueryKey.song(slug, lang),
@@ -188,9 +188,9 @@ export default function ClientLearnPage({ slug }: { slug: string }) {
                 </span>
               )}
 
-              {data.credit.featured_artist && <span> x </span>}
+              {data.credit.featured_artist.length > 0 && <span> x </span>}
 
-              {data.credit.featured_artist?.length && (
+              {data.credit.featured_artist?.length > 0 && (
                 <span>
                   {data.credit.featured_artist.map((f) => {
                     return (
@@ -277,23 +277,20 @@ export default function ClientLearnPage({ slug }: { slug: string }) {
           {data.lines.map((line, i) => {
             const { timestamp_sec, lyric } = line;
             const isActive = i === activeLineIndex;
-            // const isActive = line.timestamp_sec === currentSec;
-            console.log({ timestamp_sec, currentSec });
-            console.log({ activeLineIndex });
 
             return (
               <li
-                key={line.timestamp_sec}
-                id={idFor(line.timestamp_sec ?? 0)}
+                key={timestamp_sec}
+                id={idFor(timestamp_sec ?? 0)}
                 onMouseDown={() => {
-                  player?.seekTo(line.timestamp_sec ?? 0, true);
+                  player?.seekTo(timestamp_sec ?? 0, true);
                   player?.playVideo();
                 }}
                 className={`transition-all duration-300 text-2xl font-bold ${
                   isActive ? "text-white" : "text-white/50"
                 }`}
               >
-                {line.lyric}
+                {lyric}
               </li>
             );
           })}
@@ -301,20 +298,20 @@ export default function ClientLearnPage({ slug }: { slug: string }) {
       </section>
 
       {/* Toolbar */}
-      <section className="fixed z-20 bottom-0 w-full rounded-t-3xl border-t shadow-xl border-white/10 backdrop-blur-md font-mono">
+      <section className="fixed z-20 bottom-0 w-full rounded-t-3xl font-mono">
         <nav className="w-full">
           <div className="w-full flex items-center px-5">
             <span>{secToTs(finalSec)}</span>
 
             {/* Funtions */}
             <div className="flex items-center justify-center w-full gap-x-7 pb-3">
-              <button onMouseDown={handleToggle}>
-                {isPlaying ? (
-                  <PauseIcon className="size-14" />
-                ) : (
-                  <PlayIcon className="size-14" />
-                )}
-              </button>
+              <Button
+                variant="icon"
+                className="size-15 bg-black/20 backdrop-blur-3xl"
+                onMouseDown={handleToggle}
+              >
+                {isPlaying ? <PauseIcon /> : <PlayIcon />}
+              </Button>
               {/* <div className="flex items-center gap-3">
                 <button
                   onClick={() => setLang((l) => (l ? undefined : "zh-TW"))}
@@ -333,6 +330,7 @@ export default function ClientLearnPage({ slug }: { slug: string }) {
             <span>{secToTs(durationSec)}</span>
           </div>
 
+          {/* Slider */}
           <div className="flex justify-center">
             <input
               style={
