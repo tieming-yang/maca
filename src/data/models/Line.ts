@@ -44,10 +44,11 @@ export const Line = {
 
   async insertMany(lines: LineInsert[]): Promise<LineRow[]> {
     if (!lines.length) return [];
+    const sanitizedLines = lines.map(({ id, ...rest }) => rest);
 
     const { data, error } = await db
       .from("song_base_lines")
-      .insert(lines)
+      .insert(sanitizedLines)
       .select();
 
     if (error) {
@@ -91,6 +92,18 @@ export const Line = {
       .from("song_base_lines")
       .delete()
       .eq("id", id);
+
+    if (error) {
+      console.error(error);
+      throw error;
+    }
+  },
+
+  async deleteAll(songId: string): Promise<void> {
+    const { error } = await db
+      .from("song_base_lines")
+      .delete()
+      .eq("song_id", songId);
 
     if (error) {
       console.error(error);

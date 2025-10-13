@@ -24,7 +24,7 @@ import {
   FormattedCredit,
 } from "@/data/models/Credit";
 import { Button } from "@/app/components/ui/button";
-import { ArrowLeft, Plus, X, FilePlus } from "lucide-react";
+import { ArrowLeft, Plus, X, FilePlus, Bomb } from "lucide-react";
 import PeopleSelect from "../components/people-select";
 
 const NEW_SLUG_SENTINEL = "new";
@@ -426,7 +426,7 @@ function validateLinesSection(
   };
 
   for (const line of lines) {
-    if (line.id) {
+    if (line.id && typeof line.id === "number") {
       const { lyric, timestamp_sec } = line;
       const update = {
         ...line,
@@ -683,7 +683,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           }
 
           const { inserts: lineInserts, updates: lineUpdates } = input.lines;
-          console.log({ lineInserts, updates });
           await Line.insertMany(lineInserts);
 
           if (lineUpdates.length > 0) {
@@ -780,7 +779,18 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     mutationFn: async (id: number) => Line.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKey.song(slug) });
-      window.alert("Line Deleted");
+    },
+    onError: (err: unknown) => {
+      const message =
+        err instanceof Error ? err.message : "Unable to add the person.";
+      setErrors((prev) => ({ ...prev, base: message }));
+    },
+  });
+
+  const deleteAllLinesMutation = useMutation({
+    mutationFn: async (songId: string) => Line.deleteAll(songId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QueryKey.song(slug) });
     },
     onError: (err: unknown) => {
       const message =
@@ -1416,96 +1426,94 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                   : current.timestamp_sec === timestamp_sec;
 
               return (
-                <div key={timestamp_sec} className="flex gap-x-3">
-                  <input
-                    className={`${INPUT_CLASS} w-fit`}
-                    value={timestamp ?? ""}
-                    onChange={(e) => {
-                      if (Number.isNaN(Number(e.target.value))) {
-                        setErrors((prev) => ({
+                <div key={id}>
+                  <div className="flex gap-x-3">
+                    <input
+                      className={`${INPUT_CLASS} w-fit`}
+                      value={timestamp ?? ""}
+                      onChange={(e) => {
+                        const newTimestamp = Song.timestampToSeconds(
+                          e.target.value
+                        );
+                        if (Number.isNaN(newTimestamp)) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            lines: "Not a Number",
+                          }));
+                          console.warn("Not a number", newTimestamp);
+                          return;
+                        }
+
+                        setFormData((prev) => ({
                           ...prev,
-                          lines: "Not a Number",
+                          lines: prev.lines.map((line) =>
+                            matches(line)
+                              ? {
+                                  ...line,
+                                  timestamp_sec: newTimestamp,
+                                }
+                              : line
+                          ),
                         }));
-                        console.warn("Not a number");
-                        return;
-                      }
-                      const newTimestamp = Song.timestampToSeconds(
-                        e.target.value
-                      );
 
-                      setFormData((prev) => ({
-                        ...prev,
-                        lines: prev.lines.map((line) =>
-                          matches(line)
-                            ? {
-                                ...line,
-                                timestamp_sec: newTimestamp,
-                              }
-                            : line
-                        ),
-                      }));
+                        setIsDirty(true);
+                      }}
+                    ></input>
+                    <input
+                      className={`${INPUT_CLASS} w-full`}
+                      value={lyric ?? ""}
+                      onChange={(e) => {
+                        const nextLyric = e.target.value;
 
-                      setIsDirty(true);
-                    }}
-                  ></input>
-                  <input
-                    className={`${INPUT_CLASS} w-full`}
-                    value={lyric ?? ""}
-                    onChange={(e) => {
-                      const nextLyric = e.target.value;
+                        setFormData((prev) => ({
+                          ...prev,
+                          lines: prev.lines.map((line) =>
+                            matches(line)
+                              ? {
+                                  ...line,
+                                  lyric: nextLyric,
+                                }
+                              : line
+                          ),
+                        }));
 
-                      setFormData((prev) => ({
-                        ...prev,
-                        lines: prev.lines.map((line) =>
-                          matches(line)
-                            ? {
-                                ...line,
-                                lyric: nextLyric,
-                              }
-                            : line
-                        ),
-                      }));
+                        setIsDirty(true);
+                        setErrors({});
+                      }}
+                    ></input>
 
-                      setIsDirty(true);
-                      setErrors({});
-                    }}
-                  ></input>
-                  <Button
-                    variant="icon"
-                    className="bg-red-500 size-7"
-                    onClick={() => {
-                      if (!id) {
-                        console.warn("No Line Id");
-                        return;
-                      }
-                      deleteLineMutation.mutate(id);
-                      // setFormData((prev) => {
-                      //   const currentLine = prev.lines.find(
-                      //     (line) => line.timestamp_sec === timestamp_sec
-                      //   );
-
-                      //   return {};
-                      // });
-                    }}
-                  >
-                    <X />
-                  </Button>
+                    <Button
+                      variant="icon"
+                      className="bg-red-500 size-7"
+                      onClick={() => {
+                        if (!id) {
+                          console.warn("No Line Id");
+                          return;
+                        }
+                        deleteLineMutation.mutate(id);
+                      }}
+                    >
+                      <X />
+                    </Button>
+                  </div>
+                  {errors.lines && (
+                    <p className="text-xs text-rose-400">{errors.lines}</p>
+                  )}
                 </div>
               );
             })}
-          {errors.lines && (
-            <p className="text-xs text-rose-400">{errors.lines}</p>
-          )}
           <div className="flex justify-center w-full gap-5">
             <Button
               variant="icon"
               onMouseDown={() => {
+                //@ts-expect-error we use randomUUID as temporary ID which is string but the db requiers a number
                 setFormData((prev) => {
                   return {
                     ...prev,
                     lines: [
                       ...prev.lines,
                       {
+                        id: crypto.randomUUID(),
                         lyric: "",
                         timestamp_sec:
                           prev.lines.length > 0 &&
@@ -1529,11 +1537,20 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             >
               <FilePlus />
             </Button>
+            <Button
+              variant="icon"
+              onMouseDown={() => {
+                if (!song?.id) return;
+
+                deleteAllLinesMutation.mutate(song?.id);
+              }}
+            >
+              <Bomb />
+            </Button>
           </div>
 
           <dialog
             open={model === "batchAddLyrics"}
-            // open={true}
             className={`${PANEL_CLASS} text-white space-y-5 p-3 mx-auto w-full max-w-3xl backdrop-blur-2xl fixed top-0 my-9`}
           >
             <textarea
@@ -1548,21 +1565,36 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                   el.scrollHeight,
                   window.innerHeight * 0.8
                 )}px`;
-                const lines = el.value.split("\n");
+                const lines = el.value
+                  .split("\n\n")
+                  .reduce((acc, fields, lineIndex) => {
+                    const line = acc[lineIndex] ?? (acc[lineIndex] = {});
+                    fields.split("\n").forEach((field, idx) => {
+                      switch (idx) {
+                        case 0:
+                          //@ts-expect-error we use randomUUID as temporary ID which is string but the db requiers a number
+                          line["id"] = crypto.randomUUID();
+                          line["line_index"] = Number(field);
+                          break;
+                        case 1:
+                          line["timestamp_sec"] = Song.timestampToSeconds(
+                            field,
+                            { srt: true }
+                          );
+                          break;
+                        case 2:
+                          line["lyric"] = field;
+                      }
+                    });
 
+                    return acc;
+                  }, [] as LinesUpdate[]);
+
+                //@ts-expect-error we use randomUUID as temporary ID which is string but the db requiers a number
                 setFormData((prev) => {
-                  const lastTimestamp = prev.lines.at(-1)?.timestamp_sec ?? -1;
-                  const batchedLines = lines.map((lyric, idx) => ({
-                    lyric,
-                    timestamp_sec: lastTimestamp + idx + 1,
-                    song_id: prev.id ?? "",
-                  }));
-
-                  const newLines = [...prev.lines, ...batchedLines];
-
                   return {
                     ...prev,
-                    lines: newLines,
+                    lines,
                   };
                 });
 

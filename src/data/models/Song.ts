@@ -48,9 +48,37 @@ export const Song = {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   },
 
-  timestampToSeconds(timestamp: string | number): number {
+  timestampToSeconds(
+    timestamp: string | number,
+    option?: { srt: boolean },
+  ): number {
     if (!timestamp) return 0;
     if (typeof timestamp === "number") return Math.round(timestamp);
+
+    if (option?.srt) {
+      const [rawStart, rawEnd] = timestamp.split(/\s*-->\s*/);
+      if (!rawStart) {
+        console.error("No match SRT format");
+        return 0;
+      }
+
+      const match = rawStart?.match(
+        /^(\d{2}):(\d{2}):(\d{2}),(\d{3})$/,
+      );
+      console.log({ match });
+      if (!match) {
+        console.error("No capture matched");
+        return 0;
+      }
+
+      const [, hours, minutes, seconds, millis] = match;
+      const totalSeconds = Number(hours) * 3600 +
+        Number(minutes) * 60 +
+        Number(seconds) +
+        Number(millis) / 1000;
+
+      return Math.round(totalSeconds);
+    }
 
     const [minutes, seconds] = timestamp.split(":");
 

@@ -6,7 +6,8 @@ import { LoaderCircle } from "lucide-react";
 import { LanguageIcon, PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/data/query-keys";
-import { Song, SongBundle, CreditRow } from "@/data/models/Song";
+import { Song, SongBundle } from "@/data/models/Song";
+import { Credit, FormattedCredit } from "@/data/models/Credit";
 
 const opts = { height: "780", width: "1280", playerVars: { autoplay: 1 } };
 
@@ -28,16 +29,7 @@ export default function PlayerClient({ slug }: { slug: string }) {
   // song bundle from DB
   const { data, isLoading, error } = useQuery<SongBundle>({
     queryKey: QueryKey.song(slug, lang),
-    queryFn: () => Song.getJsonBundle(slug, lang),
-    staleTime: 60_000,
-    placeholderData: (prev) => prev,
-  });
-
-  // credits (artist / lyricist / composer)
-  const { data: credits } = useQuery<CreditRow>({
-    queryKey: ["song-credits", data?.id],
-    queryFn: () => Song.getCredits(data!.id),
-    enabled: !!data?.id,
+    queryFn: () => Song.getBundle(slug, lang),
     staleTime: 60_000,
     placeholderData: (prev) => prev,
   });
@@ -60,10 +52,12 @@ export default function PlayerClient({ slug }: { slug: string }) {
 
   const activeLineIndex = useMemo(() => {
     if (!data) return -1;
-    const lines = data.base_lines;
+    const lines = data.lines;
     for (let i = 0; i < lines.length; i++) {
       const here = lines[i].timestamp_sec ?? 0;
+      console.log({ here });
       const next = lines[i + 1]?.timestamp_sec ?? Number.POSITIVE_INFINITY;
+      console.log({ next });
       if (currentSec >= here && currentSec < next) return i;
     }
     return -1;
@@ -122,7 +116,7 @@ export default function PlayerClient({ slug }: { slug: string }) {
       !isAutoScrolling
     )
       return;
-    const sec = data.base_lines[activeLineIndex].timestamp_sec ?? 0;
+    const sec = data.lines[activeLineIndex].timestamp_sec ?? 0;
     const el = document.getElementById(idFor(sec)) as HTMLLIElement | null;
     if (el) {
       isProgrammaticScroll.current = true;
@@ -181,9 +175,9 @@ export default function PlayerClient({ slug }: { slug: string }) {
             </ruby>
             {/* Artists */}
             <div className="text-center">
-              {credits?.primary_artist?.length && (
+              {data.credit?.primary_artist?.length && (
                 <span>
-                  {credits.primary_artist.map((p) => {
+                  {data.credit.primary_artist.map((p) => {
                     return (
                       <ruby key={p.id}>
                         <span>{p.display_name}</span>
@@ -194,11 +188,11 @@ export default function PlayerClient({ slug }: { slug: string }) {
                 </span>
               )}
 
-              {credits?.featured_artist && <span> x </span>}
+              {data.credit.featured_artist && <span> x </span>}
 
-              {credits?.featured_artist?.length && (
+              {data.credit.featured_artist?.length && (
                 <span>
-                  {credits.featured_artist.map((f) => {
+                  {data.credit.featured_artist.map((f) => {
                     return (
                       <ruby key={f.id}>
                         <span>{f.display_name}</span>
@@ -212,10 +206,10 @@ export default function PlayerClient({ slug }: { slug: string }) {
           </div>
           <div>
             {/* Lyricist / Composer */}
-            {credits?.lyricist?.length && (
+            {data.credit.lyricist?.length && (
               <div>
                 作詞家:{" "}
-                {credits.lyricist.map((l) => {
+                {data.credit.lyricist.map((l) => {
                   return (
                     <ruby key={l.id}>
                       <span>{l.display_name}</span>
@@ -225,10 +219,10 @@ export default function PlayerClient({ slug }: { slug: string }) {
                 })}
               </div>
             )}
-            {credits?.composer?.length && (
+            {data.credit?.composer?.length && (
               <div>
                 作曲家:{" "}
-                {credits.composer.map((c) => {
+                {data.credit.composer.map((c) => {
                   return (
                     <ruby key={c.id}>
                       <span>{c.display_name}</span>
@@ -280,11 +274,16 @@ export default function PlayerClient({ slug }: { slug: string }) {
         ref={lyricsContainerRef}
       >
         <ul className="flex flex-col gap-y-5">
-          {data.base_lines.map((line, i) => {
+          {data.lines.map((line, i) => {
+            const { timestamp_sec, lyric } = line;
             const isActive = i === activeLineIndex;
+            // const isActive = line.timestamp_sec === currentSec;
+            console.log({ timestamp_sec, currentSec });
+            console.log({ activeLineIndex });
+
             return (
               <li
-                key={line.line_index}
+                key={line.timestamp_sec}
                 id={idFor(line.timestamp_sec ?? 0)}
                 onMouseDown={() => {
                   player?.seekTo(line.timestamp_sec ?? 0, true);
@@ -294,21 +293,7 @@ export default function PlayerClient({ slug }: { slug: string }) {
                   isActive ? "text-white" : "text-white/50"
                 }`}
               >
-                {/* ja_tokens with ruby */}
-                {line.ja_tokens.map((part, idx) =>
-                  typeof part === "string" ? (
-                    <span key={idx}>{part}</span>
-                  ) : (
-                    <ruby key={idx}>
-                      {part.kanji}
-                      {part.furigana ? <rt>{part.furigana}</rt> : null}
-                    </ruby>
-                  )
-                )}
-                {/* optional translation */}
-                {lang && data.translation && (
-                  <p className="text-xl">{translationLine(line.line_index)}</p>
-                )}
+                {line.lyric}
               </li>
             );
           })}
