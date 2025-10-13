@@ -26,7 +26,7 @@
         "./src/*"
       ]
     },
-    "target": "es2024"
+    "target": "esnext"
   },
   "include": [
     "next-env.d.ts",
