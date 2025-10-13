@@ -3,6 +3,9 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Link from "next/link";
 import Providers from "./providers";
+import { Button } from "@/app/components/ui/button";
+import { Home, User } from "lucide-react";
+import Nav from "./components/nav";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -65,7 +68,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased px-5 md:px-0`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+
+          <Nav />
+        </Providers>
       </body>
     </html>
   );

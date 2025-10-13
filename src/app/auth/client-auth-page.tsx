@@ -11,6 +11,7 @@ import {
 import { Profile } from "@/data/models/Profile";
 import { QueryKey } from "@/data/query-keys";
 import { createClient } from "@/utils/supabase/client";
+import { Button } from "../components/ui/button";
 
 export default function ClientAuthPage() {
   const router = useRouter();
@@ -135,24 +136,22 @@ export default function ClientAuthPage() {
     <main className="mx-auto max-w-md p-6 text-white">
       {/* Tabs / Mode Switcher */}
       <div className="mb-6 flex gap-2">
-        <button
-          className={`px-3 py-1 rounded-full border ${
-            mode === "signin" ? "bg-white/10" : "bg-transparent"
-          }`}
+        <Button
+          variant="outline"
+          className={`${mode === "signin" ? "border" : "border-0"}`}
           onClick={() => setMode("signin")}
           type="button"
         >
           Sign in
-        </button>
-        <button
-          className={`px-3 py-1 rounded-full border ${
-            mode === "signup" ? "bg-white/10" : "bg-transparent"
-          }`}
+        </Button>
+        <Button
+          variant="outline"
+          className={`${mode === "signup" ? "border" : "border-0"}`}
           onClick={() => setMode("signup")}
           type="button"
         >
           Sign up
-        </button>
+        </Button>
       </div>
 
       {/* Forms */}
@@ -194,13 +193,9 @@ export default function ClientAuthPage() {
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={isPending}
-            className="mt-2 w-full rounded-full bg-emerald-600 px-4 py-2 font-semibold disabled:opacity-50"
-          >
+          <Button variant="primary" type="submit" disabled={isPending}>
             {signUpMutation.isPending ? "Signing up…" : "Create account"}
-          </button>
+          </Button>
 
           {signUpMutation.isError && (
             <p className="mt-2 text-sm text-red-400">
@@ -241,13 +236,9 @@ export default function ClientAuthPage() {
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={isPending}
-            className="mt-2 w-full rounded-full bg-emerald-600 px-4 py-2 font-semibold disabled:opacity-50"
-          >
+          <Button variant="primary" type="submit" disabled={isPending}>
             {signInMutation.isPending ? "Signing in…" : "Sign in"}
-          </button>
+          </Button>
 
           {signInMutation.isError && (
             <p className="mt-2 text-sm text-red-400">

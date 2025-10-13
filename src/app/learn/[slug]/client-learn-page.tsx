@@ -2,12 +2,13 @@
 
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import Youtube from "react-youtube";
-import { LoaderCircle } from "lucide-react";
+import { Home, LoaderCircle } from "lucide-react";
 import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/data/query-keys";
 import { Song, SongBundle } from "@/data/models/Song";
 import { Button } from "@/app/components/ui/button";
+import Link from "next/link";
 
 const opts = { height: "780", width: "1280", playerVars: { autoplay: 1 } };
 
@@ -306,6 +307,11 @@ export default function ClientLearnPage(props: { slug: string }) {
 
             {/* Funtions */}
             <div className="flex items-center justify-center w-full gap-x-7 pb-3">
+              <Button variant="icon" className="bg-black/20 backdrop-blur-3xl">
+                <Link href="/">
+                  <Home />
+                </Link>
+              </Button>
               <Button
                 variant="icon"
                 className="size-15 bg-black/20 backdrop-blur-3xl"

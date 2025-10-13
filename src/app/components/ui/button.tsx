@@ -3,7 +3,7 @@
 import cn from "@/utils/cn";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
-type ButtonVariant = "primary" | "danger" | "icon";
+type ButtonVariant = "primary" | "danger" | "icon" | "outline";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
@@ -17,8 +17,9 @@ const variantClassMap: Record<ButtonVariant, string> = {
     "bg-teal-700 text-white enabled:hover:bg-teal-400 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-teal-300",
   danger:
     "border border-rose-500/60 text-rose-300 enabled:hover:bg-rose-500/10 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-rose-400",
-  icon:
-    "bg-teal-700 text-white enabled:hover:bg-teal-400 px-2 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-teal-300",
+  icon: "bg-teal-700 text-white enabled:hover:bg-teal-400 px-2 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-teal-300",
+  outline:
+    "bg-transparent text-white enabled:hover:bg-teal-400 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-teal-300",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(

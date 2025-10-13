@@ -8,6 +8,7 @@ import { createClient } from "@/utils/supabase/client";
 import Loading from "../../components/loading";
 import { QueryKey } from "@/data/query-keys";
 import Link from "next/link";
+import { Button } from "@/app/components/ui/button";
 
 export default function ClientProfilePage() {
   const router = useRouter();
@@ -91,7 +92,7 @@ export default function ClientProfilePage() {
   }
 
   return (
-    <main className="p-6 text-white">
+    <main className="p-6 text-white space-y-7 flex justify-center flex-col items-center h-svh">
       <h1 className="text-2xl font-semibold mb-4">Profile</h1>
 
       <div className="space-y-2">
@@ -102,29 +103,28 @@ export default function ClientProfilePage() {
         <div>
           <span className="opacity-70">Role:</span> {profile.role}
         </div>
-        {profile.role === "admin" && (
-          //TODO: Put it to the navbar
-          <button>
-            <Link href="/edit">Edit</Link>
-          </button>
-        )}
         <div>
           <span className="opacity-70">Joined:</span>{" "}
           {profile.created_at?.slice(0, 10) ?? "—"}
         </div>
+        {profile.role === "admin" && (
+          //TODO: Put it to the navbar
+          <Button>
+            <Link href="/edit">Edit</Link>
+          </Button>
+        )}
       </div>
 
       {/* Only show Sign Out if this is the signed-in user's profile */}
       {authUser?.id === uid && (
-        <button
-          type="button"
+        <Button
+          variant="danger"
           onClick={() => signOutMutation.mutate()}
           disabled={signOutMutation.isPending}
           aria-busy={signOutMutation.isPending}
-          className="mt-4 w-full rounded-full bg-emerald-600 px-4 py-2 font-semibold disabled:opacity-50"
         >
           {signOutMutation.isPending ? <Loading /> : "Sign Out"}
-        </button>
+        </Button>
       )}
     </main>
   );
