@@ -9,10 +9,10 @@ import { QueryKey } from "@/data/query-keys";
 import { Song, SongBundle } from "@/data/models/Song";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
-import FuriganaLine from "../components/furigana-line";
 import { redirect } from "next/navigation";
 import { addFurigana } from "@/utils/furigana/addFurigana";
 import { FuriganaType } from "@/utils/furigana/constants";
+import Loading from "@/app/components/loading";
 
 const opts = { height: "780", width: "1280" };
 
@@ -179,24 +179,10 @@ export default function ClientLearnPage(props: { slug: string }) {
   // TODO: better handling
   if (error)
     return <div className="p-10 text-red-400">Error: {error.message}</div>;
-  if (!data)
-    return (
-      <div className="flex min-h-dvh min-w-dvw flex-col max-h-dvh items-center justify-center overflow-y-hidden">
-        <LoaderCircle className="h-9 w-9 animate-spin" />
-      </div>
-    );
+  if (isLoading || !data) return <Loading isFullScreen />;
 
   return (
-    <main
-      className="flex min-h-dvh min-w-dvw flex-col max-h-dvh items-center overflow-y-hidden"
-      ref={containerRef}
-    >
-      {(!player || isLoading || !isFuriganaReady) && (
-        <div className="fixed z-50 flex justify-center items-center top-0 w-full h-full bg-black/50 backdrop-blur-xs">
-          <LoaderCircle className="h-9 w-9 animate-spin" />
-        </div>
-      )}
-
+    <main className="flex flex-col items-center" ref={containerRef}>
       {/* Header */}
       <section className="fixed z-20 top-0 w-full backdrop-blur-xs shadow-xl">
         <div
@@ -206,7 +192,6 @@ export default function ClientLearnPage(props: { slug: string }) {
           <div>
             <ruby className="text-xl">
               <h1>{data.name}</h1>
-              {/* <rt>{data.furigana}</rt> */}
             </ruby>
             {/* Artists */}
             <div className="text-center">
@@ -216,7 +201,6 @@ export default function ClientLearnPage(props: { slug: string }) {
                     return (
                       <ruby key={p.id}>
                         <span>{p.display_name}</span>
-                        {/* <rt>{p.furigana}</rt> */}
                       </ruby>
                     );
                   })}
@@ -231,7 +215,6 @@ export default function ClientLearnPage(props: { slug: string }) {
                     return (
                       <ruby key={f.id}>
                         <span>{f.display_name}</span>
-                        {/* <rt>{f.furigana}</rt> */}
                       </ruby>
                     );
                   })}
@@ -248,7 +231,6 @@ export default function ClientLearnPage(props: { slug: string }) {
                   return (
                     <ruby key={l.id}>
                       <span>{l.display_name}</span>
-                      {/* <rt>{l.furigana}</rt> */}
                     </ruby>
                   );
                 })}
@@ -261,7 +243,6 @@ export default function ClientLearnPage(props: { slug: string }) {
                   return (
                     <ruby key={c.id}>
                       <span>{c.display_name}</span>
-                      {/* <rt>{c.furigana}</rt> */}
                     </ruby>
                   );
                 })}
@@ -308,17 +289,9 @@ export default function ClientLearnPage(props: { slug: string }) {
 
       {/* Lines */}
       <section
-        className="overflow-y-auto py-24 flex flex-col px-5 xl:px-0 items-center z-10 min-w-dvw h-full bg-black/70 backdrop-blur-sm"
+        className="overflow-y-auto py-24 flex flex-col px-5 items-center z-10 min-w-dvw h-full bg-black/70 backdrop-blur-sm"
         ref={lyricsContainerRef}
       >
-        {/* {player && (
-          <FuriganaLine
-            lines={data.lines}
-            player={player}
-            activeLineIndex={activeLineIndex}
-            setIsFuriganaReady={setIsFuriganaReady}
-          />
-        )} */}
         <ul className="flex flex-col gap-y-5">
           {data.lines.map((line, i) => {
             const { timestamp_sec, lyric } = line;
@@ -344,8 +317,8 @@ export default function ClientLearnPage(props: { slug: string }) {
       </section>
 
       {/* Toolbar */}
-      <section className="fixed z-20 bottom-0 w-full rounded-t-3xl font-mono">
-        <nav className="w-full">
+      <section className="fixed z-20 bottom-0 w-full font-mono">
+        <div className="w-full">
           <div className="w-full flex items-center px-5">
             <span>{secToTs(finalSec)}</span>
 
@@ -443,7 +416,7 @@ export default function ClientLearnPage(props: { slug: string }) {
               }}
             />
           </div>
-        </nav>
+        </div>
       </section>
     </main>
   );
