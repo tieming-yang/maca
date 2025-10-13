@@ -28,7 +28,7 @@ export default function SongList() {
               style={{ filter: "drop-shadow(0 0 15px)" }}
               key={song.id ?? song.slug ?? song.name}
             >
-              <Link href={`playground/${Song.toSlug(song.romaji)}`} prefetch>
+              <Link href={`learn/${Song.toSlug(song.romaji)}`} prefetch>
                 {song.name}
               </Link>
             </li>
