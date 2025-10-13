@@ -3,11 +3,10 @@
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import Youtube from "react-youtube";
 import { LoaderCircle } from "lucide-react";
-import { LanguageIcon, PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
+import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/data/query-keys";
 import { Song, SongBundle } from "@/data/models/Song";
-import { Credit, FormattedCredit } from "@/data/models/Credit";
 import { Button } from "@/app/components/ui/button";
 
 const opts = { height: "780", width: "1280", playerVars: { autoplay: 1 } };
@@ -23,7 +22,9 @@ function idFor(sec: number) {
   return `line-${Math.max(0, Math.floor(sec))}`;
 }
 
-export default function ClientLearnPage({ slug }: { slug: string }) {
+export default function ClientLearnPage(props: { slug: string }) {
+  const { slug } = props;
+
   // language overlay toggle (start with zh-TW to match your old UI)
   const [lang, setLang] = useState<string | undefined>("zh-TW");
   // song bundle from DB

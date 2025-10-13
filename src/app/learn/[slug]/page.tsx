@@ -1,9 +1,13 @@
 import ClientLearnPage from "./client-learn-page";
 
-type Params = Promise<{ slug: string }>;
+export type LearnPageParams = Promise<{ slug: string }>;
 
-export default async function LearnPage(props: { params: Params }) {
-  const { slug } = await props.params;
+export default async function LearnPage({
+  params,
+}: {
+  params: LearnPageParams;
+}) {
+  const { slug } = await params;
 
   return <ClientLearnPage slug={slug} />;
 }
