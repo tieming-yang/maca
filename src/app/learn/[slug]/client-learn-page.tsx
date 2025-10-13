@@ -9,6 +9,8 @@ import { QueryKey } from "@/data/query-keys";
 import { Song, SongBundle } from "@/data/models/Song";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
+import FuriganaLine from "../components/furigana-line";
+import { redirect } from "next/navigation";
 
 const opts = { height: "780", width: "1280", playerVars: { autoplay: 1 } };
 
@@ -25,7 +27,10 @@ function idFor(sec: number) {
 
 export default function ClientLearnPage(props: { slug: string }) {
   const { slug } = props;
-
+  if (!slug) {
+    console.error("No Slug!");
+    redirect("/not-found");
+  }
   // language overlay toggle (start with zh-TW to match your old UI)
   const [lang, setLang] = useState<string | undefined>("zh-TW");
   // song bundle from DB
@@ -275,7 +280,14 @@ export default function ClientLearnPage(props: { slug: string }) {
         className="overflow-y-auto py-24 flex flex-col px-5 xl:px-0 items-center z-10 min-w-dvw h-full bg-black/70 backdrop-blur-sm"
         ref={lyricsContainerRef}
       >
-        <ul className="flex flex-col gap-y-5">
+        {player && (
+          <FuriganaLine
+            lines={data.lines}
+            player={player}
+            activeLineIndex={activeLineIndex}
+          />
+        )}
+        {/* <ul className="flex flex-col gap-y-5">
           {data.lines.map((line, i) => {
             const { timestamp_sec, lyric } = line;
             const isActive = i === activeLineIndex;
@@ -296,7 +308,7 @@ export default function ClientLearnPage(props: { slug: string }) {
               </li>
             );
           })}
-        </ul>
+        </ul> */}
       </section>
 
       {/* Toolbar */}

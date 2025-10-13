@@ -8,6 +8,5 @@ export default async function LearnPage({
   params: LearnPageParams;
 }) {
   const { slug } = await params;
-
   return <ClientLearnPage slug={slug} />;
 }
