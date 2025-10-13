@@ -11,8 +11,10 @@ import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import FuriganaLine from "../components/furigana-line";
 import { redirect } from "next/navigation";
+import { addFurigana } from "@/utils/furigana/addFurigana";
+import { FuriganaType } from "@/utils/furigana/constants";
 
-const opts = { height: "780", width: "1280", playerVars: { autoplay: 1 } };
+const opts = { height: "780", width: "1280" };
 
 function secToTs(total?: number | null) {
   if (!total || total <= 0) return "0:00";
@@ -57,14 +59,15 @@ export default function ClientLearnPage(props: { slug: string }) {
   const durationSec = data?.end_seconds ?? 0;
   const finalSec = Math.floor(scrub ?? currentSec);
 
+  const [isFuriganaReady, setIsFuriganaReady] = useState(false);
+  const containerRef = useRef<HTMLUListElement>(null);
+
   const activeLineIndex = useMemo(() => {
     if (!data) return -1;
     const lines = data.lines;
     for (let i = 0; i < lines.length; i++) {
       const here = lines[i].timestamp_sec ?? 0;
-      console.log({ here });
       const next = lines[i + 1]?.timestamp_sec ?? Number.POSITIVE_INFINITY;
-      console.log({ next });
       if (currentSec >= here && currentSec < next) return i;
     }
     return -1;
@@ -75,6 +78,28 @@ export default function ClientLearnPage(props: { slug: string }) {
     const map = data.translation.lines;
     return (idx: number) => map[idx];
   }, [data?.translation]);
+
+  useEffect(() => {
+    if (!data) return;
+
+    const root = containerRef.current;
+    if (!root) return;
+
+    async function _addFurigana(root: HTMLUListElement) {
+      try {
+        const elements = Array.from(root.querySelectorAll("li, span, h1"));
+
+        if (elements.length)
+          await addFurigana(FuriganaType.Hiragana, ...elements);
+      } catch (err) {
+        console.error("Add furigana effect error", err);
+      } finally {
+        setIsFuriganaReady(true);
+      }
+    }
+
+    _addFurigana(root);
+  }, [data]);
 
   // cleanup timer
   useEffect(() => {
@@ -162,8 +187,11 @@ export default function ClientLearnPage(props: { slug: string }) {
     );
 
   return (
-    <main className="flex min-h-dvh min-w-dvw flex-col max-h-dvh items-center overflow-y-hidden">
-      {(!player || isLoading) && (
+    <main
+      className="flex min-h-dvh min-w-dvw flex-col max-h-dvh items-center overflow-y-hidden"
+      ref={containerRef}
+    >
+      {(!player || isLoading || !isFuriganaReady) && (
         <div className="fixed z-50 flex justify-center items-center top-0 w-full h-full bg-black/50 backdrop-blur-xs">
           <LoaderCircle className="h-9 w-9 animate-spin" />
         </div>
@@ -178,7 +206,7 @@ export default function ClientLearnPage(props: { slug: string }) {
           <div>
             <ruby className="text-xl">
               <h1>{data.name}</h1>
-              <rt>{data.furigana}</rt>
+              {/* <rt>{data.furigana}</rt> */}
             </ruby>
             {/* Artists */}
             <div className="text-center">
@@ -188,7 +216,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                     return (
                       <ruby key={p.id}>
                         <span>{p.display_name}</span>
-                        <rt>{p.furigana}</rt>
+                        {/* <rt>{p.furigana}</rt> */}
                       </ruby>
                     );
                   })}
@@ -203,7 +231,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                     return (
                       <ruby key={f.id}>
                         <span>{f.display_name}</span>
-                        <rt>{f.furigana}</rt>
+                        {/* <rt>{f.furigana}</rt> */}
                       </ruby>
                     );
                   })}
@@ -220,7 +248,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                   return (
                     <ruby key={l.id}>
                       <span>{l.display_name}</span>
-                      <rt>{l.furigana}</rt>
+                      {/* <rt>{l.furigana}</rt> */}
                     </ruby>
                   );
                 })}
@@ -233,7 +261,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                   return (
                     <ruby key={c.id}>
                       <span>{c.display_name}</span>
-                      <rt>{c.furigana}</rt>
+                      {/* <rt>{c.furigana}</rt> */}
                     </ruby>
                   );
                 })}
@@ -271,7 +299,10 @@ export default function ClientLearnPage(props: { slug: string }) {
             player?.seekTo(0, true);
           }}
           videoId={data.youtube_id ?? undefined}
-          opts={opts}
+          opts={{
+            ...opts,
+            playerVars: { autoplay: isFuriganaReady ? 1 : 0 },
+          }}
         />
       </section>
 
@@ -280,14 +311,15 @@ export default function ClientLearnPage(props: { slug: string }) {
         className="overflow-y-auto py-24 flex flex-col px-5 xl:px-0 items-center z-10 min-w-dvw h-full bg-black/70 backdrop-blur-sm"
         ref={lyricsContainerRef}
       >
-        {player && (
+        {/* {player && (
           <FuriganaLine
             lines={data.lines}
             player={player}
             activeLineIndex={activeLineIndex}
+            setIsFuriganaReady={setIsFuriganaReady}
           />
-        )}
-        {/* <ul className="flex flex-col gap-y-5">
+        )} */}
+        <ul className="flex flex-col gap-y-5">
           {data.lines.map((line, i) => {
             const { timestamp_sec, lyric } = line;
             const isActive = i === activeLineIndex;
@@ -308,7 +340,7 @@ export default function ClientLearnPage(props: { slug: string }) {
               </li>
             );
           })}
-        </ul> */}
+        </ul>
       </section>
 
       {/* Toolbar */}
