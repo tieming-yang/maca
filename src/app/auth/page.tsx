@@ -5,7 +5,7 @@ import Loading from "../components/loading";
 export default function AuthPage({}) {
   return (
     <Suspense fallback={<Loading isFullScreen />}>
-      <ClientAuthPage />;
+      <ClientAuthPage />
     </Suspense>
   );
 }

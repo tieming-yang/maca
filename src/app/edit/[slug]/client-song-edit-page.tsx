@@ -1619,7 +1619,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         </section>
 
         {/* Tool bar */}
-        <div className="fixed bottom-7 inset-x-0 flex flex-wrap w-full justify-center items-center gap-7">
+        <div className="fixed bottom-5 inset-x-0 flex flex-wrap w-full justify-center items-center gap-45">
           <Button
             variant="icon"
             type="button"
