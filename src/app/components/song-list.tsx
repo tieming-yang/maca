@@ -21,7 +21,7 @@ export default function SongList() {
   return (
     <section className="flex w-full h-full justify-center items-center flex-col space-y-7">
       {isLoading && <Loading isFullScreen />}
-      <h2 className="text-5xl">Recently Updated</h2>
+      <h2 className="text-3xl">Recently Updated</h2>
       <ul>
         {songs &&
           songs.map((song) => {

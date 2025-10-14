@@ -305,7 +305,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                   player?.seekTo(timestamp_sec ?? 0, true);
                   player?.playVideo();
                 }}
-                className={`transition-all duration-300 text-2xl font-bold ${
+                className={`transition-all duration-300 text-xl font-bold ${
                   isActive ? "text-white" : "text-white/50"
                 }`}
               >

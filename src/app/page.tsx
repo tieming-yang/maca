@@ -5,12 +5,12 @@ type SearchParams = Promise<{ isStaging: string }>;
 
 export default async function Home(props: { searchParams: SearchParams }) {
   return (
-    <main className="px-3 w-full">
-      <header className="flex justify-between items-center w-full">
+    <main className="px-3 w-full py-7">
+      <header className="flex justify-between pb-7 items-center w-full">
         <Link className="font-mono text-xl font-semibold" href="/">
           maca
         </Link>
-        <h1 className="text-3xl md:text-3xl xl:text-5xl">
+        <h1 className="text-xl md:text-3xl xl:text-5xl">
           Learn Japanese by{" "}
           <span className="underline underline-offset-4 text-teal-500">
             singing
