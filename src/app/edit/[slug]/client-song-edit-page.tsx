@@ -977,7 +977,11 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         </div>
       )}
 
-      <form className={`${PANEL_CLASS} space-y-5 p-6`} onSubmit={handleSave}>
+      <form
+        className={`${PANEL_CLASS} space-y-5 p-6`}
+        onSubmit={handleSave}
+        noValidate
+      >
         {/* Basic Info */}
         <div className="grid gap-1">
           <label
@@ -1017,7 +1021,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             onChange={handleInputChange("romaji")}
             className={INPUT_CLASS}
             placeholder="Senbonzakura"
-            required
             disabled={disableInputs}
           />
           {errors.romaji && (
@@ -1619,7 +1622,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         </section>
 
         {/* Tool bar */}
-        <div className="fixed bottom-5 inset-x-0 flex flex-wrap w-full justify-center items-center gap-45">
+        <div className="fixed bottom-18 inset-x-0 flex flex-wrap w-full justify-center items-center gap-54">
           <Button
             variant="icon"
             type="button"

@@ -7,7 +7,7 @@ import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/data/query-keys";
 import { Song, SongBundle } from "@/data/models/Song";
-import { Button } from "@/app/components/ui/button";
+import { Button, topGlowBorder } from "@/app/components/ui/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { addFurigana } from "@/utils/furigana/addFurigana";
@@ -79,6 +79,7 @@ export default function ClientLearnPage(props: { slug: string }) {
     return (idx: number) => map[idx];
   }, [data?.translation]);
 
+  //TODO: toggle off / romaji
   useEffect(() => {
     if (!data) return;
 
@@ -320,21 +321,29 @@ export default function ClientLearnPage(props: { slug: string }) {
       <section className="fixed z-20 bottom-0 w-full font-mono">
         <div className="w-full">
           <div className="w-full flex items-center px-5">
-            <span>{secToTs(finalSec)}</span>
+            <span
+              className={`${topGlowBorder} bg-black/20 backdrop-blur-3xl px-2 py-1 rounded-full`}
+            >
+              {secToTs(finalSec)}
+            </span>
 
             {/* Funtions */}
             <div className="flex items-center justify-center w-full gap-x-7 pb-3">
-              <Button variant="icon" className="bg-black/20 backdrop-blur-3xl">
+              {/* <Button variant="icon" className="bg-black/20 backdrop-blur-3xl">
                 <Link href="/">
                   <Home />
                 </Link>
-              </Button>
+              </Button> */}
               <Button
                 variant="icon"
-                className="size-15 bg-black/20 backdrop-blur-3xl"
+                className="bg-black/20 backdrop-blur-3xl"
                 onMouseDown={handleToggle}
               >
-                {isPlaying ? <PauseIcon /> : <PlayIcon />}
+                {isPlaying ? (
+                  <PauseIcon className="size-12" />
+                ) : (
+                  <PlayIcon className="size-12" />
+                )}
               </Button>
               {/* <div className="flex items-center gap-3">
                 <button
@@ -351,7 +360,11 @@ export default function ClientLearnPage(props: { slug: string }) {
                 </button>
               </div> */}
             </div>
-            <span>{secToTs(durationSec)}</span>
+            <span
+              className={`${topGlowBorder} bg-black/20 backdrop-blur-3xl px-2 py-1 rounded-full`}
+            >
+              {secToTs(durationSec)}
+            </span>
           </div>
 
           {/* Slider */}
