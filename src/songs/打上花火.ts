@@ -7,6 +7,7 @@ const 打上花火: TSong = {
   lyricist: "米津玄師",
   composer: "米津玄師",
   youtubeId: "-tKVN2mAKRI",
+  slug: "uchiage-hanabi",
   end: "4:52",
   lyrics: [
     {

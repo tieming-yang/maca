@@ -7,6 +7,7 @@ const 大阪LOVER: TSong = {
   lyricist: "吉田美和",
   youtubeId: "E-DAUGDEeRA",
   composer: "吉田美和",
+  slug: "osaka-lover",
   end: "4:28",
   lyrics: [
     {

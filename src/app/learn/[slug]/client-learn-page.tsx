@@ -180,7 +180,7 @@ export default function ClientLearnPage(props: { slug: string }) {
   // TODO: better handling
   if (error)
     return <div className="p-10 text-red-400">Error: {error.message}</div>;
-  if (isLoading || !data || !player) return <Loading isFullScreen />;
+  if (isLoading || !data) return <Loading isFullScreen />;
 
   return (
     <main className="flex flex-col items-center" ref={containerRef}>

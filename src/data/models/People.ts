@@ -22,7 +22,13 @@ export const People = {
     return data ?? [];
   },
 
-  async create(input: PeopleInsert): Promise<PeopleRow> {
+  async insert(input: PeopleInsert): Promise<PeopleRow> {
+    const existing = await this.findByDisplayName(input.display_name);
+    if (existing) {
+      console.warn("exist");
+      return existing;
+    }
+
     const { data, error } = await db
       .from("people")
       .insert(input)
@@ -51,6 +57,18 @@ export const People = {
     }
 
     return data;
+  },
+
+  async findByDisplayName(displayName: string): Promise<PeopleRow | null> {
+    const { data, error } = await db
+      .from("people")
+      .select("*")
+      .eq("display_name", displayName)
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data ?? null;
   },
 };
 

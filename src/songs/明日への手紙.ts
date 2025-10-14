@@ -7,6 +7,7 @@ const 明日への手紙: TSong = {
   lyricist: "池田綾子",
   composer: "池田綾子",
   youtubeId: "ytQ3Hs3WjQ4",
+  slug: "ashita-e-no-tegami",
   end: "5:31",
   lyrics: [
     {

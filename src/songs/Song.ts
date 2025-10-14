@@ -16,6 +16,7 @@ export type TLyric = {
 };
 
 export type TSong = {
+  slug: string;
   id: string;
   artist: string;
   name: string;
@@ -59,12 +60,12 @@ export const Song = {
     };
   },
 
-  songs: {
-    大阪LOVER: 大阪LOVER,
-    欲望に満ちた青年団: 欲望に満ちた青年団,
-    明日への手紙: 明日への手紙,
-    おれの小樽: おれの小樽,
-    僕が死のうと思ったのは: 僕が死のうと思ったのは,
-    打上花火: 打上花火,
-  },
+  songs: [
+    大阪LOVER,
+    欲望に満ちた青年団,
+    明日への手紙,
+    おれの小樽,
+    僕が死のうと思ったのは,
+    打上花火,
+  ],
 };

@@ -7,6 +7,7 @@ const 欲望に満ちた青年団: TSong = {
   lyricist: "Taka",
   composer: "Taka",
   youtubeId: "Ds6GfTt_Lv8",
+  slug: "yokubou-ni-michita-seinendan",
   end: "3:22",
   lyrics: [
     {

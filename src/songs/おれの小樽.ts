@@ -5,6 +5,7 @@ export const おれの小樽 = {
   lyricist: "杉紀彦",
   composer: "弦哲也",
   youtubeId: "RFnDn7UpIQc",
+  slug: "ore-no-otaru",
   end: "3:37",
   lyrics: [
     {
