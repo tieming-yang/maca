@@ -62,7 +62,6 @@ function read<T = unknown>(token: RawToken, key: string) {
 export class Tokenizer {
   #superTokenizer: _Tokenizer;
   #tokensFormatter(tokens: LinderaToken[]): FormattedToken[] {
-    console.log("raw tokens", tokens);
     return tokens.map((token) => {
       const originalDetails = read<string[] | undefined>(token, "details");
 

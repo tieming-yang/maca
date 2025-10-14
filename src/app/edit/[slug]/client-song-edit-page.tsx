@@ -744,7 +744,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
   const addPersonMutation = useMutation({
     mutationFn: async (input: PeopleInsert) => {
-      const person = await People.create(input);
+      const person = await People.insert(input);
       return person;
     },
     onSuccess: (refreshed) => {
