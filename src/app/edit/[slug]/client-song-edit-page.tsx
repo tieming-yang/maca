@@ -192,11 +192,11 @@ function parseEndSeconds(value: string): {
 
 type SongSectionResult = {
   name: string;
-  romaji: string;
+  romaji?: string;
   sanitizedSlug: string;
   youtubeId: string | null;
   endSeconds: number | null;
-  furigana: string;
+  furigana?: string;
 };
 
 function validateSongSection(
@@ -208,13 +208,8 @@ function validateSongSection(
     errors.name = "Name is required.";
   }
 
-  const romaji = values.romaji.trim();
-  if (!romaji) {
-    errors.romaji = "Romaji is required.";
-  }
-
-  const sanitizedSlug = Song.toSlug(romaji);
-  if (!sanitizedSlug) {
+  const slug = values.slug.trim();
+  if (!slug) {
     errors.slug = "Slug is required.";
   }
 
@@ -239,8 +234,7 @@ function validateSongSection(
 
   return {
     name,
-    romaji,
-    sanitizedSlug,
+    sanitizedSlug: Song.toSlug(slug),
     youtubeId,
     endSeconds: parsed.endSeconds,
     furigana,
@@ -1008,39 +1002,17 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
         <div className="grid gap-1">
           <label
-            htmlFor="romaji"
-            className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
-          >
-            Romaji
-          </label>
-          <input
-            id="romaji"
-            name="romaji"
-            type="text"
-            value={formData.romaji}
-            onChange={handleInputChange("romaji")}
-            className={INPUT_CLASS}
-            placeholder="Senbonzakura"
-            disabled={disableInputs}
-          />
-          {errors.romaji && (
-            <p className="text-xs text-rose-400">{errors.romaji}</p>
-          )}
-        </div>
-
-        <div className="grid gap-1">
-          <label
             htmlFor="slug"
             className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
           >
-            Slug (auto-generated)
+            Slug
           </label>
           <input
             id="slug"
             name="slug"
             type="text"
             value={formData.slug}
-            readOnly
+            required
             className={`${INPUT_CLASS} cursor-not-allowed opacity-70`}
           />
         </div>
@@ -1107,6 +1079,27 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           />
           {errors.furigana && (
             <p className="text-xs text-rose-400">{errors.furigana}</p>
+          )}
+        </div>
+        <div className="grid gap-1">
+          <label
+            htmlFor="romaji"
+            className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
+          >
+            Romaji
+          </label>
+          <input
+            id="romaji"
+            name="romaji"
+            type="text"
+            value={formData.romaji}
+            onChange={handleInputChange("romaji")}
+            className={INPUT_CLASS}
+            placeholder="Senbonzakura"
+            disabled={disableInputs}
+          />
+          {errors.romaji && (
+            <p className="text-xs text-rose-400">{errors.romaji}</p>
           )}
         </div>
 
