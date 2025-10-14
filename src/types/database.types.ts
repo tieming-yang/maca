@@ -775,7 +775,7 @@ export type Database = {
           display_name: string
           furigana: string | null
           id: string
-          romaji: string
+          romaji: string | null
         }
         Insert: {
           alt_names?: Json | null
@@ -783,7 +783,7 @@ export type Database = {
           display_name: string
           furigana?: string | null
           id?: string
-          romaji: string
+          romaji?: string | null
         }
         Update: {
           alt_names?: Json | null
@@ -791,7 +791,7 @@ export type Database = {
           display_name?: string
           furigana?: string | null
           id?: string
-          romaji?: string
+          romaji?: string | null
         }
         Relationships: []
       }
