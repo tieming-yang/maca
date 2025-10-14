@@ -1,5 +1,7 @@
-# Docs
+# Learn Japanese by Singing 🎵
 
-## Github markdown
+## Docs
+
+### Github markdown
 
 https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
