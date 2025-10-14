@@ -4,8 +4,12 @@ import type { Database } from "@/types/database.types";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
+if (!supabaseKey || !supabaseUrl) {
+  throw new Error("No Credential!");
+}
+
 export const createClient = () =>
   createBrowserClient<Database>(
-    supabaseUrl!,
-    supabaseKey!,
+    supabaseUrl,
+    supabaseKey,
   );
