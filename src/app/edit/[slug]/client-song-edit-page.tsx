@@ -802,11 +802,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       const value = event.target.value;
       setFormData((prev) => {
         switch (field) {
-          case "romaji":
-            const nextSlug = Song.toSlug(value);
-            return { ...prev, romaji: value, slug: nextSlug };
-          case "primary_artist":
-
           default:
             return { ...prev, [field]: value };
         }
@@ -1012,6 +1007,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             name="slug"
             type="text"
             value={formData.slug}
+            onChange={handleInputChange("slug")}
             required
             className={`${INPUT_CLASS} cursor-not-allowed opacity-70`}
           />

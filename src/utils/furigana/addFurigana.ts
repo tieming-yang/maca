@@ -35,6 +35,11 @@ export async function addFurigana(
       const ranges = tokens.reverse().map((token) => {
         const ruby = createRuby(token, furiganaType);
         const range = document.createRange();
+
+        if (
+          !text.textContent?.length || token.start >= text.length ||
+          token.end > text.length
+        ) return;
         range.setStart(text, token.start);
         range.setEnd(text, token.end);
         range.deleteContents();
