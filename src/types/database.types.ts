@@ -924,7 +924,7 @@ export type Database = {
           furigana: string | null
           id: string
           name: string
-          romaji: string
+          romaji: string | null
           slug: string
           work_id: string | null
           youtube_id: string | null
@@ -936,7 +936,7 @@ export type Database = {
           furigana?: string | null
           id?: string
           name: string
-          romaji: string
+          romaji?: string | null
           slug: string
           work_id?: string | null
           youtube_id?: string | null
@@ -948,7 +948,7 @@ export type Database = {
           furigana?: string | null
           id?: string
           name?: string
-          romaji?: string
+          romaji?: string | null
           slug?: string
           work_id?: string | null
           youtube_id?: string | null
