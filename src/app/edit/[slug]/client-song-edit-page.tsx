@@ -401,9 +401,6 @@ function validateLinesSection(
   if (lines.length === 0) {
     errors.lines = "No lines";
   }
-  if (!values.id) {
-    errors.lines = "No Song Id";
-  }
 
   const hasDuplicateTimestamp = lines.some(
     (line, index, array) =>
@@ -660,7 +657,12 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
           await Credit.insert(inserted.id, input.credit);
 
-          await Line.insertMany(input.lines);
+          await Line.insertMany(
+            input.lines.map((line) => ({
+              ...line,
+              song_id: inserted.id,
+            }))
+          );
 
           return Song.getBundle(inserted.slug);
 
@@ -1611,7 +1613,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         </section>
 
         {/* Tool bar */}
-        <div className="fixed bottom-18 inset-x-0 flex flex-wrap w-full justify-center items-center gap-54">
+        <div className="fixed top-18 left-5 flex flex-col gap-5">
           <Button
             variant="icon"
             type="button"
