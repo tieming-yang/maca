@@ -290,7 +290,7 @@ export default function ClientLearnPage(props: { slug: string }) {
 
       {/* Lines */}
       <section
-        className="overflow-y-auto py-24 flex flex-col px-5 items-center z-10 min-w-dvw h-full bg-black/70 backdrop-blur-sm"
+        className="overflow-y-auto py-24 flex flex-col px-5 items-center z-10 min-w-dvw h-dvh bg-black/70 backdrop-blur-sm"
         ref={lyricsContainerRef}
       >
         <ul className="flex flex-col gap-y-5">
