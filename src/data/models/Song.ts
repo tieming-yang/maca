@@ -65,7 +65,6 @@ export const Song = {
       const match = rawStart?.match(
         /^(\d{2}):(\d{2}):(\d{2}),(\d{3})$/,
       );
-      console.log({ match });
       if (!match) {
         console.error("No capture matched");
         return 0;
