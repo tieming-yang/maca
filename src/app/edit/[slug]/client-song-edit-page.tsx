@@ -453,7 +453,7 @@ function validateForm(
   const lines = validateLinesSection(values, options, errors);
 
   if (options.isNew && workAction.kind === "none" && !workAction.workId) {
-    errors.work_title = "Provide a new work or link an existing work ID.";
+    errors.base = "Provide a new work or link an existing work ID.";
   }
 
   if (Object.keys(errors).length > 0 || !songSection.sanitizedSlug) {
