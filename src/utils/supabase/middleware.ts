@@ -42,7 +42,8 @@ export async function updateSession(request: NextRequest) {
 
   if (
     !user &&
-    request.nextUrl.pathname.startsWith("/profile")
+    request.nextUrl.pathname.startsWith("/edit") &&
+    request.nextUrl.pathname.startsWith("/contribute")
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
