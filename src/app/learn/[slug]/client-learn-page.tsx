@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import Youtube from "react-youtube";
-import { Home, LoaderCircle } from "lucide-react";
+import { Home } from "lucide-react";
 import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/data/query-keys";
@@ -11,8 +11,9 @@ import { Button, topGlowBorder } from "@/app/components/ui/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { addFurigana } from "@/utils/furigana/addFurigana";
-import { FuriganaType } from "@/utils/furigana/constants";
+import { FuriganaType, FuriganaTypeArray } from "@/utils/furigana/constants";
 import Loading from "@/app/components/loading";
+import { Dropdown, DropdownItem } from "@/app/components/ui/dropdown";
 
 const opts = { height: "780", width: "1280" };
 
@@ -26,6 +27,8 @@ function secToTs(total?: number | null) {
 function idFor(sec: number) {
   return `line-${Math.max(0, Math.floor(sec))}`;
 }
+
+const FURIGANA_ELEMENTS = "li, span, h1";
 
 export default function ClientLearnPage(props: { slug: string }) {
   const { slug } = props;
@@ -59,8 +62,12 @@ export default function ClientLearnPage(props: { slug: string }) {
   const durationSec = data?.end_seconds ?? 0;
   const finalSec = Math.floor(scrub ?? currentSec);
 
+  const [selectedFuriganaTypes, setSelectedFuriganaTypes] = useState<
+    FuriganaType[]
+  >([FuriganaType.Hiragana]);
   const [isFuriganaReady, setIsFuriganaReady] = useState(false);
   const containerRef = useRef<HTMLUListElement>(null);
+  const [isFuriganaMenuOpen, setIsFuriganaMenuOpen] = useState(false);
 
   const activeLineIndex = useMemo(() => {
     if (!data) return -1;
@@ -79,19 +86,18 @@ export default function ClientLearnPage(props: { slug: string }) {
     return (idx: number) => map[idx];
   }, [data?.translation]);
 
-  //TODO: toggle off / romaji
   useEffect(() => {
     if (!data) return;
-
     const root = containerRef.current;
     if (!root) return;
 
     async function _addFurigana(root: HTMLUListElement) {
       try {
-        const elements = Array.from(root.querySelectorAll("li, span, h1"));
-
-        if (elements.length)
-          await addFurigana(FuriganaType.Hiragana, ...elements);
+        setIsFuriganaReady(false);
+        const elements = Array.from(root.querySelectorAll(FURIGANA_ELEMENTS));
+        if (elements.length) {
+          await addFurigana(selectedFuriganaTypes, ...elements);
+        }
       } catch (err) {
         console.error("Add furigana effect error", err);
       } finally {
@@ -100,7 +106,7 @@ export default function ClientLearnPage(props: { slug: string }) {
     }
 
     _addFurigana(root);
-  }, [data]);
+  }, [data, selectedFuriganaTypes]);
 
   // cleanup timer
   useEffect(() => {
@@ -227,7 +233,10 @@ export default function ClientLearnPage(props: { slug: string }) {
             {/* Lyricist / Composer */}
             {data.credit.lyricist?.length && (
               <div>
-                作詞家:{" "}
+                <span data-furigana-excluded className="text-xs">
+                  作詞家:{" "}
+                </span>
+
                 {data.credit.lyricist.map((l) => {
                   return (
                     <ruby key={l.id}>
@@ -239,7 +248,11 @@ export default function ClientLearnPage(props: { slug: string }) {
             )}
             {data.credit?.composer?.length && (
               <div>
-                作曲家:{" "}
+                <span data-furigana-excluded className="text-xs">
+                  {" "}
+                  作曲家:{" "}
+                </span>
+
                 {data.credit.composer.map((c) => {
                   return (
                     <ruby key={c.id}>
@@ -329,28 +342,43 @@ export default function ClientLearnPage(props: { slug: string }) {
 
             {/* Funtions */}
             <div className="flex items-center justify-center w-full gap-x-7 pb-3">
-              {/* <Button variant="icon" className="bg-black/20 backdrop-blur-3xl">
+              <Button variant="icon" className="bg-black/20 backdrop-blur-3xl">
                 <Link href="/">
                   <Home />
                 </Link>
-              </Button> */}
+              </Button>
               <Button
                 variant="icon"
-                className="bg-black/20 backdrop-blur-3xl"
+                className="bg-black/20 backdrop-blur-3xl size-15"
                 onMouseDown={handleToggle}
               >
-                {isPlaying ? (
-                  <PauseIcon className="size-12" />
-                ) : (
-                  <PlayIcon className="size-12" />
-                )}
+                {isPlaying ? <PauseIcon /> : <PlayIcon />}
               </Button>
+              <Dropdown
+                open={isFuriganaMenuOpen}
+                setOpen={setIsFuriganaMenuOpen}
+              >
+                {FuriganaTypeArray.map((type) => {
+                  const selected = selectedFuriganaTypes.includes(type);
+                  return (
+                    <DropdownItem
+                      key={type}
+                      value={type}
+                      setValue={setSelectedFuriganaTypes}
+                      selected={selected}
+                    >
+                      {type}
+                    </DropdownItem>
+                  );
+                })}
+              </Dropdown>
+
               {/* <div className="flex items-center gap-3">
                 <button
                   onClick={() => setLang((l) => (l ? undefined : "zh-TW"))}
                   className="inline-flex items-center gap-2 px-3 py-1 rounded bg-white/10 hover:bg-white/20"
                   title={lang ? `Hide ${lang}` : "Show zh-TW"}
-                >
+                
                   <LanguageIcon
                     className={`size-5 ${
                       lang ? "text-white" : "text-white/50"

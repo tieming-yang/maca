@@ -58,6 +58,8 @@ export const FuriganaType = {
 } as const;
 export type FuriganaType = (typeof FuriganaType)[keyof typeof FuriganaType];
 
+export const FuriganaTypeArray = Object.values(FuriganaType);
+
 export const SelectMode = {
   Default: "default",
   Original: "original",

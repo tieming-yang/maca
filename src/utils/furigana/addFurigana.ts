@@ -16,35 +16,68 @@ export interface KanjiMark extends KanjiToken {
  * Ruby tag is "\<ruby>original\<rp>(\</rp>\<rt>reading\</rt>\<rp>)\</rp>\</ruby>".
  */
 export async function addFurigana(
-  furiganaType: FuriganaType = FuriganaType.Hiragana,
+  selectedFuriganas: FuriganaType[],
   ...elements: Element[]
 ) {
-  // const furiganaType = await getGeneralSettings(ExtStorage.FuriganaType);
-  // if (!furiganaType) {
-  //   return;
-  // }
+  const selectedSet = new Set(selectedFuriganas);
+  const seen = new Set();
+  for (const element of elements) {
+    const rubies = element.querySelectorAll<HTMLElement>(
+      `ruby.${FURIGANA_CLASS}`,
+    );
+    for (const ruby of rubies) {
+      const existingRts = ruby.querySelectorAll<HTMLElement>(
+        `rt[data-furigana-type]`,
+      );
 
-  const japaneseTexts = elements.flatMap(collectTexts).filter((node) =>
+      existingRts.forEach((rt) => {
+        const existingType = rt.dataset.furiganaType as FuriganaType;
+        if (!existingType) return;
+
+        if (!selectedSet.has(existingType)) {
+          rt.previousElementSibling?.remove();
+          rt.nextElementSibling?.remove();
+          rt.remove();
+        } else {
+          seen.add(existingType);
+        }
+      });
+
+      if (!ruby.querySelector("rt")) {
+        console.log("no furigana");
+        ruby.replaceWith(
+          document.createTextNode(ruby.dataset.original ?? ""),
+        );
+      }
+    }
+  }
+
+  const missingTypes = selectedFuriganas.filter((type) => !seen.has(type));
+
+  const collectedTexts = elements.flatMap(collectTexts);
+  const japaneseTexts = collectedTexts.filter((node) =>
     /\p{sc=Han}/u.test(node.textContent ?? "")
   );
 
   await Promise.all(
-    japaneseTexts.map(async (text) => {
-      const tokens = await tokenize(text.textContent ?? "");
-      const fragment = document.createDocumentFragment();
-      const ranges = tokens.reverse().map((token) => {
-        const ruby = createRuby(token, furiganaType);
-        const range = document.createRange();
+    missingTypes.map(async (type) => {
+      for (const text of japaneseTexts) {
+        const tokens = await tokenize(text.textContent ?? "");
 
-        if (
-          !text.textContent?.length || token.start >= text.length ||
-          token.end > text.length
-        ) return;
-        range.setStart(text, token.start);
-        range.setEnd(text, token.end);
-        range.deleteContents();
-        range.insertNode(ruby);
-      });
+        tokens.reverse().forEach((token) => {
+          const ruby = createRuby(token, type);
+          const range = document.createRange();
+
+          if (
+            !text.textContent?.length || token.start >= text.length ||
+            token.end > text.length
+          ) return;
+          range.setStart(text, token.start);
+          range.setEnd(text, token.end);
+          range.deleteContents();
+          range.insertNode(ruby);
+        });
+      }
     }),
   );
 }
@@ -53,8 +86,6 @@ const exclusionParentTagSet = new Set([
   "SCRIPT",
   "STYLE",
   "NOSCRIPT",
-  "RUBY",
-  "RT",
   "TITLE",
 ]);
 
@@ -67,7 +98,10 @@ export const collectTexts = (element: Element): Text[] => {
     if (!parent) {
       continue;
     }
-    if (!exclusionParentTagSet.has(parent.tagName)) {
+    if (
+      !exclusionParentTagSet.has(parent.tagName) &&
+      !(parent.dataset.furiganaExcluded === "true")
+    ) {
       texts.push(node);
     }
   }
@@ -112,6 +146,8 @@ export const createRuby = (
 ): HTMLElement => {
   const ruby = document.createElement("ruby");
   ruby.classList.add(FURIGANA_CLASS);
+  ruby.dataset.original = token.original;
+
   if ("isFiltered" in token && token.isFiltered) {
     ruby.classList.add("isFiltered");
   }
@@ -132,8 +168,11 @@ export const createRuby = (
       // token.reading default is katakana
       break;
   }
+
   const readingTextNode = document.createTextNode(token.reading);
   const rt = document.createElement("rt");
+  rt.dataset.furiganaType = furiganaType;
+
   rt.appendChild(readingTextNode);
   ruby.appendChild(originalText);
   ruby.appendChild(leftParenthesisRp);
