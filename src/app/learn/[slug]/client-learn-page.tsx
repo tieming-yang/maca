@@ -349,7 +349,7 @@ export default function ClientLearnPage(props: { slug: string }) {
               </Button>
               <Button
                 variant="icon"
-                className="bg-black/20 backdrop-blur-3xl size-15"
+                className="bg-black/20 backdrop-blur-3xl"
                 onMouseDown={handleToggle}
               >
                 {isPlaying ? <PauseIcon /> : <PlayIcon />}
