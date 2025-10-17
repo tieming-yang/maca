@@ -1407,7 +1407,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         )}
 
         {/* Lines */}
-        <section className="grid gap-1">
+        <section className="grid gap-1 pb-15">
           <h2>Lyrics</h2>
 
           {formData.lines &&
@@ -1613,16 +1613,8 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         </section>
 
         {/* Tool bar */}
-        <div className="fixed top-18 left-5 flex flex-col gap-5">
-          <Button
-            variant="icon"
-            type="button"
-            onClick={() => router.push("/edit")}
-          >
-            <ArrowLeft />
-          </Button>
-
-          <div className="flex gap-3">
+        <div className="fixed bottom-5 left-5 flex flex-col gap-5">
+          <div className="flex flex-col gap-3">
             <Button
               type="submit"
               disabled={
@@ -1644,6 +1636,14 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
               </Button>
             )}
           </div>
+
+          <Button
+            variant="icon"
+            type="button"
+            onClick={() => router.push("/edit")}
+          >
+            <ArrowLeft />
+          </Button>
         </div>
       </form>
     </section>
