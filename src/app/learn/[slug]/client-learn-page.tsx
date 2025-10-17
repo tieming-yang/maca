@@ -342,14 +342,14 @@ export default function ClientLearnPage(props: { slug: string }) {
 
             {/* Funtions */}
             <div className="flex items-center justify-center w-full gap-x-7 pb-3">
-              <Button variant="icon" className="bg-black/20 backdrop-blur-3xl">
+              <Button variant="icon" className="bg-black/20">
                 <Link href="/">
                   <Home />
                 </Link>
               </Button>
               <Button
                 variant="icon"
-                className="bg-black/20 backdrop-blur-3xl"
+                className="bg-black/20"
                 onMouseDown={handleToggle}
               >
                 {isPlaying ? <PauseIcon /> : <PlayIcon />}
