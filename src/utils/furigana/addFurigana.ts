@@ -19,67 +19,31 @@ export async function addFurigana(
   selectedFuriganas: FuriganaType[],
   ...elements: Element[]
 ) {
-  const selectedSet = new Set(selectedFuriganas);
-  const seen = new Set();
+  const types = Array.from(new Set(selectedFuriganas));
   for (const element of elements) {
-    const rubies = element.querySelectorAll<HTMLElement>(
-      `ruby.${FURIGANA_CLASS}`,
-    );
-    for (const ruby of rubies) {
-      const existingRts = ruby.querySelectorAll<HTMLElement>(
-        `rt[data-furigana-type]`,
-      );
-
-      existingRts.forEach((rt) => {
-        const existingType = rt.dataset.furiganaType as FuriganaType;
-        if (!existingType) return;
-
-        if (!selectedSet.has(existingType)) {
-          rt.previousElementSibling?.remove();
-          rt.nextElementSibling?.remove();
-          rt.remove();
-        } else {
-          seen.add(existingType);
-        }
-      });
-
-      if (!ruby.querySelector("rt")) {
-        console.log("no furigana");
-        ruby.replaceWith(
-          document.createTextNode(ruby.dataset.original ?? ""),
-        );
-      }
-    }
+    ensureOriginalText(element);
+    const source = (element as HTMLElement).dataset.furiganaSource ??
+      element.textContent ?? "";
+    element.textContent = source; // wipe every previous ruby
   }
 
-  const missingTypes = selectedFuriganas.filter((type) => !seen.has(type));
+  if (!types.length) return; // nothing to render
 
-  const collectedTexts = elements.flatMap(collectTexts);
-  const japaneseTexts = collectedTexts.filter((node) =>
-    /\p{sc=Han}/u.test(node.textContent ?? "")
-  );
+  const texts = elements
+    .flatMap(collectTexts)
+    .filter((node) => /\p{sc=Han}/u.test(node.textContent ?? ""));
 
-  await Promise.all(
-    missingTypes.map(async (type) => {
-      for (const text of japaneseTexts) {
-        const tokens = await tokenize(text.textContent ?? "");
-
-        tokens.reverse().forEach((token) => {
-          const ruby = createRuby(token, type);
-          const range = document.createRange();
-
-          if (
-            !text.textContent?.length || token.start >= text.length ||
-            token.end > text.length
-          ) return;
-          range.setStart(text, token.start);
-          range.setEnd(text, token.end);
-          range.deleteContents();
-          range.insertNode(ruby);
-        });
-      }
-    }),
-  );
+  for (const text of texts) {
+    const tokens = await tokenize(text.textContent ?? "");
+    for (const token of tokens.reverse()) {
+      const ruby = createRuby(token, types); // all selected readings at once
+      const range = document.createRange();
+      range.setStart(text, token.start);
+      range.setEnd(text, token.end);
+      range.deleteContents();
+      range.insertNode(ruby);
+    }
+  }
 }
 
 const exclusionParentTagSet = new Set([
@@ -136,67 +100,58 @@ const tokenize = async (text: string) => {
   }
   const tokenizer = await getTokenizer();
   const tokens = tokenizer.tokenize(text);
-
+  // console.log("3. in tokenize", tokens);
   return toKanjiToken(tokens, text);
+};
+
+const readingFor = (base: string, type: FuriganaType) => {
+  switch (type) {
+    case FuriganaType.Hiragana:
+      return toHiragana(base);
+    case FuriganaType.Romaji:
+      return toRomaji(base);
+    case FuriganaType.Katakana:
+    default:
+      return base; // incoming token.reading is already katakana
+  }
 };
 
 export const createRuby = (
   token: KanjiMark | KanjiToken,
-  furiganaType: FuriganaType,
+  types: FuriganaType[],
 ): HTMLElement => {
   const ruby = document.createElement("ruby");
   ruby.classList.add(FURIGANA_CLASS);
-  ruby.dataset.original = token.original;
-
-  if ("isFiltered" in token && token.isFiltered) {
-    ruby.classList.add("isFiltered");
-  }
-  const rightParenthesisRp = document.createElement("rp");
-  rightParenthesisRp.textContent = ")";
-  const leftParenthesisRp = document.createElement("rp");
-  leftParenthesisRp.textContent = "(";
   const originalText = document.createTextNode(token.original);
-
-  switch (furiganaType) {
-    case FuriganaType.Hiragana:
-      token.reading = toHiragana(token.reading);
-      break;
-    case FuriganaType.Romaji:
-      token.reading = toRomaji(token.reading);
-      break;
-    case FuriganaType.Katakana:
-      // token.reading default is katakana
-      break;
-  }
-
-  const readingTextNode = document.createTextNode(token.reading);
-  const rt = document.createElement("rt");
-  rt.dataset.furiganaType = furiganaType;
-
-  rt.appendChild(readingTextNode);
   ruby.appendChild(originalText);
-  ruby.appendChild(leftParenthesisRp);
-  ruby.appendChild(rt);
-  ruby.appendChild(rightParenthesisRp);
+
+  for (const type of types) {
+    const left = document.createElement("rp");
+    left.textContent = "(";
+    const rt = document.createElement("rt");
+    rt.dataset.furiganaType = type;
+    rt.textContent = readingFor(token.reading, type);
+    rt.classList.add("--rt--")
+    const right = document.createElement("rp");
+    right.textContent = ")";
+    ruby.appendChild(left);
+    ruby.appendChild(rt);
+    ruby.appendChild(right);
+  }
   return ruby;
 };
 
-export async function annotateLyrics(text: string, type: FuriganaType) {
-  if (!/\p{sc=Han}/u.test(text)) return text;
+function ensureOriginalText(element: Element) {
+  const el = element as HTMLElement;
+  if (!el.dataset.furiganaSource) {
+    el.dataset.furiganaSource = el.textContent ?? "";
+  }
+}
 
-  const tokens = await tokenize(text);
+function removeAllFurigana(element: HTMLElement) {
+  const original = element.dataset.furiganaSource;
+  if (!original) return; // nothing cached; bail or recompute
 
-  return tokens
-    .slice()
-    .sort((a, b) => b.start - a.start)
-    .reduce((acc, token) => {
-      let reading = token.reading;
-      if (type === FuriganaType.Hiragana) reading = toHiragana(reading);
-      else if (type === FuriganaType.Romaji) reading = toRomaji(reading);
-
-      const rubyClass = "ruby";
-      const ruby =
-        `<ruby class="${rubyClass}">${token.original}<rp>(</rp><rt>${reading}</rt><rp>)</rp></ruby>`;
-      return acc.slice(0, token.start) + ruby + acc.slice(token.end);
-    }, text);
+  element.textContent = original; // restore the full sentence
+  delete element.dataset.furiganaSource; // optional: clear the cache
 }

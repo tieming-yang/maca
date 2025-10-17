@@ -64,7 +64,6 @@ export class Tokenizer {
   #tokensFormatter(tokens: LinderaToken[]): FormattedToken[] {
     return tokens.map((token) => {
       const originalDetails = read<string[] | undefined>(token, "details");
-
       const formattedDetails = originalDetails &&
         detailsArrayToObject(originalDetails);
       return {

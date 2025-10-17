@@ -65,6 +65,7 @@ const toSimplifiedToken = (
   linderaToken: LinderaTokenWithDetails,
   text: string,
 ): SimplifiedToken => {
+  // console.log("simpleToken", linderaToken.reading);
   return {
     start: byteIndexToUtf16Index(linderaToken.byteStart, text),
     end: byteIndexToUtf16Index(linderaToken.byteEnd, text),
@@ -92,6 +93,7 @@ function byteIndexToUtf16Index(byteIndex: number, text: string): number {
 
 const toRubyText = (token: SimplifiedToken): KanjiToken | KanjiToken[] => {
   // The pure Kanji words do not need to be disassembled.
+  // console.log("toRubyToken", token.reading);
   if (isKanji(token.original)) {
     return {
       original: token.original,

@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   --color-background: var(--background);
@@ -68,4 +68,8 @@
     background: var(--background);
     font-family: Arial, Helvetica, sans-serif;
   }
+}
+
+.--furigana-- {
+  @apply inline-flex flex-col-reverse align-bottom;
 }
