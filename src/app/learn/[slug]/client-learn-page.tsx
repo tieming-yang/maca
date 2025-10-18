@@ -342,7 +342,7 @@ export default function ClientLearnPage(props: { slug: string }) {
             </span>
 
             {/* Funtions */}
-            <div className="flex items-center justify-center w-full gap-x-7 pb-3">
+            <nav className="flex items-center justify-center w-full gap-x-7 pb-3">
               <Button variant="icon" className="bg-black/20">
                 <Link href="/">
                   <Home />
@@ -353,7 +353,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                 className="bg-black/20 size-17"
                 onMouseDown={handleToggle}
               >
-                {isPlaying ? <FaPause size="27" /> : <FaPlay size="27"/>}
+                {isPlaying ? <FaPause size="27" /> : <FaPlay size="27" />}
               </Button>
               <Dropdown
                 open={isFuriganaMenuOpen}
@@ -388,7 +388,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                   <span className="text-sm">{lang ?? "none"}</span>
                 </button>
               </div> */}
-            </div>
+            </nav>
             <span
               className={`${topGlowBorder} bg-black/20 backdrop-blur-3xl px-2 py-1 rounded-full`}
             >

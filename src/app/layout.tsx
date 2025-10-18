@@ -4,6 +4,8 @@ import "./globals.css";
 import Providers from "./providers";
 
 import Nav from "./components/nav";
+import { Suspense } from "react";
+import Loading from "./components/loading";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -69,7 +71,9 @@ export default function RootLayout({
         <Providers>
           {children}
 
-          <Nav />
+          <Suspense fallback={<Loading isFullScreen />}>
+            <Nav />
+          </Suspense>
         </Providers>
       </body>
     </html>
