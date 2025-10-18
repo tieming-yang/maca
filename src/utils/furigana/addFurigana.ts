@@ -19,12 +19,14 @@ export async function addFurigana(
   selectedFuriganas: FuriganaType[],
   ...elements: Element[]
 ) {
-  const types = Array.from(new Set(selectedFuriganas));
+  const types = selectedFuriganas;
+  // We simplified the flow instead of checking if there is existing <rt>,
+  // we simply use the original text to rebuild all current selected type from scratch.
   for (const element of elements) {
     ensureOriginalText(element);
     const source = (element as HTMLElement).dataset.furiganaSource ??
       element.textContent ?? "";
-    element.textContent = source; // wipe every previous ruby
+    element.textContent = source;
   }
 
   if (!types.length) return; // nothing to render
@@ -36,7 +38,7 @@ export async function addFurigana(
   for (const text of texts) {
     const tokens = await tokenize(text.textContent ?? "");
     for (const token of tokens.reverse()) {
-      const ruby = createRuby(token, types); // all selected readings at once
+      const ruby = createRuby(token, types);
       const range = document.createRange();
       range.setStart(text, token.start);
       range.setEnd(text, token.end);
@@ -131,7 +133,7 @@ export const createRuby = (
     const rt = document.createElement("rt");
     rt.dataset.furiganaType = type;
     rt.textContent = readingFor(token.reading, type);
-    rt.classList.add("--rt--")
+    rt.classList.add("--rt--");
     const right = document.createElement("rp");
     right.textContent = ")";
     ruby.appendChild(left);
@@ -150,8 +152,7 @@ function ensureOriginalText(element: Element) {
 
 function removeAllFurigana(element: HTMLElement) {
   const original = element.dataset.furiganaSource;
-  if (!original) return; // nothing cached; bail or recompute
-
-  element.textContent = original; // restore the full sentence
-  delete element.dataset.furiganaSource; // optional: clear the cache
+  if (!original) return;
+  element.textContent = original;
+  delete element.dataset.furiganaSource;
 }
