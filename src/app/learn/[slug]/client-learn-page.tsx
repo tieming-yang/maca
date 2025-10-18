@@ -14,6 +14,7 @@ import { addFurigana } from "@/utils/furigana/addFurigana";
 import { FuriganaType, FuriganaTypeArray } from "@/utils/furigana/constants";
 import Loading from "@/app/components/loading";
 import { Dropdown, DropdownItem } from "@/app/components/ui/dropdown";
+import { FaPause, FaPlay } from "react-icons/fa";
 
 const opts = { height: "780", width: "1280" };
 
@@ -349,10 +350,10 @@ export default function ClientLearnPage(props: { slug: string }) {
               </Button>
               <Button
                 variant="icon"
-                className="bg-black/20"
+                className="bg-black/20 size-17"
                 onMouseDown={handleToggle}
               >
-                {isPlaying ? <PauseIcon /> : <PlayIcon />}
+                {isPlaying ? <FaPause size="27" /> : <FaPlay size="27"/>}
               </Button>
               <Dropdown
                 open={isFuriganaMenuOpen}
