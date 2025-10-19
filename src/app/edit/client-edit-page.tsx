@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Loading from "../components/loading";
+import { Button } from "@/app/components/ui/button";
 
 export default function ClientEditPage() {
   const router = useRouter();
@@ -38,13 +39,9 @@ export default function ClientEditPage() {
             Browse existing songs or create a new entry to edit its metadata.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleCreate}
-          className="rounded-full bg-teal-500 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-teal-400 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-teal-300"
-        >
+        <Button type="button" onClick={handleCreate}>
           New Song
-        </button>
+        </Button>
       </header>
 
       {error && (
@@ -60,7 +57,7 @@ export default function ClientEditPage() {
       )}
 
       {songs && songs.length > 0 && (
-        <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60 shadow-[0_25px_55px_-40px_rgba(12,12,12,1)]">
+        <div className="overflow-hidden rounded-2xl border pb-16 border-zinc-800 bg-zinc-950/60 shadow-[0_25px_55px_-40px_rgba(12,12,12,1)]">
           <table className="min-w-full divide-y divide-zinc-800">
             <thead className="bg-zinc-900/50">
               <tr>
@@ -99,12 +96,11 @@ export default function ClientEditPage() {
                       {createdAtLabel}
                     </td>
                     <td className="px-4 py-3 text-right text-sm">
-                      <Link
-                        href={`/edit/${encodeURIComponent(song.slug)}`}
-                        className="rounded-full border border-teal-500/60 px-3 py-2 font-medium text-teal-200 transition hover:bg-teal-500/10 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-teal-300"
-                      >
-                        Edit
-                      </Link>
+                      <Button variant="outline">
+                        <Link href={`/edit/${encodeURIComponent(song.slug)}`}>
+                          Edit
+                        </Link>
+                      </Button>
                     </td>
                   </tr>
                 );
