@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import Youtube from "react-youtube";
-import { Home } from "lucide-react";
+import { Home, Music } from "lucide-react";
 import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/data/query-keys";
@@ -40,7 +40,11 @@ export default function ClientLearnPage(props: { slug: string }) {
   // language overlay toggle (start with zh-TW to match your old UI)
   const [lang, setLang] = useState<string | undefined>("zh-TW");
   // song bundle from DB
-  const { data, isLoading, error } = useQuery<SongBundle>({
+  const {
+    data: song,
+    isLoading,
+    error,
+  } = useQuery<SongBundle>({
     queryKey: QueryKey.song(slug, lang),
     queryFn: () => Song.getBundle(slug, lang),
     staleTime: 60_000,
@@ -60,7 +64,7 @@ export default function ClientLearnPage(props: { slug: string }) {
   const isProgrammaticScroll = useRef(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const durationSec = data?.end_seconds ?? 0;
+  const durationSec = song?.end_seconds ?? 0;
   const finalSec = Math.floor(scrub ?? currentSec);
 
   const [selectedFuriganaTypes, setSelectedFuriganaTypes] = useState<
@@ -70,25 +74,40 @@ export default function ClientLearnPage(props: { slug: string }) {
   const containerRef = useRef<HTMLUListElement>(null);
   const [isFuriganaMenuOpen, setIsFuriganaMenuOpen] = useState(false);
 
+  const renderSong = useMemo(() => {
+    return song && song.lines && song.lines.length > 0
+      ? {
+          ...song,
+          lines: [
+            {
+              lyric: "music",
+              timestamp_sec: 0,
+            },
+            ...song.lines,
+          ],
+        }
+      : song;
+  }, [song]);
+
   const activeLineIndex = useMemo(() => {
-    if (!data) return -1;
-    const lines = data.lines;
+    if (!renderSong) return -1;
+    const lines = renderSong.lines;
     for (let i = 0; i < lines.length; i++) {
       const here = lines[i].timestamp_sec ?? 0;
       const next = lines[i + 1]?.timestamp_sec ?? Number.POSITIVE_INFINITY;
       if (currentSec >= here && currentSec < next) return i;
     }
     return -1;
-  }, [data, currentSec]);
+  }, [renderSong, currentSec]);
 
   const translationLine = useMemo(() => {
-    if (!data?.translation) return (idx: number) => undefined;
-    const map = data.translation.lines;
+    if (!song?.translation) return (idx: number) => undefined;
+    const map = song.translation.lines;
     return (idx: number) => map[idx];
-  }, [data?.translation]);
+  }, [song?.translation]);
 
   useEffect(() => {
-    if (!data) return;
+    if (!song) return;
     const root = containerRef.current;
     if (!root) return;
 
@@ -107,7 +126,7 @@ export default function ClientLearnPage(props: { slug: string }) {
     }
 
     _addFurigana(root);
-  }, [data, selectedFuriganaTypes]);
+  }, [song, selectedFuriganaTypes]);
 
   // cleanup timer
   useEffect(() => {
@@ -150,20 +169,21 @@ export default function ClientLearnPage(props: { slug: string }) {
   // auto-scroll to active line
   useEffect(() => {
     if (
-      !data ||
+      !song ||
       activeLineIndex < 0 ||
       !lyricsContainerRef.current ||
       !isAutoScrolling
     )
       return;
-    const sec = data.lines[activeLineIndex].timestamp_sec ?? 0;
+
+    const sec = song.lines[activeLineIndex]?.timestamp_sec ?? 0;
     const el = document.getElementById(idFor(sec)) as HTMLLIElement | null;
     if (el) {
       isProgrammaticScroll.current = true;
       el.scrollIntoView({ block: "center", behavior: "smooth" });
       setTimeout(() => (isProgrammaticScroll.current = false), 800);
     }
-  }, [data, activeLineIndex, isAutoScrolling]);
+  }, [song, activeLineIndex, isAutoScrolling]);
 
   // toggle auto-scroll when user scrolls manually
   useEffect(() => {
@@ -187,7 +207,7 @@ export default function ClientLearnPage(props: { slug: string }) {
   // TODO: better handling
   if (error)
     return <div className="p-10 text-red-400">Error: {error.message}</div>;
-  if (isLoading || !data) return <Loading isFullScreen />;
+  if (isLoading || !song) return <Loading isFullScreen />;
 
   return (
     <main className="flex flex-col items-center" ref={containerRef}>
@@ -199,13 +219,13 @@ export default function ClientLearnPage(props: { slug: string }) {
         >
           <div>
             <ruby className="text-xl">
-              <h1>{data.name}</h1>
+              <h1>{song.name}</h1>
             </ruby>
             {/* Artists */}
             <div className="text-center">
-              {data.credit?.primary_artist?.length && (
+              {song.credit?.primary_artist?.length && (
                 <span>
-                  {data.credit.primary_artist.map((p) => {
+                  {song.credit.primary_artist.map((p) => {
                     return (
                       <ruby key={p.id}>
                         <span>{p.display_name}</span>
@@ -215,11 +235,11 @@ export default function ClientLearnPage(props: { slug: string }) {
                 </span>
               )}
 
-              {data.credit.featured_artist.length > 0 && <span> x </span>}
+              {song.credit.featured_artist.length > 0 && <span> x </span>}
 
-              {data.credit.featured_artist?.length > 0 && (
+              {song.credit.featured_artist?.length > 0 && (
                 <span>
-                  {data.credit.featured_artist.map((f) => {
+                  {song.credit.featured_artist.map((f) => {
                     return (
                       <ruby key={f.id}>
                         <span>{f.display_name}</span>
@@ -232,13 +252,13 @@ export default function ClientLearnPage(props: { slug: string }) {
           </div>
           <div>
             {/* Lyricist / Composer */}
-            {data.credit.lyricist?.length && (
+            {song.credit.lyricist?.length && (
               <div>
                 <span data-furigana-excluded className="text-xs">
                   作詞家:{" "}
                 </span>
 
-                {data.credit.lyricist.map((l) => {
+                {song.credit.lyricist.map((l) => {
                   return (
                     <ruby key={l.id}>
                       <span>{l.display_name}</span>
@@ -247,14 +267,14 @@ export default function ClientLearnPage(props: { slug: string }) {
                 })}
               </div>
             )}
-            {data.credit?.composer?.length && (
+            {song.credit?.composer?.length && (
               <div>
                 <span data-furigana-excluded className="text-xs">
                   {" "}
                   作曲家:{" "}
                 </span>
 
-                {data.credit.composer.map((c) => {
+                {song.credit.composer.map((c) => {
                   return (
                     <ruby key={c.id}>
                       <span>{c.display_name}</span>
@@ -294,7 +314,7 @@ export default function ClientLearnPage(props: { slug: string }) {
             setCurrentSec(0);
             player?.seekTo(0, true);
           }}
-          videoId={data.youtube_id ?? undefined}
+          videoId={song.youtube_id ?? undefined}
           opts={{
             ...opts,
             playerVars: { autoplay: isFuriganaReady ? 1 : 0 },
@@ -308,11 +328,24 @@ export default function ClientLearnPage(props: { slug: string }) {
         ref={lyricsContainerRef}
       >
         <ul className="flex flex-col gap-y-5">
-          {data.lines.map((line, i) => {
+          {renderSong?.lines.map((line, i) => {
             const { timestamp_sec, lyric } = line;
             const isActive = i === activeLineIndex;
 
-            return (
+            return lyric === "music" ? (
+              <Music
+                key={timestamp_sec}
+                data-furigana-excluded
+                onMouseDown={() => {
+                  console.log(timestamp_sec);
+                  player?.seekTo(timestamp_sec ?? 0, true);
+                  player?.playVideo();
+                }}
+                className={`transition-all duration-300 size-7 ${
+                  isActive ? "text-white animate-pulse" : "text-white/50"
+                }`}
+              />
+            ) : (
               <li
                 key={timestamp_sec}
                 id={idFor(timestamp_sec ?? 0)}
