@@ -16,7 +16,7 @@ import Loading from "@/app/components/loading";
 import { Dropdown, DropdownItem } from "@/app/components/ui/dropdown";
 import { FaPause, FaPlay } from "react-icons/fa";
 
-const opts = { height: "780", width: "1280" };
+const opts = { height: "780", width: "960" };
 
 function secToTs(total?: number | null) {
   if (!total || total <= 0) return "0:00";
