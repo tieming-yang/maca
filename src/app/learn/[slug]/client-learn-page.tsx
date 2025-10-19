@@ -15,8 +15,7 @@ import { FuriganaType, FuriganaTypeArray } from "@/utils/furigana/constants";
 import Loading from "@/app/components/loading";
 import { Dropdown, DropdownItem } from "@/app/components/ui/dropdown";
 import { FaPause, FaPlay } from "react-icons/fa";
-
-const opts = { height: "780", width: "960" };
+import { useWindowWidth } from "@/hooks/use-window-width";
 
 function secToTs(total?: number | null) {
   if (!total || total <= 0) return "0:00";
@@ -316,8 +315,9 @@ export default function ClientLearnPage(props: { slug: string }) {
           }}
           videoId={song.youtube_id ?? undefined}
           opts={{
-            ...opts,
-            playerVars: { autoplay: isFuriganaReady ? 1 : 0 },
+            height: "780",
+            width: "960",
+            playerVars: { autoplay: 1 },
           }}
         />
       </section>
