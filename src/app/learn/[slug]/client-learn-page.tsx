@@ -211,9 +211,10 @@ export default function ClientLearnPage(props: { slug: string }) {
   return (
     <main className="flex flex-col items-center" ref={containerRef}>
       {/* Header */}
-      <section className="fixed z-20 top-0 w-full backdrop-blur-xs shadow-xl">
+      <section className="fixed flex px-1 max-w-3xl justify-center items-center z-20 top-0 w-full backdrop-blur-xs shadow-xl">
+        <span>{secToTs(finalSec)}</span>
         <div
-          className="flex items-center justify-center w-full py-1 gap-x-7 font-semibold"
+          className="flex items-center justify-center w-full py-2 gap-x-7 font-semibold"
           style={{ filter: "drop-shadow(0 0 7px)" }}
         >
           <div>
@@ -284,6 +285,7 @@ export default function ClientLearnPage(props: { slug: string }) {
             )}
           </div>
         </div>
+        <span>{secToTs(durationSec)}</span>
       </section>
 
       {/* YouTube */}
@@ -368,12 +370,6 @@ export default function ClientLearnPage(props: { slug: string }) {
       <section className="fixed z-20 bottom-0 w-full font-mono">
         <div className="w-full">
           <div className="w-full flex items-center px-5">
-            <span
-              className={`${topGlowBorder} bg-black/20 backdrop-blur-3xl px-2 py-1 rounded-full`}
-            >
-              {secToTs(finalSec)}
-            </span>
-
             {/* Funtions */}
             <nav className="flex items-center justify-center w-full gap-x-7 pb-3">
               <Button variant="icon" className="bg-black/20">
@@ -422,11 +418,6 @@ export default function ClientLearnPage(props: { slug: string }) {
                 </button>
               </div> */}
             </nav>
-            <span
-              className={`${topGlowBorder} bg-black/20 backdrop-blur-3xl px-2 py-1 rounded-full`}
-            >
-              {secToTs(durationSec)}
-            </span>
           </div>
 
           {/* Slider */}
