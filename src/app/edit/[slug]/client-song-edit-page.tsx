@@ -402,14 +402,15 @@ function validateLinesSection(
     errors.lines = "No lines";
   }
 
-  const hasDuplicateTimestamp = lines.some(
-    (line, index, array) =>
-      array.findIndex((other) => other.timestamp_sec === line.timestamp_sec) !==
-      index
-  );
-  if (hasDuplicateTimestamp) {
-    errors.lines = "Each line needs a unique timestamp.";
-  }
+  //TODO: Add error to the duplicated line
+  // const hasDuplicateTimestamp = lines.some(
+  //   (line, index, array) =>
+  //     array.findIndex((other) => other.timestamp_sec === line.timestamp_sec) !==
+  //     index
+  // );
+  // if (hasDuplicateTimestamp) {
+  //   errors.lines = "Each line needs a unique timestamp.";
+  // }
 
   const plan: LinesMutationPlan = {
     inserts: [],
@@ -437,7 +438,7 @@ function validateLinesSection(
       plan.inserts.push(insert);
     }
   }
-
+  console.log(plan.inserts, plan.updates);
   return plan;
 }
 
@@ -541,7 +542,16 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
   const isNew = slug === NEW_SLUG_SENTINEL;
 
-  const [formData, setFormData] = useState<SongFormData>(makeBlankSong);
+  const storageKey = useMemo(() => `maca:formData:${slug || "new"}`, [slug]);
+
+  const [formData, setFormData] = useState<SongFormData>(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      return raw ? JSON.parse(raw) : makeBlankSong();
+    } catch {
+      return makeBlankSong();
+    }
+  });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [initialWork_id, setInitialWork_id] = useState<string | null>(null);
@@ -581,9 +591,22 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   const disableInputs = !isNew && (isLoading || Boolean(fetchError));
 
   useEffect(() => {
+    if (!isNew && !formData.name) return;
+    if (isNew && !isDirty) return;
+
+    localStorage.setItem(storageKey, JSON.stringify(formData));
+  }, [formData, storageKey, formData.lines]);
+
+  useEffect(() => {
     if (!isNew && song) {
-      const mapped = mapRowToForm(song);
-      setFormData(mapped);
+      let songData = makeBlankSong();
+      const draft = localStorage.getItem(storageKey);
+      if (draft) {
+        songData = JSON.parse(draft);
+      } else {
+        songData = mapRowToForm(song);
+      }
+      setFormData(songData);
       setErrors({});
       setIsDirty(false);
       setInitialWork_id(song.work?.id ?? null);
@@ -592,11 +615,11 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         song.work?.id
           ? {
               id: song.work.id,
-              title: mapped.work_title,
-              romaji: mapped.work_romaji,
-              furigana: mapped.work_furigana,
-              kind: mapped.work_kind,
-              year: mapped.work_year,
+              title: songData.work_title,
+              romaji: songData.work_romaji,
+              furigana: songData.work_furigana,
+              kind: songData.work_kind,
+              year: songData.work_year,
             }
           : null
       );
@@ -605,8 +628,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (isNew) {
-      const initial = makeBlankSong();
-      setFormData(initial);
       setErrors({});
       setIsDirty(false);
       setInitialWork_id(null);
@@ -717,6 +738,8 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             }
           : null
       );
+
+      localStorage.removeItem(storageKey);
 
       if (input.kind === "update") {
         if (refreshed.slug !== input.previousSlug) {
@@ -1411,91 +1434,117 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           <h2>Lyrics</h2>
 
           {formData.lines &&
-            formData.lines.map((line) => {
-              const { lyric, timestamp_sec, id } = line;
-              const timestamp = Song.secondsToTimestamp(timestamp_sec);
-              const matches = (current: typeof line) =>
-                id !== null && id !== undefined
-                  ? current.id === id
-                  : current.timestamp_sec === timestamp_sec;
+            formData.lines
+              .sort((a, b) => a.timestamp_sec - b.timestamp_sec)
+              .map((line) => {
+                const { lyric, timestamp_sec, id } = line;
+                const timestamp = Song.secondsToTimestamp(timestamp_sec);
+                const matches = (current: typeof line) =>
+                  id !== null && id !== undefined
+                    ? current.id === id
+                    : current.timestamp_sec === timestamp_sec;
+                return (
+                  <div key={id}>
+                    <div className="flex gap-x-3">
+                      <input
+                        className={`${INPUT_CLASS} w-fit`}
+                        value={timestamp ?? ""}
+                        onChange={(e) => {
+                          const newTimestamp = Song.timestampToSeconds(
+                            e.target.value
+                          );
+                          if (Number.isNaN(newTimestamp)) {
+                            setErrors((prev) => ({
+                              ...prev,
+                              lines: "Not a Number",
+                            }));
+                            console.warn("Not a number", newTimestamp);
+                            return;
+                          }
 
-              return (
-                <div key={id}>
-                  <div className="flex gap-x-3">
-                    <input
-                      className={`${INPUT_CLASS} w-fit`}
-                      value={timestamp ?? ""}
-                      onChange={(e) => {
-                        const newTimestamp = Song.timestampToSeconds(
-                          e.target.value
-                        );
-                        if (Number.isNaN(newTimestamp)) {
-                          setErrors((prev) => ({
+                          setFormData((prev) => ({
                             ...prev,
-                            lines: "Not a Number",
+                            lines: prev.lines.map((line) =>
+                              matches(line)
+                                ? {
+                                    ...line,
+                                    timestamp_sec: newTimestamp,
+                                  }
+                                : line
+                            ),
                           }));
-                          console.warn("Not a number", newTimestamp);
-                          return;
-                        }
 
-                        setFormData((prev) => ({
-                          ...prev,
-                          lines: prev.lines.map((line) =>
-                            matches(line)
-                              ? {
-                                  ...line,
-                                  timestamp_sec: newTimestamp,
-                                }
-                              : line
-                          ),
-                        }));
+                          setIsDirty(true);
+                        }}
+                      ></input>
+                      <input
+                        className={`${INPUT_CLASS} w-full`}
+                        value={lyric ?? ""}
+                        onChange={(e) => {
+                          const nextLyric = e.target.value;
 
-                        setIsDirty(true);
-                      }}
-                    ></input>
-                    <input
-                      className={`${INPUT_CLASS} w-full`}
-                      value={lyric ?? ""}
-                      onChange={(e) => {
-                        const nextLyric = e.target.value;
+                          setFormData((prev) => ({
+                            ...prev,
+                            lines: prev.lines.map((line) =>
+                              matches(line)
+                                ? {
+                                    ...line,
+                                    lyric: nextLyric,
+                                  }
+                                : line
+                            ),
+                          }));
 
-                        setFormData((prev) => ({
-                          ...prev,
-                          lines: prev.lines.map((line) =>
-                            matches(line)
-                              ? {
-                                  ...line,
-                                  lyric: nextLyric,
-                                }
-                              : line
-                          ),
-                        }));
+                          setIsDirty(true);
+                          setErrors({});
+                        }}
+                      ></input>
 
-                        setIsDirty(true);
-                        setErrors({});
-                      }}
-                    ></input>
+                      <Button
+                        variant="icon"
+                        className="bg-red-500 size-7"
+                        onClick={() => {
+                          if (isNew || typeof line.id === "string") {
+                            console.log("delete in isnew");
+                            setFormData((prev) => {
+                              return {
+                                ...prev,
+                                lines: prev.lines.filter(
+                                  (line) => line.id !== id
+                                ),
+                              };
+                            });
+                            return;
+                          }
+                          if (!id) {
+                            console.warn("No Line Id");
+                            return;
+                          }
 
-                    <Button
-                      variant="icon"
-                      className="bg-red-500 size-7"
-                      onClick={() => {
-                        if (!id) {
-                          console.warn("No Line Id");
-                          return;
-                        }
-                        deleteLineMutation.mutate(id);
-                      }}
-                    >
-                      <X />
-                    </Button>
+                          deleteLineMutation.mutate(id);
+                          setFormData((prev) => {
+                            return {
+                              ...prev,
+                              lines: prev.lines.filter(
+                                (line) => line.id !== id
+                              ),
+                            };
+                          });
+                          localStorage.setItem(
+                            storageKey,
+                            JSON.stringify(formData)
+                          );
+                        }}
+                      >
+                        <X />
+                      </Button>
+                    </div>
+                    {errors.lines && (
+                      <p className="text-xs text-rose-400">{errors.lines}</p>
+                    )}
                   </div>
-                  {errors.lines && (
-                    <p className="text-xs text-rose-400">{errors.lines}</p>
-                  )}
-                </div>
-              );
-            })}
+                );
+              })}
           <div className="flex justify-center w-full gap-5">
             <Button
               variant="icon"
@@ -1613,7 +1662,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         </section>
 
         {/* Tool bar */}
-        <div className="fixed bottom-5 left-5 flex flex-col gap-5">
+        <div className="fixed bottom-20 left-5 flex flex-col gap-5">
           <div className="flex flex-col gap-3">
             <Button
               type="submit"
@@ -1636,14 +1685,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
               </Button>
             )}
           </div>
-
-          <Button
-            variant="icon"
-            type="button"
-            onClick={() => router.push("/edit")}
-          >
-            <ArrowLeft />
-          </Button>
         </div>
       </form>
     </section>
