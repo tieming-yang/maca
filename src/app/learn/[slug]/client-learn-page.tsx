@@ -217,7 +217,7 @@ export default function ClientLearnPage(props: { slug: string }) {
     <main className="flex flex-col items-center" ref={containerRef}>
       {/* Header */}
       <section className="fixed flex px-1 max-w-3xl justify-center items-center z-20 top-0 w-full backdrop-blur-xs shadow-xl">
-        <span>{secToTs(finalSec)}</span>
+        <span className="font-mono font-light">{secToTs(finalSec)}</span>
         <div
           className="flex items-center justify-center w-full py-2 gap-x-7 font-semibold"
           style={{ filter: "drop-shadow(0 0 7px)" }}
@@ -290,7 +290,7 @@ export default function ClientLearnPage(props: { slug: string }) {
             )}
           </div>
         </div>
-        <span>{secToTs(durationSec)}</span>
+        <span className="font-mono font-light">{secToTs(durationSec)}</span>
       </section>
 
       {/* YouTube */}
