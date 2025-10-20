@@ -51,13 +51,13 @@ export default function Nav() {
             </Link>
           )}
 
-          {pathname !== "/vote" && (
+          {/* {pathname !== "/vote" && (
             <Link href="/vote">
               <Button variant="icon">
                 <MdOutlineHowToVote size="25" />
               </Button>
             </Link>
-          )}
+          )} */}
         </div>
       </div>
     </nav>
