@@ -78,10 +78,13 @@ export default function RootLayout({
           <Toaster
             position="top-center"
             toastOptions={{
-              unstyled: true,
-              classNames: {
-                default: `${topGlowBorder} inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition gap-x-2 border border-white/20 backdrop-blur-2xl`,
-              },
+              // unstyled: true,
+              // classNames: {
+              //   default: `${topGlowBorder} inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition gap-x-2 border border-white/20 backdrop-blur-2xl`,
+              // },
+              style: {
+                borderRadius: 100,
+              }
             }}
           />
           <Suspense fallback={<Loading isFullScreen />}>

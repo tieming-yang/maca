@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function InstallPWAPrompt() {
   const [isIOS, setIsIOS] = useState(false);
@@ -18,23 +19,16 @@ export default function InstallPWAPrompt() {
     return null; // Don't show install button if already installed
   }
 
-  return (
-    <div>
-      {isIOS && (
-        <p>
-          To install this app on your iOS device, tap the share button
-          <span role="img" aria-label="share icon">
-            {" "}
-            ⎋{" "}
-          </span>
-          and then &ldquo;Add to Home Screen&rdquo;
-          <span role="img" aria-label="plus icon">
-            {" "}
-            ➕{" "}
-          </span>
-          .
-        </p>
-      )}
-    </div>
-  );
+  if (isIOS) {
+    toast("To install this app on your iOS device, tap the share button", {
+      description: 'and then "Add to Home Screen"',
+      action: {
+        label: "Got it",
+        onClick: (e) => {
+          e.preventDefault();
+          toast.dismiss();
+        },
+      },
+    });
+  }
 }
