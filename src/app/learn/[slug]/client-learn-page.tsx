@@ -214,7 +214,7 @@ export default function ClientLearnPage(props: { slug: string }) {
   if (isLoading || !song) return <Loading isFullScreen />;
 
   return (
-    <main className="flex flex-col items-center" ref={containerRef}>
+    <main className="flex flex-col items-center font-sans" ref={containerRef}>
       {/* Header */}
       <section className="fixed flex px-1 max-w-3xl justify-center items-center z-20 top-0 w-full backdrop-blur-xs shadow-xl">
         <span className="font-mono font-light">{secToTs(finalSec)}</span>

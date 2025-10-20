@@ -70,7 +70,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased px-5 md:px-0 overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} font-serif antialiased px-5 md:px-0 overflow-x-hidden`}
       >
         <Providers>
           {children}
