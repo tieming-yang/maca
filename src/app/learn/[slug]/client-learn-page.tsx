@@ -76,7 +76,10 @@ export default function ClientLearnPage(props: { slug: string }) {
   const [isFuriganaMenuOpen, setIsFuriganaMenuOpen] = useState(false);
 
   const renderSong = useMemo(() => {
-    return song && song.lines && song.lines.length > 0
+    return song &&
+      song.lines &&
+      song.lines.length > 0 &&
+      song.lines.at(0)?.timestamp_sec !== 0
       ? {
           ...song,
           lines: [
@@ -297,6 +300,7 @@ export default function ClientLearnPage(props: { slug: string }) {
             const p = e.target;
             setPlayer(p);
             p.setPlaybackQuality("small");
+            p.playVideo();
           }}
           onPlay={() => {
             if (!player) return;
@@ -321,7 +325,6 @@ export default function ClientLearnPage(props: { slug: string }) {
           opts={{
             height: "780",
             width: "960",
-            playerVars: { autoplay: 1 },
           }}
         />
       </section>
