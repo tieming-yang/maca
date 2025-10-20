@@ -22,7 +22,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   description: "Learn Japanese by singing",
-  metadataBase: new URL("https://maca-maca.vercel.app/"),
+  metadataBase: new URL("https://maca.club/"),
   title: {
     default: "maca",
     template: "%s | maca",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "maca",
     description: "Learn Japanese by singing",
-    url: "https://maca-maca.vercel.app/",
+    url: "https://maca.club/",
     siteName: "maca",
     locale: "en",
     type: "website",
