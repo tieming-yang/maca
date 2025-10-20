@@ -24,7 +24,7 @@ export default function SongList() {
   }
 
   return (
-    <section className="flex w-full h-full justify-center items-center flex-col space-y-7 max-w-3xl mx-auto">
+    <section className="flex w-full h-full justify-center items-center flex-col pb-32 space-y-7 max-w-3xl mx-auto">
       {isLoading && <Loading isFullScreen />}
       <h2 className="text-xl font-bold sm:text-2xl md:text-3xl self-start">Recently Updated</h2>
       <ul className="grid sm:grid-cols-2 md:grid-cols-3 sm:gap-x-10 gap-y-3 w-full justify-center">
