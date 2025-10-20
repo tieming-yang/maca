@@ -6,6 +6,8 @@ import Providers from "./providers";
 import Nav from "./components/nav";
 import { Suspense } from "react";
 import Loading from "./components/loading";
+import Toaster from "./components/ui/sonner";
+import { topGlowBorder } from "./components/ui/button";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -70,7 +72,15 @@ export default function RootLayout({
       >
         <Providers>
           {children}
-
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              unstyled: true,
+              classNames: {
+                default: `${topGlowBorder} inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition gap-x-2 border border-white/20 backdrop-blur-2xl`,
+              },
+            }}
+          />
           <Suspense fallback={<Loading isFullScreen />}>
             <Nav />
           </Suspense>

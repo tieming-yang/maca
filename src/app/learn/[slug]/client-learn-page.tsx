@@ -14,8 +14,8 @@ import { addFurigana } from "@/utils/furigana/addFurigana";
 import { FuriganaType, FuriganaTypeArray } from "@/utils/furigana/constants";
 import Loading from "@/app/components/loading";
 import { Dropdown, DropdownItem } from "@/app/components/ui/dropdown";
-import { FaPause, FaPlay } from "react-icons/fa";
-import { useWindowWidth } from "@/hooks/use-window-width";
+import { FaPause, FaPlay, FaShare } from "react-icons/fa";
+import { toast } from "sonner";
 
 function secToTs(total?: number | null) {
   if (!total || total <= 0) return "0:00";
@@ -49,6 +49,8 @@ export default function ClientLearnPage(props: { slug: string }) {
     staleTime: 60_000,
     placeholderData: (prev) => prev,
   });
+
+  const url = typeof window !== "undefined" ? window.location.href : "";
 
   const [player, setPlayer] = useState<YT.Player | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -367,7 +369,7 @@ export default function ClientLearnPage(props: { slug: string }) {
       </section>
 
       {/* Toolbar */}
-      <section className="fixed z-20 bottom-0 w-full font-mono">
+      <section className="fixed z-20 bottom-0 w-full font-mono max-w-md">
         <div className="w-full">
           <div className="w-full flex items-center px-5">
             {/* Funtions */}
@@ -402,6 +404,22 @@ export default function ClientLearnPage(props: { slug: string }) {
                   );
                 })}
               </Dropdown>
+              <Button
+                variant="icon"
+                className="absolute right-3 bg-black/10"
+                onClick={async () => {
+                  try {
+                    await navigator?.clipboard.writeText(url);
+                    // alert(`Copied! \n ${url}`);
+                    toast.success(`Copied ${url}`);
+                  } catch (err) {
+                    console.error("Failed to copy: ", err);
+                    toast.error("Failed to copied URL, please try again");
+                  }
+                }}
+              >
+                <FaShare />
+              </Button>
 
               {/* <div className="flex items-center gap-3">
                 <button
