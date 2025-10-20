@@ -108,7 +108,7 @@ export const Song = {
       credits:song_credits (
         id, song_id, role, person:people(*)
       ),
-      work:works (*)`);
+      work:works (*)`).order("created_at", { ascending: false });
 
     if (error) {
       console.error(error);
