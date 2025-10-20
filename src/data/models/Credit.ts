@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
 import type { Database } from "@/types/database.types";
+import { PeopleRow } from "./People";
 
 export type CreditRow = Database["public"]["Tables"]["song_credits"]["Row"];
 export type CreditInsert =
@@ -38,11 +39,39 @@ export type FormattedCredit = {
   lyricist: CreditPerson[];
 };
 
+type CreditWithPerson = {
+  id: number;
+  role: CreditRole;
+  person: PeopleRow;
+};
+
 const db = createClient();
 
 export const Credit = {
   CREDIT_ROLE_VALUES,
   CREDIT_ROLE_LABELS,
+
+  toFormattedCredit(credits: CreditWithPerson[]) {
+    const formattedCredit: FormattedCredit = {
+      primary_artist: [],
+      featured_artist: [],
+      composer: [],
+      lyricist: [],
+    };
+    for (const row of credits ?? []) {
+      const role = row.role as keyof FormattedCredit;
+      const p = row.person as CreditPerson | null;
+      if (!p || !role) continue;
+
+      if (formattedCredit[role]) {
+        formattedCredit[role].push({
+          ...p,
+          creditId: row.id,
+        });
+      }
+    }
+    return formattedCredit;
+  },
 
   async getAll(): Promise<CreditRow[]> {
     const { data, error } = await db
@@ -59,31 +88,14 @@ export const Credit = {
   },
 
   async get(songId: string): Promise<FormattedCredit> {
-    const { data, error } = await db
+    const { data: credits, error } = await db
       .from("song_credits")
-      .select("id, role, person:people(id, display_name, romaji, furigana)")
+      .select("id, role, person:people(*)")
       .eq("song_id", songId);
     if (error) throw error;
 
-    const credits: FormattedCredit = {
-      primary_artist: [],
-      featured_artist: [],
-      composer: [],
-      lyricist: [],
-    };
-    for (const row of data ?? []) {
-      const role = row.role as keyof FormattedCredit;
-      const p = row.person as CreditPerson | null;
-      if (!p || !role) continue;
-
-      if (credits[role]) {
-        credits[role].push({
-          ...p,
-          creditId: row.id,
-        });
-      }
-    }
-    return credits;
+    const formattedCredits: FormattedCredit = this.toFormattedCredit(credits);
+    return formattedCredits;
   },
 
   async create(input: CreditInsert): Promise<CreditRow> {

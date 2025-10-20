@@ -39,6 +39,11 @@ export type SongBundle = {
   created_by: string | null;
 };
 
+export type SongWithMetadata = TableRow & {
+  credits: FormattedCredit;
+  work: WorkRow | null;
+};
+
 const db = createClient();
 
 export const Song = {
@@ -95,6 +100,27 @@ export const Song = {
     }
 
     return data as TableRow[];
+  },
+
+  async getAllWithMetadata(): Promise<SongWithMetadata[]> {
+    const { data: songs, error } = await db.from("songs").select(`
+      *,
+      credits:song_credits (
+        id, song_id, role, person:people(*)
+      ),
+      work:works (*)`);
+
+    if (error) {
+      console.error(error);
+      throw Error("getAllWithMetadata Error:", error);
+    }
+
+    const formattedSongs = songs.map((song) => ({
+      ...song,
+      credits: Credit.toFormattedCredit(song.credits),
+    }));
+
+    return formattedSongs;
   },
 
   async getBySlug(slug: string): Promise<SongWithWorkRow> {
