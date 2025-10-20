@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { createServerSideClient } from "@/utils/supabase/server";
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database.types";
 
 const DEFAULT_BASE_URL = "https://maca.club";
 const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_BASE_URL).replace(
@@ -13,8 +14,18 @@ type SongSlug = {
 };
 
 async function getSongSlugs(): Promise<SongSlug[]> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Missing Supabase env vars for sitemap");
+    return [];
+  }
+
+  const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+
   try {
-    const supabase = await createServerSideClient();
     const { data, error } = await supabase
       .from("songs")
       .select("slug, created_at")
@@ -25,9 +36,17 @@ async function getSongSlugs(): Promise<SongSlug[]> {
       return [];
     }
 
-    return (data ?? []).filter(
-      (song): song is SongSlug => Boolean(song?.slug),
-    );
+    return (data ?? []).reduce<SongSlug[]>((acc, song) => {
+      const slug = song?.slug;
+      if (!slug) return acc;
+
+      acc.push({
+        slug,
+        created_at: song.created_at ?? null,
+      });
+
+      return acc;
+    }, []);
   } catch (error) {
     console.error("Unexpected error creating sitemap song entries", error);
     return [];
