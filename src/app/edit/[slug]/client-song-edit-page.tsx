@@ -26,6 +26,7 @@ import {
 import { Button } from "@/app/components/ui/button";
 import { ArrowLeft, Plus, X, FilePlus, Bomb } from "lucide-react";
 import PeopleSelect from "../components/people-select";
+import { toast } from "sonner";
 
 const NEW_SLUG_SENTINEL = "new";
 const PANEL_CLASS =
@@ -752,12 +753,13 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         router.replace(`/edit/${encodeURIComponent(refreshed.slug)}`);
       }
 
-      window.alert("Updated");
+      toast.success("Updated");
     },
     onError: (err: unknown) => {
       const message =
         err instanceof Error ? err.message : "Unable to save the song.";
       setErrors((prev) => ({ ...prev, base: message }));
+      toast.error(errors.base);
     },
   });
 
@@ -967,7 +969,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   }, [isNew, song]);
 
   return (
-    <section className="w-full max-w-3xl mx-auto space-y-6 py-8 text-zinc-100 px-3">
+    <section className="w-full font-mono max-w-3xl mx-auto space-y-6 py-8 text-zinc-100 px-3">
       {(isLoading || saveMutation.isPending) && <Loading isFullScreen />}
 
       <header className={`${PANEL_CLASS} space-y-1 p-6`}>
