@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { usePreviousPath } from "@/hooks/use-previous-path";
+import { MdOutlineHowToVote } from "react-icons/md";
 
 export default function Nav() {
   const pathname = usePathname();
@@ -33,17 +34,30 @@ export default function Nav() {
           </Button>
         )}
 
-        <div className="flex justify-center gap-x-5">
-          <Link href="/">
-            <Button variant="icon">
-              <Home />
-            </Button>
-          </Link>
-          <Link href="/auth">
-            <Button variant="icon">
-              <User />
-            </Button>
-          </Link>
+        <div className="flex justify-center gap-x-3">
+          {pathname !== "/" && (
+            <Link href="/">
+              <Button variant="icon">
+                <Home />
+              </Button>
+            </Link>
+          )}
+
+          {pathname !== "/auth" && (
+            <Link href="/auth">
+              <Button variant="icon">
+                <User />
+              </Button>
+            </Link>
+          )}
+
+          {pathname !== "/vote" && (
+            <Link href="/vote">
+              <Button variant="icon">
+                <MdOutlineHowToVote size="25" />
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </nav>
