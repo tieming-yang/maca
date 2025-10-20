@@ -370,7 +370,7 @@ export default function ClientLearnPage(props: { slug: string }) {
       </section>
 
       {/* Slider */}
-      <div className="flex flex-col gap-y-3 justify-center max-w-dvw fixed bottom-30 z-50">
+      <div className="flex flex-col gap-y-3 justify-center max-w-dvw fixed bottom-25 z-50">
         <input
           style={
             {
