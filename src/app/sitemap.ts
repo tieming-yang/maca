@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/database.types";
+
+export const dynamic = "force-static";
 
 const DEFAULT_BASE_URL = "https://maca.club";
 const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_BASE_URL).replace(
@@ -10,6 +10,11 @@ const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_BASE_URL).replace(
 
 type SongSlug = {
   slug: string;
+  created_at: string | null;
+};
+
+type SongRow = {
+  slug: string | null;
   created_at: string | null;
 };
 
@@ -23,18 +28,29 @@ async function getSongSlugs(): Promise<SongSlug[]> {
     return [];
   }
 
-  const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+  const restUrl = new URL("/rest/v1/songs", supabaseUrl);
+  restUrl.searchParams.set("select", "slug,created_at");
+  restUrl.searchParams.set("order", "created_at.desc");
 
   try {
-    const { data, error } = await supabase
-      .from("songs")
-      .select("slug, created_at")
-      .order("created_at", { ascending: false });
+    const response = await fetch(restUrl.toString(), {
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+      },
+      cache: "force-cache",
+      next: { revalidate },
+    });
 
-    if (error) {
-      console.error("Failed to load song slugs for sitemap", error);
+    if (!response.ok) {
+      console.error("Failed to load song slugs for sitemap", {
+        status: response.status,
+        statusText: response.statusText,
+      });
       return [];
     }
+
+    const data = (await response.json()) as SongRow[];
 
     return (data ?? []).reduce<SongSlug[]>((acc, song) => {
       const slug = song?.slug;
