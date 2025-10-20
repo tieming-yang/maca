@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import SongList from "./components/song-list";
+import InstallPWAPrompt from "./components/install-pwa-prompt";
 
 type SearchParams = Promise<{ isStaging: string }>;
 
@@ -29,6 +30,7 @@ export default async function Home(props: { searchParams: SearchParams }) {
       </header>
 
       <SongList />
+      <InstallPWAPrompt />
     </main>
   );
 }
