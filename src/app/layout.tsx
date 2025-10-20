@@ -26,29 +26,6 @@ export const metadata: Metadata = {
   description: "Learn Japanese by singing",
   metadataBase: new URL("https://maca.club/"),
   manifest: "/manifest.json",
-  icons: {
-    icon: [
-      {
-        url: "/favicons/favicon-32x32.png",
-        sizes: "32x32",
-        type: "image/png",
-      },
-      {
-        url: "/favicons/favicon-16x16.png",
-        sizes: "16x16",
-        type: "image/png",
-      },
-      {
-        url: "/favicons/favicon.ico",
-      },
-    ],
-    apple: [
-      {
-        url: "/favicons/apple-touch-icon.png",
-        sizes: "180x180",
-      },
-    ],
-  },
   title: {
     default: "maca",
     template: "%s | maca",
@@ -62,7 +39,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/public/favicons/android-chrome-512x512.png",
+        url: "/favicons/icon-512x512.png",
         width: 1200,
         height: 630,
         alt: "maca",
