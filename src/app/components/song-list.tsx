@@ -26,24 +26,35 @@ export default function SongList() {
   return (
     <section className="flex w-full h-full justify-center items-center flex-col pb-32 space-y-7 max-w-3xl mx-auto">
       {isLoading && <Loading isFullScreen />}
-      <h2 className="text-xl font-bold sm:text-2xl md:text-3xl self-start">Recently Updated</h2>
-      <ul className="grid sm:grid-cols-2 md:grid-cols-3 sm:gap-x-10 gap-y-3 w-full justify-center">
+      <h2 className="text-xl font-bold sm:text-2xl md:text-3xl self-start">
+        Recently Updated
+      </h2>
+      <ul
+        className="w-full overflow-x-auto"
+        style={{
+          display: "grid",
+          gridAutoFlow: "column",
+          gridTemplateRows: "repeat(5, minmax(0, 1fr))",
+          gap: "0.75rem 1.5rem",
+          padding: "0.5rem 0",
+        }}
+      >
         {songs &&
           songs.map((song) => {
             return (
               <li
-                className="text-xl xl:text-2xl leading-relaxed1 flex flex-col transition-all duration-200"
+                className="text-md xl:text-2xl flex min-w-[10rem] flex-col transition-all duration-200"
                 style={{ filter: "drop-shadow(0 0 15px)" }}
                 key={song.id ?? song.slug ?? song.name}
               >
                 <Link
-                  className="font-semibold"
+                  className="font-semibold whitespace-nowrap"
                   href={`learn/${song.slug}`}
                   prefetch
                 >
                   {song.name}
                 </Link>
-                <p className="text-white/70 text-sm">
+                <p className="text-white/70 text-sm whitespace-nowrap">
                   {song.credits.primary_artist.at(0)?.display_name}
                 </p>
                 {/* <Link
