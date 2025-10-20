@@ -453,7 +453,15 @@ export default function ClientLearnPage(props: { slug: string }) {
                 className="bg-black/20 size-17"
                 onMouseDown={handleToggle}
               >
-                {isPlaying ? <FaPause size="27" /> : <FaPlay size="27" />}
+                {player ? (
+                  isPlaying ? (
+                    <FaPause size="27" />
+                  ) : (
+                    <FaPlay size="27" />
+                  )
+                ) : (
+                  <Loading />
+                )}
               </Button>
               <Dropdown
                 open={isFuriganaMenuOpen}
