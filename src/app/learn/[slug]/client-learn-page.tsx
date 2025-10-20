@@ -294,7 +294,7 @@ export default function ClientLearnPage(props: { slug: string }) {
       </section>
 
       {/* YouTube */}
-      <section className="fixed z-0 top-32">
+      <section className="fixed z-0 md:top-32 top-12">
         <Youtube
           onReady={(e: YT.PlayerEvent) => {
             const p = e.target;
