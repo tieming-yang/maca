@@ -26,7 +26,7 @@ export default function Nav() {
   const hasPreviousPath = previousPath && pathname !== "/";
 
   return (
-    <nav className="fixed bottom-5 mx-auto w-full">
+    <nav className="fixed bottom-7 mx-auto w-full">
       <div className="flex justify-center md:gap-x-20 gap-x-10">
         {hasPreviousPath && (
           <Button variant="icon" onClick={() => router.back()}>

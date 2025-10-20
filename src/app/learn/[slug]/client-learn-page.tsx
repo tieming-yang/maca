@@ -217,7 +217,6 @@ export default function ClientLearnPage(props: { slug: string }) {
     <main className="flex flex-col items-center font-sans" ref={containerRef}>
       {/* Header */}
       <section className="fixed flex px-1 max-w-3xl justify-center items-center z-20 top-0 w-full backdrop-blur-xs shadow-xl">
-        <span className="font-mono font-light">{secToTs(finalSec)}</span>
         <div
           className="flex items-center justify-center w-full py-2 gap-x-7 font-semibold"
           style={{ filter: "drop-shadow(0 0 7px)" }}
@@ -290,7 +289,6 @@ export default function ClientLearnPage(props: { slug: string }) {
             )}
           </div>
         </div>
-        <span className="font-mono font-light">{secToTs(durationSec)}</span>
       </section>
 
       {/* YouTube */}
@@ -371,12 +369,80 @@ export default function ClientLearnPage(props: { slug: string }) {
         </ul>
       </section>
 
+      {/* Slider */}
+      <div className="flex flex-col gap-y-3 justify-center max-w-dvw fixed bottom-30 z-50">
+        <input
+          style={
+            {
+              "--fill": `${(finalSec / Math.max(1, durationSec)) * 100}%`,
+            } as React.CSSProperties
+          }
+          className="
+              w-75 sm:w-120 select-none appearance-none bg-white/50
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+              transition-colors
+
+              /* TRACK (WebKit: aurora gradient fill + dim base) */
+              [&::-webkit-slider-runnable-track]:h-1
+
+              /* Two-layer background: first is aurora, sized to --fill; second is the dim base */
+              [&::-webkit-slider-runnable-track]:[background-image:linear-gradient(90deg,rgba(16,185,129,0.9),rgba(5,150,105,0.6)_50%,rgba(4,120,87,0.4)_100%),linear-gradient(90deg,rgba(16,185,129,0.25),rgba(16,185,129,0)_80%)]
+              [&::-webkit-slider-runnable-track]:bg-transparent
+              [&::-webkit-slider-runnable-track]:[background-size:var(--fill)_100%,calc(var(--fill)+40px)_100%]
+              [&::-webkit-slider-runnable-track]:[background-repeat:no-repeat]
+              [&::-webkit-slider-runnable-track]:[filter:drop-shadow(0_0_10px_rgba(16,185,129,0.25))]
+
+              /* TRACK (Firefox) */
+              [&::-moz-range-track]:h-1
+
+              [&::-moz-range-progress]:h-1
+              [&::-moz-range-track]:bg-white/50
+              [&::-moz-range-progress]:rounded-full
+              [&::-moz-range-progress]:bg-[linear-gradient(90deg,rgba(16,185,129,0.85),rgba(5,150,105,0.55)_50%,rgba(4,120,87,0.35)_100%)]
+              [&::-moz-range-progress]:[box-shadow:0_0_14px_rgba(16,185,129,0.25)]
+
+              /* THUMB */
+              [&::-webkit-slider-thumb]:appearance-none
+              [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4
+              [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white/90
+              [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:-mt-1.5
+
+              [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4
+              [&::-moz-range-thumb]:rounded-full 
+              [&::-moz-range-thumb]:bg-white/90
+              [&::-moz-range-thumb]:shadow
+
+              /* Fallback color for other browsers */
+              accent-emerald-500
+            "
+          type="range"
+          min={0}
+          max={durationSec ?? 0}
+          value={finalSec}
+          step={1}
+          onChange={(e) => setScrub(parseInt(e.target.value, 10))}
+          onPointerDown={() => (isScrubbingRef.current = true)}
+          onPointerUp={() => {
+            const ts = finalSec || 0;
+            player?.seekTo(ts, true);
+            setCurrentSec(ts);
+            isScrubbingRef.current = false;
+            setScrub(null);
+          }}
+        />
+
+        <div className="w-full flex justify-between">
+          <span className="font-mono font-light">{secToTs(finalSec)}</span>
+          <span className="font-mono font-light">{secToTs(durationSec)}</span>
+        </div>
+      </div>
+
       {/* Toolbar */}
-      <section className="fixed z-20 bottom-0 w-full font-mono max-w-md">
+      <section className="fixed z-20 bottom-7 w-full font-mono max-w-md">
         <div className="w-full">
           <div className="w-full flex items-center px-5">
             {/* Funtions */}
-            <nav className="flex items-center justify-center w-full gap-x-7 pb-3">
+            <nav className="flex items-center justify-center w-full gap-x-7">
               <Link href="/">
                 <Button variant="icon" className="bg-black/20">
                   <Home />
@@ -439,69 +505,6 @@ export default function ClientLearnPage(props: { slug: string }) {
                 </button>
               </div> */}
             </nav>
-          </div>
-
-          {/* Slider */}
-          <div className="flex justify-center max-w-dvw">
-            <input
-              style={
-                {
-                  "--fill": `${(finalSec / Math.max(1, durationSec)) * 100}%`,
-                } as React.CSSProperties
-              }
-              className="
-              min-w-svw select-none appearance-none bg-transparent
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30
-              transition-colors
-
-              /* TRACK (WebKit: aurora gradient fill + dim base) */
-              [&::-webkit-slider-runnable-track]:h-3
-
-              /* Two-layer background: first is aurora, sized to --fill; second is the dim base */
-              [&::-webkit-slider-runnable-track]:[background-image:linear-gradient(90deg,rgba(16,185,129,0.9),rgba(5,150,105,0.6)_50%,rgba(4,120,87,0.4)_100%),linear-gradient(90deg,rgba(16,185,129,0.25),rgba(16,185,129,0)_80%)]
-              [&::-webkit-slider-runnable-track]:bg-transparent
-              [&::-webkit-slider-runnable-track]:[background-size:var(--fill)_100%,calc(var(--fill)+40px)_100%]
-              [&::-webkit-slider-runnable-track]:[background-repeat:no-repeat]
-              [&::-webkit-slider-runnable-track]:[filter:drop-shadow(0_0_10px_rgba(16,185,129,0.25))]
-
-              /* TRACK (Firefox) */
-              [&::-moz-range-track]:h-3
-
-              [&::-moz-range-progress]:h-3
-              [&::-moz-range-track]:bg-transparent
-              [&::-moz-range-progress]:rounded-full
-              [&::-moz-range-progress]:bg-[linear-gradient(90deg,rgba(16,185,129,0.85),rgba(5,150,105,0.55)_50%,rgba(4,120,87,0.35)_100%)]
-              [&::-moz-range-progress]:[box-shadow:0_0_14px_rgba(16,185,129,0.25)]
-
-              /* THUMB */
-              [&::-webkit-slider-thumb]:appearance-none
-              [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5
-              [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white/90
-              [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:-mt-2
-
-              [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5
-              [&::-moz-range-thumb]:rounded-full 
-              [&::-moz-range-thumb]:bg-white/90
-              [&::-moz-range-thumb]:shadow
-
-              /* Fallback color for other browsers */
-              accent-emerald-500
-            "
-              type="range"
-              min={0}
-              max={durationSec ?? 0}
-              value={finalSec}
-              step={1}
-              onChange={(e) => setScrub(parseInt(e.target.value, 10))}
-              onPointerDown={() => (isScrubbingRef.current = true)}
-              onPointerUp={() => {
-                const ts = finalSec || 0;
-                player?.seekTo(ts, true);
-                setCurrentSec(ts);
-                isScrubbingRef.current = false;
-                setScrub(null);
-              }}
-            />
           </div>
         </div>
       </section>
