@@ -9,6 +9,8 @@ import Loading from "./components/loading";
 import Toaster from "./components/ui/sonner";
 import { topGlowBorder } from "./components/ui/button";
 
+import { Analytics } from "@vercel/analytics/next";
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -85,6 +87,7 @@ export default function RootLayout({
             <Nav />
           </Suspense>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );

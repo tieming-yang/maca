@@ -16,6 +16,7 @@
     "@tanstack/react-query": "^5.85.3",
     "@tanstack/react-query-devtools": "^5.85.3",
     "@types/youtube": "^0.1.0",
+    "@vercel/analytics": "^1.5.0",
     "lindera-wasm-ipadic": "^1.1.1",
     "lucide-react": "^0.453.0",
     "next": "15.4.5",
