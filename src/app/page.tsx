@@ -1,14 +1,24 @@
 import Link from "next/link";
+import Image from "next/image";
 import SongList from "./components/song-list";
 
 type SearchParams = Promise<{ isStaging: string }>;
 
 export default async function Home(props: { searchParams: SearchParams }) {
   return (
-    <main className="px-3 w-full py-7">
+    <main className="px-1 w-full py-3">
       <header className="flex justify-between pb-7 items-center w-full">
-        <Link className="font-mono text-xl font-semibold" href="/">
-          maca
+        <Link
+          className="font-mono text-xl size-10 relative font-semibold"
+          href="/"
+        >
+          <Image
+            className="rounded-full"
+            src="/favicons/icon-192x192.png"
+            alt="maca logo"
+            fill
+            priority
+          />
         </Link>
         <h1 className="text-md md:text-3xl xl:text-5xl">
           Learn Japanese by{" "}
