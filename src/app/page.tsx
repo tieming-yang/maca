@@ -10,7 +10,7 @@ export default async function Home(props: { searchParams: SearchParams }) {
         <Link className="font-mono text-xl font-semibold" href="/">
           maca
         </Link>
-        <h1 className="text-xl md:text-3xl xl:text-5xl">
+        <h1 className="text-md md:text-3xl xl:text-5xl">
           Learn Japanese by{" "}
           <span className="underline underline-offset-4 text-teal-500">
             singing

@@ -24,15 +24,15 @@ export default function SongList() {
   }
 
   return (
-    <section className="flex w-full h-full justify-center items-center flex-col space-y-7">
+    <section className="flex w-full h-full justify-center items-center flex-col space-y-7 max-w-3xl mx-auto">
       {isLoading && <Loading isFullScreen />}
-      <h2 className="text-3xl">Recently Updated</h2>
-      <ul className="flex flex-col gap-y-1.5">
+      <h2 className="text-xl font-bold sm:text-2xl md:text-3xl self-start">Recently Updated</h2>
+      <ul className="grid sm:grid-cols-2 md:grid-cols-3 sm:gap-x-10 gap-y-3 w-full justify-center">
         {songs &&
           songs.map((song) => {
             return (
               <li
-                className="text-md sm:text-xl leading-relaxed1 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-10  transition-all duration-200"
+                className="text-xl xl:text-2xl leading-relaxed1 flex flex-col transition-all duration-200"
                 style={{ filter: "drop-shadow(0 0 15px)" }}
                 key={song.id ?? song.slug ?? song.name}
               >
@@ -43,7 +43,7 @@ export default function SongList() {
                 >
                   {song.name}
                 </Link>
-                <p className="text-white/70">
+                <p className="text-white/70 text-sm">
                   {song.credits.primary_artist.at(0)?.display_name}
                 </p>
                 {/* <Link
