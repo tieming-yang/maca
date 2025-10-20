@@ -374,11 +374,11 @@ export default function ClientLearnPage(props: { slug: string }) {
           <div className="w-full flex items-center px-5">
             {/* Funtions */}
             <nav className="flex items-center justify-center w-full gap-x-7 pb-3">
-              <Button variant="icon" className="bg-black/20">
-                <Link href="/">
+              <Link href="/">
+                <Button variant="icon" className="bg-black/20">
                   <Home />
-                </Link>
-              </Button>
+                </Button>
+              </Link>
               <Button
                 variant="icon"
                 className="bg-black/20 size-17"
@@ -439,7 +439,7 @@ export default function ClientLearnPage(props: { slug: string }) {
           </div>
 
           {/* Slider */}
-          <div className="flex justify-center">
+          <div className="flex justify-center max-w-dvw">
             <input
               style={
                 {
@@ -447,7 +447,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                 } as React.CSSProperties
               }
               className="
-              w-full select-none appearance-none bg-transparent
+              min-w-svw select-none appearance-none bg-transparent
               focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30
               transition-colors
 
@@ -473,12 +473,12 @@ export default function ClientLearnPage(props: { slug: string }) {
               /* THUMB */
               [&::-webkit-slider-thumb]:appearance-none
               [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5
-              [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white
+              [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white/90
               [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:-mt-2
 
               [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5
               [&::-moz-range-thumb]:rounded-full 
-              [&::-moz-range-thumb]:bg-white
+              [&::-moz-range-thumb]:bg-white/90
               [&::-moz-range-thumb]:shadow
 
               /* Fallback color for other browsers */

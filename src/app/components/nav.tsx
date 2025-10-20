@@ -34,16 +34,16 @@ export default function Nav() {
         )}
 
         <div className="flex justify-center gap-x-5">
-          <Button variant="icon">
-            <Link href="/">
+          <Link href="/">
+            <Button variant="icon">
               <Home />
-            </Link>
-          </Button>
-          <Button variant="icon">
-            <Link href="/auth">
+            </Button>
+          </Link>
+          <Link href="/auth">
+            <Button variant="icon">
               <User />
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </div>
     </nav>
