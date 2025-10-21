@@ -14,7 +14,8 @@ export type TranslationLineRow =
 export type InsertRow = Database["public"]["Tables"]["songs"]["Insert"];
 export type UpdateRow = Database["public"]["Tables"]["songs"]["Update"];
 export type SongWithWorkRow = TableRow & { work: WorkRow | null };
-
+export type SongVisibility =
+  Database["public"]["Tables"]["songs"]["Row"]["visibility"];
 export type JaToken = string | { kanji: string; furigana?: string };
 
 export type Translation = {
@@ -103,12 +104,17 @@ export const Song = {
   },
 
   async getAllWithMetadata(): Promise<SongWithMetadata[]> {
-    const { data: songs, error } = await db.from("songs").select(`
-      *,
-      credits:song_credits (
-        id, song_id, role, person:people(*)
-      ),
-      work:works (*)`).order("created_at", { ascending: false });
+    const { data: songs, error } = await db
+      .from("songs")
+      .select(`
+        *,
+        credits:song_credits (
+          id, song_id, role, person:people(*)
+        ),
+        work:works (*)
+      `)
+      .neq("visibility", "private")
+      .order("created_at", { ascending: false });
 
     if (error) {
       console.error(error);
@@ -140,18 +146,19 @@ export const Song = {
     return data;
   },
 
-  async getViewBySlug(slug: string): Promise<ViewRow> {
-    const { data, error } = await db
-      .from("song_with_base_json")
-      .select("*")
-      .eq("slug", slug)
-      .single();
-    if (error) {
-      console.error(error);
-      throw Error("getViewBySlug Error:", error);
-    }
-    return data as ViewRow;
-  },
+  //TODO: Fix song_with_base_json to include visibility
+  // async getViewBySlug(slug: string): Promise<ViewRow> {
+  //   const { data, error } = await db
+  //     .from("song_with_base_json")
+  //     .select("*")
+  //     .eq("slug", slug)
+  //     .single();
+  //   if (error) {
+  //     console.error(error);
+  //     throw Error("getViewBySlug Error:", error);
+  //   }
+  //   return data;
+  // },
 
   async getDefaultVersion(songId: string, lang: string) {
     const { data, error } = await db
