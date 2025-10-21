@@ -558,7 +558,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   const [initialWork_id, setInitialWork_id] = useState<string | null>(null);
   const [initialWorkSnapshot, setInitialWorkSnapshot] =
     useState<WorkFormSnapshot | null>(null);
-  const [hasWork, setHasWork] = useState<boolean>(false);
+  const [hasWork, setHasWork] = useState<boolean>(true);
   const [model, setModel] = useState<ModelStatus>("idel");
 
   const [personData, setPersonData] = useState<CreditPerson>(
@@ -759,7 +759,9 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       const message =
         err instanceof Error ? err.message : "Unable to save the song.";
       setErrors((prev) => ({ ...prev, base: message }));
-      toast.error(errors.base);
+      toast.error(errors.base, {
+        description: message,
+      });
     },
   });
 
@@ -780,6 +782,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       const message =
         err instanceof Error ? err.message : "Unable to add the person.";
       setErrors((prev) => ({ ...prev, base: message }));
+      toast.error(message)
     },
   });
 
@@ -793,6 +796,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       const message =
         err instanceof Error ? err.message : "Unable to delete the song.";
       setErrors((prev) => ({ ...prev, base: message }));
+      toast.error(message)
     },
   });
 
@@ -1451,6 +1455,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                       <input
                         className={`${INPUT_CLASS} w-fit`}
                         value={timestamp ?? ""}
+                        type="time"
                         onChange={(e) => {
                           const newTimestamp = Song.timestampToSeconds(
                             e.target.value

@@ -73,3 +73,9 @@
 .--furigana-- {
   @apply inline-flex flex-col-reverse align-bottom;
 }
+
+@layer utilities {
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(100%);
+  }
+}
