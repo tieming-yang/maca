@@ -64,7 +64,7 @@ def download_mp3_and_get_path(url: str, out_template: str) -> Path:
     return mp3_path
 
 
-def run_whisper(mp3_path: Path, out_dir: Path, model: str = "medium", language: str = "ja", device_cpu: bool = True):
+def run_whisper(mp3_path: Path, out_dir: Path, model: str = "large-v3", language: str = "ja", device_cpu: bool = True):
     out_dir.mkdir(parents=True, exist_ok=True)
 
     cmd = [
