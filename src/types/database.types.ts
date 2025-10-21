@@ -1104,18 +1104,21 @@ export type Database = {
           id: number
           line_index: number
           text_json: Json
+          timestamp_sec: number | null
           version_id: string
         }
         Insert: {
           id?: number
           line_index: number
           text_json: Json
+          timestamp_sec?: number | null
           version_id: string
         }
         Update: {
           id?: number
           line_index?: number
           text_json?: Json
+          timestamp_sec?: number | null
           version_id?: string
         }
         Relationships: [
