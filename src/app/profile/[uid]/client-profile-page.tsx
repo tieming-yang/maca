@@ -100,9 +100,7 @@ export default function ClientProfilePage() {
           <span className="opacity-70">Username:</span>{" "}
           {profile.username ?? "—"}
         </div>
-        <div>
-          <span className="opacity-70">Role:</span> {profile.role}
-        </div>
+
         <div>
           <span className="opacity-70">Joined:</span>{" "}
           {profile.created_at?.slice(0, 10) ?? "—"}
