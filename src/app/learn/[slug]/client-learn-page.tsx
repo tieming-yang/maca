@@ -370,7 +370,7 @@ export default function ClientLearnPage(props: { slug: string }) {
       </section>
 
       {/* Slider */}
-      <div className="flex flex-col gap-y-3 justify-center max-w-dvw fixed bottom-25 z-50">
+      <div className="flex flex-col gap-y-3 justify-center max-w-dvw fixed bottom-25 z-30">
         <input
           style={
             {
@@ -438,7 +438,7 @@ export default function ClientLearnPage(props: { slug: string }) {
       </div>
 
       {/* Toolbar */}
-      <section className="fixed z-20 bottom-7 w-full font-mono max-w-md">
+      <section className="fixed z-40 bottom-7 w-full font-mono max-w-md">
         <div className="w-full">
           <div className="w-full flex items-center px-5">
             {/* Funtions */}
