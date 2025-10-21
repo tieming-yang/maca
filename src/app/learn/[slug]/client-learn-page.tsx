@@ -342,7 +342,6 @@ export default function ClientLearnPage(props: { slug: string }) {
                 key={timestamp_sec}
                 data-furigana-excluded
                 onMouseDown={() => {
-                  console.log(timestamp_sec);
                   player?.seekTo(timestamp_sec ?? 0, true);
                   player?.playVideo();
                 }}
