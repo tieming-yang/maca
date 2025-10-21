@@ -59,7 +59,7 @@ export default function SongList() {
                 >
                   {song.name}
                 </Link>
-                <p className="text-white/70 text-sm whitespace-nowrap">
+                <p className="text-white/70 text-sm">
                   {featureArtist ? (
                     <span>
                       {primaryArtist} & {featureArtist}
