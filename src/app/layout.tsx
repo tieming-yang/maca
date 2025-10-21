@@ -27,14 +27,14 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://maca.club/"),
   manifest: "/manifest.json",
   title: {
-    default: "maca",
-    template: "%s | maca",
+    default: "Maca",
+    template: "%s | Maca",
   },
   openGraph: {
-    title: "maca",
+    title: "Maca",
     description: "Learn Japanese by singing",
     url: "https://maca.club/",
-    siteName: "maca",
+    siteName: "Maca",
     locale: "en",
     type: "website",
     images: [
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
         url: "/favicons/icon-512x512.png",
         width: 1200,
         height: 630,
-        alt: "maca",
+        alt: "Maca",
       },
     ],
   },
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: "maca",
+    title: "Maca",
     card: "summary_large_image",
   },
   appleWebApp: {

@@ -15,8 +15,8 @@ export default async function Home(props: { searchParams: SearchParams }) {
         >
           <Image
             className="rounded-full"
-            src="/favicons/icon-192x192.png"
-            alt="maca logo"
+            src="/favicons/web-app-manifest-192x192.png"
+            alt="Maca logo"
             fill
             priority
           />
