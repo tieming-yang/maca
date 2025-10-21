@@ -1601,10 +1601,16 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             </Button>
             <Button
               variant="icon"
-              onMouseDown={() => {
-                if (!song?.id) return;
-
-                deleteAllLinesMutation.mutate(song?.id);
+              onClick={() => {
+                if (!song?.id) {
+                  toast.error("No Song id");
+                  return;
+                }
+                if (window.confirm("Do you want to Bomb all lines?!")) {
+                  deleteAllLinesMutation.mutate(song?.id);
+                } else {
+                  toast.info("Bomb Cancelled!");
+                }
               }}
             >
               <Bomb />
