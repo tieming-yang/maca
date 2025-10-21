@@ -7,7 +7,6 @@ import Nav from "./components/nav";
 import { Suspense } from "react";
 import Loading from "./components/loading";
 import Toaster from "./components/ui/sonner";
-import { topGlowBorder } from "./components/ui/button";
 
 import { Analytics } from "@vercel/analytics/next";
 
@@ -39,7 +38,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/favicons/icon-512x512.png",
+        url: "/favicons/web-app-manifest-512x512.png",
         width: 1200,
         height: 630,
         alt: "Maca",
