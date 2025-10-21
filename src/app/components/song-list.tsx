@@ -41,9 +41,14 @@ export default function SongList() {
       >
         {songs &&
           songs.map((song) => {
+            const primaryArtist =
+              song.credits.primary_artist.at(0)?.display_name;
+            const featureArtist =
+              song.credits.featured_artist.at(0)?.display_name;
+
             return (
               <li
-                className="text-md snap-center xl:text-2xl flex min-w-[10rem] flex-col transition-all duration-200"
+                className="text-md snap-center xl:text-xl flex min-w-[10rem] flex-col transition-all duration-200"
                 // style={{ filter: "drop-shadow(0 0 15px)" }}
                 key={song.id ?? song.slug ?? song.name}
               >
@@ -55,7 +60,13 @@ export default function SongList() {
                   {song.name}
                 </Link>
                 <p className="text-white/70 text-sm whitespace-nowrap">
-                  {song.credits.primary_artist.at(0)?.display_name}
+                  {featureArtist ? (
+                    <span>
+                      {primaryArtist} & {featureArtist}
+                    </span>
+                  ) : (
+                    <span>{primaryArtist}</span>
+                  )}
                 </p>
                 {/* <Link
                   className="text-white/70"
