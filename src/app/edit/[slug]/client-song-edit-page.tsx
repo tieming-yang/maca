@@ -439,7 +439,7 @@ function validateLinesSection(
       plan.inserts.push(insert);
     }
   }
-  console.log(plan.inserts, plan.updates);
+
   return plan;
 }
 
@@ -566,6 +566,10 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   );
   const [personErrors, setPersonErrors] = useState<PersonFormErrors>({});
 
+  const [editingField, setEditingField] = useState<"timestamp" | "none">(
+    "none"
+  );
+
   const lyricsTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const {
@@ -632,7 +636,6 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       setErrors({});
       setIsDirty(false);
       setInitialWork_id(null);
-      setHasWork(false);
       setInitialWorkSnapshot(null);
     }
   }, [isNew]);
@@ -974,6 +977,12 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     return "Edit Song";
   }, [isNew, song]);
 
+  const renderLines = useMemo(() => {
+    const lines = [...formData.lines];
+    if (editingField === "timestamp") return lines;
+    return lines.sort((a, b) => a.timestamp_sec - b.timestamp_sec);
+  }, [formData.lines, editingField]);
+
   return (
     <section className="w-full font-mono max-w-3xl mx-auto space-y-6 py-8 text-zinc-100 px-3">
       {(isLoading || saveMutation.isPending) && <Loading isFullScreen />}
@@ -1042,7 +1051,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             value={formData.slug}
             onChange={handleInputChange("slug")}
             required
-            className={`${INPUT_CLASS} cursor-not-allowed opacity-70`}
+            className={`${INPUT_CLASS} opacity-70`}
           />
         </div>
 
@@ -1441,96 +1450,79 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         <section className="grid gap-1 pb-15">
           <h2>Lyrics</h2>
 
-          {formData.lines &&
-            formData.lines
-              .sort((a, b) => a.timestamp_sec - b.timestamp_sec)
-              .map((line) => {
-                const { lyric, timestamp_sec, id } = line;
-                const timestamp = Song.secondsToTimestamp(timestamp_sec);
-                const matches = (current: typeof line) =>
-                  id !== null && id !== undefined
-                    ? current.id === id
-                    : current.timestamp_sec === timestamp_sec;
-                return (
-                  <div key={id}>
-                    <div className="flex gap-x-3">
-                      <input
-                        className={`${INPUT_CLASS} w-fit`}
-                        value={timestamp ?? ""}
-                        type="time"
-                        onChange={(e) => {
-                          const newTimestamp = Song.timestampToSeconds(
-                            e.target.value
-                          );
-                          if (Number.isNaN(newTimestamp)) {
-                            setErrors((prev) => ({
-                              ...prev,
-                              lines: "Not a Number",
-                            }));
-                            console.warn("Not a number", newTimestamp);
-                            return;
-                          }
-
-                          setFormData((prev) => ({
+          {renderLines &&
+            renderLines.map((line) => {
+              const { lyric, timestamp_sec, id } = line;
+              const timestamp = Song.secondsToTimestamp(timestamp_sec);
+              const matches = (current: typeof line) =>
+                id !== null && id !== undefined
+                  ? current.id === id
+                  : current.timestamp_sec === timestamp_sec;
+              return (
+                <div key={id}>
+                  <div className="flex gap-x-3">
+                    <input
+                      type="time"
+                      className={`${INPUT_CLASS} w-fit`}
+                      value={timestamp ?? ""}
+                      onFocus={() => setEditingField("timestamp")}
+                      onBlur={() => setEditingField("none")}
+                      onChange={(e) => {
+                        const newTimestamp = Song.timestampToSeconds(
+                          e.target.value
+                        );
+                        if (Number.isNaN(newTimestamp)) {
+                          setErrors((prev) => ({
                             ...prev,
-                            lines: prev.lines.map((line) =>
-                              matches(line)
-                                ? {
-                                    ...line,
-                                    timestamp_sec: newTimestamp,
-                                  }
-                                : line
-                            ),
+                            lines: "Not a Number",
                           }));
+                          console.warn("Not a number", newTimestamp);
+                          return;
+                        }
 
-                          setIsDirty(true);
-                        }}
-                      ></input>
-                      <input
-                        className={`${INPUT_CLASS} w-full`}
-                        value={lyric ?? ""}
-                        onChange={(e) => {
-                          const nextLyric = e.target.value;
+                        setFormData((prev) => ({
+                          ...prev,
+                          lines: prev.lines.map((line) =>
+                            matches(line)
+                              ? {
+                                  ...line,
+                                  timestamp_sec: newTimestamp,
+                                }
+                              : line
+                          ),
+                        }));
 
-                          setFormData((prev) => ({
-                            ...prev,
-                            lines: prev.lines.map((line) =>
-                              matches(line)
-                                ? {
-                                    ...line,
-                                    lyric: nextLyric,
-                                  }
-                                : line
-                            ),
-                          }));
+                        setIsDirty(true);
+                      }}
+                    ></input>
+                    <input
+                      className={`${INPUT_CLASS} w-full`}
+                      value={lyric ?? ""}
+                      onChange={(e) => {
+                        const nextLyric = e.target.value;
 
-                          setIsDirty(true);
-                          setErrors({});
-                        }}
-                      ></input>
+                        setFormData((prev) => ({
+                          ...prev,
+                          lines: prev.lines.map((line) =>
+                            matches(line)
+                              ? {
+                                  ...line,
+                                  lyric: nextLyric,
+                                }
+                              : line
+                          ),
+                        }));
 
-                      <Button
-                        variant="icon"
-                        className="bg-red-500 size-7"
-                        onClick={() => {
-                          if (isNew || typeof line.id === "string") {
-                            console.log("delete in isnew");
-                            setFormData((prev) => {
-                              return {
-                                ...prev,
-                                lines: prev.lines.filter(
-                                  (line) => line.id !== id
-                                ),
-                              };
-                            });
-                            return;
-                          }
-                          if (!id) {
-                            console.warn("No Line Id");
-                            return;
-                          }
+                        setIsDirty(true);
+                        setErrors({});
+                      }}
+                    ></input>
 
-                          deleteLineMutation.mutate(id);
+                    <Button
+                      variant="icon"
+                      className="bg-red-500 size-7"
+                      onClick={() => {
+                        if (isNew || typeof line.id === "string") {
                           setFormData((prev) => {
                             return {
                               ...prev,
@@ -1539,21 +1531,35 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                               ),
                             };
                           });
-                          localStorage.setItem(
-                            storageKey,
-                            JSON.stringify(formData)
-                          );
-                        }}
-                      >
-                        <X />
-                      </Button>
-                    </div>
-                    {errors.lines && (
-                      <p className="text-xs text-rose-400">{errors.lines}</p>
-                    )}
+                          return;
+                        }
+                        if (!id) {
+                          console.warn("No Line Id");
+                          return;
+                        }
+
+                        deleteLineMutation.mutate(id);
+                        setFormData((prev) => {
+                          return {
+                            ...prev,
+                            lines: prev.lines.filter((line) => line.id !== id),
+                          };
+                        });
+                        localStorage.setItem(
+                          storageKey,
+                          JSON.stringify(formData)
+                        );
+                      }}
+                    >
+                      <X />
+                    </Button>
                   </div>
-                );
-              })}
+                  {errors.lines && (
+                    <p className="text-xs text-rose-400">{errors.lines}</p>
+                  )}
+                </div>
+              );
+            })}
           <div className="flex justify-center w-full gap-5">
             <Button
               variant="icon"
