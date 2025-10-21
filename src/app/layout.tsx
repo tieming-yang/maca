@@ -61,6 +61,24 @@ export const metadata: Metadata = {
     title: "maca",
     card: "summary_large_image",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Maca",
+    startupImage: [
+      {
+        media:
+          "screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)",
+        url: "/splashes/apple-splash-2048-2732.png",
+      },
+      // {
+      //   media:
+      //     "screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)",
+      //   url: "/splashes/apple-splash-2732-2048.jpg",
+      // },
+    ],
+  },
+  other: { "apple-mobile-web-app-capable": "yes" },
 };
 
 export default function RootLayout({
@@ -84,7 +102,7 @@ export default function RootLayout({
               // },
               style: {
                 borderRadius: 100,
-              }
+              },
             }}
           />
           <Suspense fallback={<Loading isFullScreen />}>
