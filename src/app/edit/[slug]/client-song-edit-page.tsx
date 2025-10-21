@@ -776,13 +776,13 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
       setModel("idel");
 
-      window.alert("Added");
+      toast.success("Person Added");
     },
     onError: (err: unknown) => {
       const message =
         err instanceof Error ? err.message : "Unable to add the person.";
       setErrors((prev) => ({ ...prev, base: message }));
-      toast.error(message)
+      toast.error(message);
     },
   });
 
@@ -796,7 +796,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       const message =
         err instanceof Error ? err.message : "Unable to delete the song.";
       setErrors((prev) => ({ ...prev, base: message }));
-      toast.error(message)
+      toast.error(message);
     },
   });
 
@@ -816,11 +816,13 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     mutationFn: async (songId: string) => Line.deleteAll(songId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKey.song(slug) });
+      toast.success("Deleted All Lines!");
     },
     onError: (err: unknown) => {
       const message =
         err instanceof Error ? err.message : "Unable to add the person.";
       setErrors((prev) => ({ ...prev, base: message }));
+      toast.error(message);
     },
   });
 
