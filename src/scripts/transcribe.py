@@ -75,6 +75,8 @@ def run_whisper(mp3_path: Path, out_dir: Path, model: str = "large-v3", language
         "--task", "transcribe",
         "--output_format", "srt",
         "--output_dir", str(out_dir),
+        "--hallucination_silence_threshold", "5",
+        "--word_timestamps", "True"
     ]
     if device_cpu:
         cmd.extend(["--device", "cpu"])  # quiet FP16 warning on CPU
