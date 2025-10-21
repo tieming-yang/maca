@@ -596,7 +596,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     if (isNew && !isDirty) return;
 
     localStorage.setItem(storageKey, JSON.stringify(formData));
-  }, [formData, storageKey, formData.lines]);
+  }, [formData, storageKey, formData.lines, isDirty, isNew]);
 
   useEffect(() => {
     if (!isNew && song) {
@@ -625,7 +625,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           : null
       );
     }
-  }, [isNew, song]);
+  }, [isNew, song, storageKey]);
 
   useEffect(() => {
     if (isNew) {
