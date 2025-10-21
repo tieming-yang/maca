@@ -1496,7 +1496,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                       }}
                     ></input>
                     <input
-                      className={`${INPUT_CLASS} w-full`}
+                      className={`${INPUT_CLASS} w-full overflow-auto`}
                       value={lyric ?? ""}
                       onChange={(e) => {
                         const nextLyric = e.target.value;
@@ -1518,11 +1518,54 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                       }}
                     ></input>
 
-                    <Button
-                      variant="icon"
-                      className="bg-red-500 size-7"
-                      onClick={() => {
-                        if (isNew || typeof line.id === "string") {
+                    {/* Controls */}
+                    <div className="flex gap-x-1">
+                      <Button
+                        variant="icon"
+                        className="size-7"
+                        onClick={() => {
+                          //@ts-expect-error we use randomUUID as temporary ID which is string but the db requiers a number
+                          setFormData((prev) => {
+                            return {
+                              ...prev,
+                              lines: [
+                                ...prev.lines,
+                                {
+                                  id: crypto.randomUUID(),
+                                  lyric: "",
+                                  timestamp_sec: line.timestamp_sec + 1,
+                                  song_id: formData.id ?? "",
+                                },
+                              ],
+                            };
+                          });
+
+                          setErrors({});
+                        }}
+                      >
+                        <Plus />
+                      </Button>
+                      <Button
+                        variant="icon"
+                        className="bg-red-500 size-7"
+                        onClick={() => {
+                          if (isNew || typeof line.id === "string") {
+                            setFormData((prev) => {
+                              return {
+                                ...prev,
+                                lines: prev.lines.filter(
+                                  (line) => line.id !== id
+                                ),
+                              };
+                            });
+                            return;
+                          }
+                          if (!id) {
+                            console.warn("No Line Id");
+                            return;
+                          }
+
+                          deleteLineMutation.mutate(id);
                           setFormData((prev) => {
                             return {
                               ...prev,
@@ -1531,28 +1574,15 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                               ),
                             };
                           });
-                          return;
-                        }
-                        if (!id) {
-                          console.warn("No Line Id");
-                          return;
-                        }
-
-                        deleteLineMutation.mutate(id);
-                        setFormData((prev) => {
-                          return {
-                            ...prev,
-                            lines: prev.lines.filter((line) => line.id !== id),
-                          };
-                        });
-                        localStorage.setItem(
-                          storageKey,
-                          JSON.stringify(formData)
-                        );
-                      }}
-                    >
-                      <X />
-                    </Button>
+                          localStorage.setItem(
+                            storageKey,
+                            JSON.stringify(formData)
+                          );
+                        }}
+                      >
+                        <X />
+                      </Button>
+                    </div>
                   </div>
                   {errors.lines && (
                     <p className="text-xs text-rose-400">{errors.lines}</p>
@@ -1560,35 +1590,9 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                 </div>
               );
             })}
-          <div className="flex justify-center w-full gap-5">
-            <Button
-              variant="icon"
-              onMouseDown={() => {
-                //@ts-expect-error we use randomUUID as temporary ID which is string but the db requiers a number
-                setFormData((prev) => {
-                  return {
-                    ...prev,
-                    lines: [
-                      ...prev.lines,
-                      {
-                        id: crypto.randomUUID(),
-                        lyric: "",
-                        timestamp_sec:
-                          prev.lines.length > 0 &&
-                          prev.lines.at(-1) !== undefined
-                            ? prev.lines.at(-1)!.timestamp_sec + 1
-                            : 0,
-                        song_id: formData.id ?? "",
-                      },
-                    ],
-                  };
-                });
 
-                setErrors({});
-              }}
-            >
-              <Plus />
-            </Button>
+          {/* Bottom Tools */}
+          <div className="flex justify-center w-full gap-5">
             <Button
               variant="icon"
               onMouseDown={() => setModel("batchAddLyrics")}
