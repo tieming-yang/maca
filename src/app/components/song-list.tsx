@@ -24,13 +24,13 @@ export default function SongList() {
   }
 
   return (
-    <section className="flex w-full h-full justify-center items-center flex-col pb-32 space-y-7 max-w-3xl mx-auto">
+    <section className="flex w-full h-full justify-center items-center px-0 flex-col pb-32 space-y-7 max-w-3xl mx-auto">
       {isLoading && <Loading isFullScreen />}
       <h2 className="text-xl font-bold sm:text-2xl md:text-3xl self-start">
         Recently Updated
       </h2>
       <ul
-        className="w-full overflow-x-auto"
+        className="w-full overflow-x-auto snap-x snap-mandatory"
         style={{
           display: "grid",
           gridAutoFlow: "column",
@@ -43,8 +43,8 @@ export default function SongList() {
           songs.map((song) => {
             return (
               <li
-                className="text-md xl:text-2xl flex min-w-[10rem] flex-col transition-all duration-200"
-                style={{ filter: "drop-shadow(0 0 15px)" }}
+                className="text-md snap-center xl:text-2xl flex min-w-[10rem] flex-col transition-all duration-200"
+                // style={{ filter: "drop-shadow(0 0 15px)" }}
                 key={song.id ?? song.slug ?? song.name}
               >
                 <Link
