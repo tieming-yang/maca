@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS song_base_lines_song_id_timestamp_sec_idx;
