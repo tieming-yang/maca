@@ -87,7 +87,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
+    <html lang="en">
+      <head>
+        <meta name="apple-mobile-web-app-title" content="Maca" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-serif antialiased px-5 md:px-0 overflow-x-hidden`}
       >

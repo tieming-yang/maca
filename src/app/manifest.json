@@ -1,6 +1,6 @@
 {
-  "name": "maca",
-  "short_name": "maca",
+  "name": "Maca",
+  "short_name": "Maca",
   "description": "Learn Japanese by singing",
   "id": "/",
   "start_url": "/",
@@ -14,6 +14,18 @@
   "prefer_related_applications": false,
   "categories": ["education", "music", "productivity"],
   "icons": [
+    {
+      "src": "/favicons/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicons/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "/favicons/icon-192x192.png",
       "sizes": "192x192",
