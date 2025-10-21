@@ -93,7 +93,8 @@ export const Song = {
   async getAll(): Promise<TableRow[]> {
     const { data, error } = await db
       .from("songs")
-      .select("*");
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (error) {
       console.error(error);

@@ -42,9 +42,9 @@ export default function SongList() {
         {songs &&
           songs.map((song) => {
             const primaryArtist =
-              song.credits.primary_artist.at(0)?.display_name;
+              song.credits?.primary_artist.at(0)?.display_name;
             const featureArtist =
-              song.credits.featured_artist.at(0)?.display_name;
+              song.credits?.featured_artist.at(0)?.display_name;
 
             return (
               <li
