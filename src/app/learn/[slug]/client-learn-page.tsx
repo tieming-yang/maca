@@ -3,11 +3,10 @@
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import Youtube from "react-youtube";
 import { Home, Music } from "lucide-react";
-import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "@/data/query-keys";
 import { Song, SongBundle } from "@/data/models/Song";
-import { Button, topGlowBorder } from "@/app/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { addFurigana } from "@/utils/furigana/addFurigana";
@@ -465,6 +464,7 @@ export default function ClientLearnPage(props: { slug: string }) {
               <Dropdown
                 open={isFuriganaMenuOpen}
                 setOpen={setIsFuriganaMenuOpen}
+                toggleButtonIcon={<TbLanguageHiragana className="size-7.5"/>}
               >
                 {FuriganaTypeArray.map((type) => {
                   const selected = selectedFuriganaTypes.includes(type);
