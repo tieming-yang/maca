@@ -6,7 +6,7 @@ export default function Loading({
   isFullScreen?: boolean;
 }) {
   return isFullScreen ? (
-    <div className="fixed inset-0 z-50 w-full h-full bg-slate-700/20 backdrop-blur-2xl flex justify-center items-center">
+    <div className="fixed inset-0 z-50 w-full h-full bg-black flex justify-center items-center">
       <LoaderCircle className="h-9 w-9 animate-spin" />
     </div>
   ) : (
