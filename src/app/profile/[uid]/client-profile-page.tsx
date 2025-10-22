@@ -4,33 +4,18 @@ import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { Profile } from "@/data/models/Profile";
-import { createClient } from "@/utils/supabase/client";
 import Loading from "../../components/loading";
 import { QueryKey } from "@/data/query-keys";
 import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
+import useAuthUser from "@/hooks/use-auth-user";
 
 export default function ClientProfilePage() {
   const router = useRouter();
   const { uid } = useParams<{ uid: string }>();
   const query = useQueryClient();
-  const supabase = createClient();
 
-  useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
-      query.setQueryData(QueryKey.authUser, session?.user ?? null);
-    });
-    return () => sub.subscription?.unsubscribe();
-  }, [query, supabase]);
-
-  // --- get auth user so we can distinguish "my profile" vs "someone else's" ---
-  const { data: authUser } = useQuery({
-    queryKey: QueryKey.authUser,
-    queryFn: async () => (await supabase.auth.getUser()).data.user,
-    // ensure we don't keep stale user around across navigations
-    staleTime: 0,
-    refetchOnMount: "always",
-  });
+  const { authUser, isAuthUserLoading, isAuthUserError } = useAuthUser();
 
   // --- sign out as a mutation (handles pending/error + cache cleanup) ---
   const signOutMutation = useMutation({
@@ -70,7 +55,7 @@ export default function ClientProfilePage() {
     }
   }, [uid, isLoading, profile, authUser, router]);
 
-  if (isLoading) {
+  if (isLoading || isAuthUserLoading) {
     return (
       <main className="p-6 text-white">
         <Loading isFullScreen />
@@ -78,7 +63,7 @@ export default function ClientProfilePage() {
     );
   }
 
-  if (error) {
+  if (error || isAuthUserError) {
     return (
       <main className="p-6 text-red-400">
         <p>Error: {(error as Error).message}</p>
