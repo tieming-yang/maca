@@ -35,7 +35,7 @@ export default function SongList() {
           display: "grid",
           gridAutoFlow: "column",
           gridTemplateRows: "repeat(5, minmax(0, 1fr))",
-          gap: "0.75rem 1.5rem",
+          gap: "0.75rem",
           padding: "0.5rem 0",
         }}
       >
@@ -48,7 +48,7 @@ export default function SongList() {
 
             return (
               <li
-                className="text-md snap-center xl:text-xl flex min-w-[10rem] flex-col transition-all duration-200"
+                className="text-md snap-center xl:text-xl border p-2 sm:p-3 justify-center flex flex-col transition-all duration-200"
                 // style={{ filter: "drop-shadow(0 0 15px)" }}
                 key={song.id ?? song.slug ?? song.name}
               >
@@ -59,7 +59,7 @@ export default function SongList() {
                 >
                   {song.name}
                 </Link>
-                <p className="text-white/70 text-sm">
+                <div className="text-white/75 text-sm whitespace-nowrap">
                   {featureArtist ? (
                     <span>
                       {primaryArtist} & {featureArtist}
@@ -67,7 +67,7 @@ export default function SongList() {
                   ) : (
                     <span>{primaryArtist}</span>
                   )}
-                </p>
+                </div>
                 {/* <Link
                   className="text-white/70"
                   href={`artist/${
