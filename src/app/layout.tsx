@@ -91,7 +91,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Maca" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-serif antialiased md:px-0 overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} font-mono antialiased md:px-0 overflow-x-hidden`}
       >
         <Providers>
           {children}

@@ -15,12 +15,12 @@ const baseClass = `${topGlowBorder} inline-flex items-center justify-center roun
 
 const variantClassMap: Record<ButtonVariant, string> = {
   primary:
-    "bg-teal-700 text-white enabled:hover:bg-teal-900 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-teal-300",
+    "bg-black/10 text-white enabled:hover:bg-zinc-900 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-zinc-300",
   danger:
     "border border-rose-500/60 text-rose-300 enabled:hover:bg-rose-500/10 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-rose-400",
-  icon: "bg-teal-700/50 text-white enabled:hover:bg-teal-900 px-2 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-teal-300 size-13",
+  icon: "bg-black/10 text-white enabled:hover:bg-zinc-900 px-2 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-zinc-300 size-13",
   outline:
-    "bg-transparent text-white enabled:hover:bg-teal-400 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-teal-300",
+    "bg-transparent text-white enabled:hover:bg-zinc-400 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-zinc-300",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
