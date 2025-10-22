@@ -7,7 +7,7 @@ type SearchParams = Promise<{ isStaging: string }>;
 
 export default async function Home(props: { searchParams: SearchParams }) {
   return (
-    <main className="px-1 w-full py-3">
+    <main className="px-1 w-full py-3 sm:px-3">
       <header className="flex md:px-3 justify-between pb-7 items-center w-full">
         <Link
           className="font-mono text-xl size-10 relative font-semibold"
