@@ -1451,7 +1451,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           <h2>Lyrics</h2>
 
           {renderLines &&
-            renderLines.map((line) => {
+            renderLines.map((line, index) => {
               const { lyric, timestamp_sec, id } = line;
               const timestamp = Song.secondsToTimestamp(timestamp_sec);
               const matches = (current: typeof line) =>
@@ -1529,13 +1529,14 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                             return {
                               ...prev,
                               lines: [
-                                ...prev.lines,
+                                ...prev.lines.slice(0, index + 1),
                                 {
                                   id: crypto.randomUUID(),
                                   lyric: "",
                                   timestamp_sec: line.timestamp_sec + 1,
                                   song_id: formData.id ?? "",
                                 },
+                                ...prev.lines.slice(index + 1),
                               ],
                             };
                           });
