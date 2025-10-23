@@ -1499,7 +1499,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                       className={`${INPUT_CLASS} w-full overflow-auto`}
                       value={lyric ?? ""}
                       onChange={(e) => {
-                        const nextLyric = e.target.value;
+                        const nextLyric = e.target.value.trim();
 
                         setFormData((prev) => ({
                           ...prev,
