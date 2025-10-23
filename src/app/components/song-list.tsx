@@ -47,18 +47,14 @@ export default function SongList() {
               song.credits?.featured_artist.at(0)?.display_name;
 
             return (
-              <li
+              <Link
+                href={`learn/${song.slug}`}
+                prefetch
                 className="text-md snap-center xl:text-xl border p-2 sm:p-3 justify-center flex flex-col transition-all duration-200"
                 // style={{ filter: "drop-shadow(0 0 15px)" }}
                 key={song.id ?? song.slug ?? song.name}
               >
-                <Link
-                  className="font-semibold whitespace-nowrap"
-                  href={`learn/${song.slug}`}
-                  prefetch
-                >
-                  {song.name}
-                </Link>
+                <li className="font-semibold whitespace-nowrap">{song.name}</li>
                 <div className="text-white/75 text-sm whitespace-nowrap">
                   {featureArtist ? (
                     <span>
@@ -76,7 +72,7 @@ export default function SongList() {
                 >
                   {song.credits.primary_artist.at(0)?.display_name}
                 </Link> */}
-              </li>
+              </Link>
             );
           })}
       </ul>
