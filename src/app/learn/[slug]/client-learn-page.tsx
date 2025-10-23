@@ -13,8 +13,11 @@ import { addFurigana } from "@/utils/furigana/addFurigana";
 import { FuriganaType, FuriganaTypeArray } from "@/utils/furigana/constants";
 import Loading from "@/app/components/loading";
 import { Dropdown, DropdownItem } from "@/app/components/ui/dropdown";
-import { FaPause, FaPlay, FaShare } from "react-icons/fa";
+import { FaLanguage, FaPause, FaPlay, FaShare } from "react-icons/fa";
 import { toast } from "sonner";
+import useAuthUser from "@/hooks/use-auth-user";
+import { LuLanguages } from "react-icons/lu";
+import { TbLanguageHiragana } from "react-icons/tb";
 
 function secToTs(total?: number | null) {
   if (!total || total <= 0) return "0:00";
