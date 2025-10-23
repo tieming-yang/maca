@@ -2,21 +2,16 @@
 
 import cn from "@/utils/cn";
 import { topGlowBorder } from "./button";
-import {
-  ComponentPropsWithoutRef,
-  Dispatch,
-  ForwardRefExoticComponent,
-  RefAttributes,
-  SetStateAction,
-} from "react";
+import { ComponentPropsWithoutRef, Dispatch, SetStateAction } from "react";
 import { Button } from "@/app/components/ui/button";
 import { FuriganaType } from "@/utils/furigana/constants";
-import { BookType, LucideProps } from "lucide-react";
+import Loading from "@/app/components/loading";
 
 type DropdownProps = ComponentPropsWithoutRef<"div"> & {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   toggleButtonIcon: React.ReactNode;
+  isReady: boolean;
 };
 function Dropdown({
   className,
@@ -24,6 +19,7 @@ function Dropdown({
   open,
   setOpen,
   toggleButtonIcon,
+  isReady,
   ...props
 }: DropdownProps) {
   return (
@@ -32,17 +28,22 @@ function Dropdown({
       className={cn(className, `relative rounded-full`)}
       {...props}
     >
-      <Button
-        variant="icon"
-        className="bg-black/20"
-        onClick={() => setOpen((prev) => !prev)}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-controls="dropdown-menu"
-        tabIndex={-1}
-      >
-        {toggleButtonIcon}
-      </Button>
+      {isReady ? (
+        <Button
+          variant="icon"
+          className="bg-black/20"
+          onClick={() => setOpen((prev) => !prev)}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls="dropdown-menu"
+          tabIndex={-1}
+        >
+          {toggleButtonIcon}
+        </Button>
+      ) : (
+        <Loading />
+      )}
+
       {open && (
         <ul
           className={`absolute flex flex-col items-center -left-8 bottom-full mb-2 w-fit rounded-2xl bg-black/70 backdrop-blur-xl ${topGlowBorder}`}
