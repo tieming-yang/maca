@@ -112,7 +112,15 @@ def main():
     srts_dir = Path("./srts")
     run_whisper(mp3_path, srts_dir, model="medium", language="ja", device_cpu=True)
 
-    print(f"✅ Done.\n✅ MP3 kept at: {mp3_path.resolve()}\n✅ SRT saved in: {srts_dir.resolve()}")
+    try:
+        mp3_path.unlink()
+        mp3_status = "deleted"
+    except FileNotFoundError:
+        mp3_status = "already removed"
+    except OSError as err:
+        mp3_status = f"could not be removed ({err})"
+
+    print(f"✅ Done.\n✅ MP3 {mp3_status}: {mp3_path.resolve()}\n✅ SRT saved in: {srts_dir.resolve()}")
 
 
 if __name__ == "__main__":
