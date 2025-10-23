@@ -464,25 +464,30 @@ export default function ClientLearnPage(props: { slug: string }) {
                   <Loading />
                 )}
               </Button>
-              <Dropdown
-                open={isFuriganaMenuOpen}
-                setOpen={setIsFuriganaMenuOpen}
-                toggleButtonIcon={<TbLanguageHiragana className="size-7.5"/>}
-              >
-                {FuriganaTypeArray.map((type) => {
-                  const selected = selectedFuriganaTypes.includes(type);
-                  return (
-                    <DropdownItem
-                      key={type}
-                      value={type}
-                      setValue={setSelectedFuriganaTypes}
-                      selected={selected}
-                    >
-                      {type}
-                    </DropdownItem>
-                  );
-                })}
-              </Dropdown>
+              {isFuriganaReady ? (
+                <Dropdown
+                  open={isFuriganaMenuOpen}
+                  setOpen={setIsFuriganaMenuOpen}
+                  toggleButtonIcon={<TbLanguageHiragana className="size-7.5" />}
+                >
+                  {FuriganaTypeArray.map((type) => {
+                    const selected = selectedFuriganaTypes.includes(type);
+                    return (
+                      <DropdownItem
+                        key={type}
+                        value={type}
+                        setValue={setSelectedFuriganaTypes}
+                        selected={selected}
+                      >
+                        {type}
+                      </DropdownItem>
+                    );
+                  })}
+                </Dropdown>
+              ) : (
+                <Loading />
+              )}
+
               <Button
                 variant="icon"
                 className="absolute right-3 bg-black/10"
