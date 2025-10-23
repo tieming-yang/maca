@@ -28,21 +28,17 @@ function Dropdown({
       className={cn(className, `relative rounded-full`)}
       {...props}
     >
-      {isReady ? (
-        <Button
-          variant="icon"
-          className="bg-black/20"
-          onClick={() => setOpen((prev) => !prev)}
-          aria-haspopup="listbox"
-          aria-expanded={open}
-          aria-controls="dropdown-menu"
-          tabIndex={-1}
-        >
-          {toggleButtonIcon}
-        </Button>
-      ) : (
-        <Loading />
-      )}
+      <Button
+        variant="icon"
+        className="bg-black/20"
+        onClick={() => setOpen((prev) => !prev)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls="dropdown-menu"
+        tabIndex={-1}
+      >
+        {isReady ? toggleButtonIcon : <Loading />}
+      </Button>
 
       {open && (
         <ul
