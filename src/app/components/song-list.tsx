@@ -24,9 +24,9 @@ export default function SongList() {
   }
 
   return (
-    <section className="flex w-full h-full justify-center items-center px-0 flex-col pb-32 space-y-7 max-w-5xl mx-auto">
+    <section className="flex flex-col items-center justify-center w-full h-full max-w-5xl px-0 pb-32 mx-auto space-y-7">
       {isLoading && <Loading isFullScreen />}
-      <h2 className="text-xl font-bold sm:text-2xl md:text-3xl self-start">
+      <h2 className="self-start text-xl font-bold sm:text-2xl md:text-3xl">
         Recently Updated
       </h2>
       <ul
@@ -50,12 +50,12 @@ export default function SongList() {
               <Link
                 href={`learn/${song.slug}`}
                 prefetch
-                className="text-md snap-center xl:text-xl border p-2 sm:p-3 justify-center flex flex-col transition-all duration-200"
+                className="flex flex-col justify-center p-2 transition-all duration-200 border text-md group snap-center xl:text-xl sm:p-3 hover:scale-110 hover:bg-white hover:text-black"
                 // style={{ filter: "drop-shadow(0 0 15px)" }}
                 key={song.id ?? song.slug ?? song.name}
               >
                 <li className="font-semibold whitespace-nowrap">{song.name}</li>
-                <div className="text-white/75 text-sm whitespace-nowrap">
+                <div className="text-sm text-white/75 group-hover:text-zinc-800 whitespace-nowrap">
                   {featureArtist ? (
                     <span>
                       {primaryArtist} & {featureArtist}
