@@ -453,9 +453,9 @@ export default function ClientLearnPage(props: { slug: string }) {
               >
                 {player ? (
                   isPlaying ? (
-                    <FaPause size="27" />
+                    <FaPause className="size-8.5" />
                   ) : (
-                    <FaPlay size="27" />
+                    <FaPlay className="size-8.5" />
                   )
                 ) : (
                   <Loading />

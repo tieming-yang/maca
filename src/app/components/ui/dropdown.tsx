@@ -2,20 +2,28 @@
 
 import cn from "@/utils/cn";
 import { topGlowBorder } from "./button";
-import { ComponentPropsWithoutRef, Dispatch, SetStateAction } from "react";
+import {
+  ComponentPropsWithoutRef,
+  Dispatch,
+  ForwardRefExoticComponent,
+  RefAttributes,
+  SetStateAction,
+} from "react";
 import { Button } from "@/app/components/ui/button";
 import { FuriganaType } from "@/utils/furigana/constants";
-import { BookType } from "lucide-react";
+import { BookType, LucideProps } from "lucide-react";
 
 type DropdownProps = ComponentPropsWithoutRef<"div"> & {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  toggleButtonIcon: React.ReactNode;
 };
 function Dropdown({
   className,
   children,
   open,
   setOpen,
+  toggleButtonIcon,
   ...props
 }: DropdownProps) {
   return (
@@ -33,7 +41,7 @@ function Dropdown({
         aria-controls="dropdown-menu"
         tabIndex={-1}
       >
-        <BookType />
+        {toggleButtonIcon}
       </Button>
       {open && (
         <ul
