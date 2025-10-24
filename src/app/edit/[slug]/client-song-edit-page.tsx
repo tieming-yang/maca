@@ -559,7 +559,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   const [initialWorkSnapshot, setInitialWorkSnapshot] =
     useState<WorkFormSnapshot | null>(null);
   const [hasWork, setHasWork] = useState<boolean>(true);
-  const [model, setModel] = useState<ModelStatus>("idel");
+  const [modal, setModal] = useState<ModelStatus>("idel");
 
   const [personData, setPersonData] = useState<CreditPerson>(
     makeBlankCreditPerson
@@ -777,7 +777,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       queryClient.invalidateQueries({ queryKey: QueryKey.people() });
       queryClient.setQueryData(QueryKey.person(refreshed.id), refreshed);
 
-      setModel("idel");
+      setModal("idel");
 
       toast.success("Person Added");
     },
@@ -1151,7 +1151,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
               type="button"
               variant="primary"
               onMouseDown={() =>
-                setModel((model) =>
+                setModal((model) =>
                   model === "addPerson" ? "idel" : "addPerson"
                 )
               }
@@ -1160,7 +1160,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             </Button>
 
             <dialog
-              open={model === "addPerson"}
+              open={modal === "addPerson"}
               className={`${PANEL_CLASS} text-white space-y-5 p-6 mx-auto w-full max-w-3xl backdrop-blur-2xl`}
             >
               <div className="flex justify-between">
@@ -1169,7 +1169,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                   type="button"
                   variant="icon"
                   onMouseDown={() =>
-                    setModel((model) =>
+                    setModal((model) =>
                       model === "addPerson" ? "idel" : "addPerson"
                     )
                   }
@@ -1596,7 +1596,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           <div className="flex justify-center w-full gap-5">
             <Button
               variant="icon"
-              onMouseDown={() => setModel("batchAddLyrics")}
+              onMouseDown={() => setModal("batchAddLyrics")}
             >
               <FilePlus />
             </Button>
@@ -1619,7 +1619,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
           </div>
 
           <dialog
-            open={model === "batchAddLyrics"}
+            open={modal === "batchAddLyrics"}
             className={`${PANEL_CLASS} text-white space-y-5 p-3 mx-auto w-full max-w-3xl backdrop-blur-2xl fixed top-0 my-9`}
           >
             <textarea
@@ -1676,7 +1676,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                 type="button"
                 variant="icon"
                 onMouseDown={() =>
-                  setModel((model) =>
+                  setModal((model) =>
                     model === "batchAddLyrics" ? "idel" : "batchAddLyrics"
                   )
                 }
