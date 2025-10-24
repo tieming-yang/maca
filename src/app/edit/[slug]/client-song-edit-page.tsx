@@ -535,7 +535,7 @@ type SaveInput =
       lines: LinesMutationPlan;
     };
 
-type ModelStatus = "addPerson" | "idel" | "batchAddLyrics";
+type ModalStatus = "addPerson" | "idel" | "batchAddLyrics";
 
 export default function ClientSongEditPage({ slug }: { slug: string }) {
   const router = useRouter();
@@ -559,7 +559,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   const [initialWorkSnapshot, setInitialWorkSnapshot] =
     useState<WorkFormSnapshot | null>(null);
   const [hasWork, setHasWork] = useState<boolean>(true);
-  const [modal, setModal] = useState<ModelStatus>("idel");
+  const [modal, setModal] = useState<ModalStatus>("idel");
 
   const [personData, setPersonData] = useState<CreditPerson>(
     makeBlankCreditPerson
