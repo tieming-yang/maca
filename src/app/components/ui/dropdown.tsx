@@ -30,7 +30,7 @@ function Dropdown({
     >
       <Button
         variant="icon"
-        className="bg-black/20"
+        className={`${open ? "text-white/50" : "text-white"}`}
         onClick={() => setOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={open}
