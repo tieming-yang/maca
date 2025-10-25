@@ -632,7 +632,7 @@ export type Database = {
           created_at: string | null
           factor_id: string | null
           id: string
-          ip: unknown | null
+          ip: unknown
           not_after: string | null
           oauth_client_id: string | null
           refreshed_at: string | null
@@ -646,7 +646,7 @@ export type Database = {
           created_at?: string | null
           factor_id?: string | null
           id: string
-          ip?: unknown | null
+          ip?: unknown
           not_after?: string | null
           oauth_client_id?: string | null
           refreshed_at?: string | null
@@ -660,7 +660,7 @@ export type Database = {
           created_at?: string | null
           factor_id?: string | null
           id?: string
-          ip?: unknown | null
+          ip?: unknown
           not_after?: string | null
           oauth_client_id?: string | null
           refreshed_at?: string | null
@@ -861,22 +861,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      email: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      jwt: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      role: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      uid: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      email: { Args: never; Returns: string }
+      jwt: { Args: never; Returns: Json }
+      role: { Args: never; Returns: string }
+      uid: { Args: never; Returns: string }
     }
     Enums: {
       aal_level: "aal1" | "aal2" | "aal3"
@@ -1102,21 +1090,21 @@ export type Database = {
       translation_lines: {
         Row: {
           id: number
-          line_index: number
+          line_index: number | null
           text_json: Json
           timestamp_sec: number | null
           version_id: string
         }
         Insert: {
           id?: number
-          line_index: number
+          line_index?: number | null
           text_json: Json
           timestamp_sec?: number | null
           version_id: string
         }
         Update: {
           id?: number
-          line_index?: number
+          line_index?: number | null
           text_json?: Json
           timestamp_sec?: number | null
           version_id?: string
@@ -1159,7 +1147,7 @@ export type Database = {
           song_id: string
           status?: Database["public"]["Enums"]["version_status"]
           title?: string | null
-          version_number: number
+          version_number?: number
         }
         Update: {
           created_at?: string
@@ -1311,11 +1299,11 @@ export type Database = {
     }
     Functions: {
       current_role: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
       get_my_profile: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           avatar_url: string | null
           created_at: string
@@ -1324,15 +1312,15 @@ export type Database = {
           updated_at: string | null
           username: string | null
         }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      promote_user_to_admin: {
-        Args: { p_email: string }
-        Returns: undefined
-      }
+      is_admin: { Args: never; Returns: boolean }
+      promote_user_to_admin: { Args: { p_email: string }; Returns: undefined }
     }
     Enums: {
       app_role: "user" | "editor" | "admin"
@@ -1653,32 +1641,14 @@ export type Database = {
         Args: { _bucket_id: string; _name: string }
         Returns: boolean
       }
-      extension: {
-        Args: { name: string }
-        Returns: string
-      }
-      filename: {
-        Args: { name: string }
-        Returns: string
-      }
-      foldername: {
-        Args: { name: string }
-        Returns: string[]
-      }
-      get_level: {
-        Args: { name: string }
-        Returns: number
-      }
-      get_prefix: {
-        Args: { name: string }
-        Returns: string
-      }
-      get_prefixes: {
-        Args: { name: string }
-        Returns: string[]
-      }
+      extension: { Args: { name: string }; Returns: string }
+      filename: { Args: { name: string }; Returns: string }
+      foldername: { Args: { name: string }; Returns: string[] }
+      get_level: { Args: { name: string }; Returns: number }
+      get_prefix: { Args: { name: string }; Returns: string }
+      get_prefixes: { Args: { name: string }; Returns: string[] }
       get_size_by_bucket: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           bucket_id: string
           size: number
@@ -1719,10 +1689,7 @@ export type Database = {
         Args: { bucket_ids: string[]; names: string[] }
         Returns: undefined
       }
-      operation: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      operation: { Args: never; Returns: string }
       search: {
         Args: {
           bucketname: string
