@@ -38,9 +38,11 @@ export default function ClientLearnPage(props: { slug: string }) {
     console.error("No Slug!");
     redirect("/not-found");
   }
-  // language overlay toggle (start with zh-TW to match your old UI)
+
   const [lang, setLang] = useState<string | undefined>("zh-TW");
-  // song bundle from DB
+
+  const { authUser, isAuthUserLoading, isAuthUserError } = useAuthUser();
+
   const {
     data: song,
     isLoading,
@@ -76,6 +78,9 @@ export default function ClientLearnPage(props: { slug: string }) {
   const [isFuriganaReady, setIsFuriganaReady] = useState(false);
   const containerRef = useRef<HTMLUListElement>(null);
   const [isFuriganaMenuOpen, setIsFuriganaMenuOpen] = useState(false);
+
+  type ModalStatus = "idle" | "translation";
+  const [modal, setModal] = useState<ModalStatus>("idle");
 
   const renderSong = useMemo(() => {
     return song &&
@@ -210,7 +215,6 @@ export default function ClientLearnPage(props: { slug: string }) {
     return () => container.removeEventListener("scroll", onScroll);
   }, []);
 
-  // TODO: better handling
   if (error)
     return <div className="p-10 text-red-400">Error: {error.message}</div>;
   if (isLoading || !song) return <Loading isFullScreen />;
@@ -294,7 +298,7 @@ export default function ClientLearnPage(props: { slug: string }) {
       </section>
 
       {/* YouTube */}
-      <section className="fixed z-0 md:top-32 top-12">
+      <section className="fixed z-0 md:top-1 top-12">
         <Youtube
           onReady={(e: YT.PlayerEvent) => {
             const p = e.target;
@@ -443,12 +447,36 @@ export default function ClientLearnPage(props: { slug: string }) {
         <div className="w-full">
           <div className="w-full flex items-center px-5">
             {/* Funtions */}
-            <nav className="flex items-center justify-center w-full gap-x-7">
+            <nav className="flex items-center justify-center w-full gap-x-5">
               <Link href="/">
                 <Button variant="icon" className="bg-black/20">
                   <Home />
                 </Button>
               </Link>
+
+              <Button
+                variant="icon"
+                className="bg-black/20"
+                onClick={() => {
+                  const isTranlationOpen = modal === "translation";
+                  if (isTranlationOpen) {
+                    player?.playVideo();
+                  } else {
+                    player?.pauseVideo();
+                  }
+
+                  setModal((status) =>
+                    status === "translation" ? "idle" : "translation"
+                  );
+                }}
+              >
+                <LuLanguages
+                  className={`size-6.5 ${
+                    modal === "translation" ? "text-white/50" : "text-white"
+                  }`}
+                />
+              </Button>
+
               <Button
                 variant="icon"
                 className="bg-black/20 size-17"
@@ -488,35 +516,36 @@ export default function ClientLearnPage(props: { slug: string }) {
 
               <Button
                 variant="icon"
-                className="absolute right-3 bg-black/10"
+                className="bg-black/10"
                 onClick={async () => {
                   try {
                     await navigator?.clipboard.writeText(url);
-                    // alert(`Copied! \n ${url}`);
-                    toast.success(`Copied ${url}`);
+                    toast.success(`Copied!`, {
+                      description: "Go Share to your friends!",
+                    });
                   } catch (err) {
                     console.error("Failed to copy: ", err);
                     toast.error("Failed to copied URL, please try again");
                   }
                 }}
               >
-                <FaShare />
+                <FaShare className="size-5" />
               </Button>
 
-              {/* <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setLang((l) => (l ? undefined : "zh-TW"))}
-                  className="inline-flex items-center gap-2 px-3 py-1 rounded bg-white/10 hover:bg-white/20"
-                  title={lang ? `Hide ${lang}` : "Show zh-TW"}
-                
-                  <LanguageIcon
-                    className={`size-5 ${
-                      lang ? "text-white" : "text-white/50"
-                    }`}
-                  />
-                  <span className="text-sm">{lang ?? "none"}</span>
-                </button>
-              </div> */}
+              <dialog
+                open={modal === "translation"}
+                className={`text-white bg-black/50 border space-y-5 p-3 mx-auto w-full max-w-3xl backdrop-blur-2xl fixed top-0 my-9`}
+              >
+                <div className="flex flex-col items-center-safe">
+                  <div>{/* all version, sorted by vote | created time */}</div>
+
+                  <Link href={`/translate/${song.slug}`}>
+                    <Button className="rounded-none border">
+                      Create Yours Translation
+                    </Button>
+                  </Link>
+                </div>
+              </dialog>
             </nav>
           </div>
         </div>
