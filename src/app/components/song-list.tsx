@@ -26,9 +26,12 @@ export default function SongList() {
   return (
     <section className="flex flex-col items-center justify-center w-full h-full max-w-5xl px-0 pb-32 mx-auto space-y-7">
       {isLoading && <Loading isFullScreen />}
-      <h2 className="self-start text-xl font-bold sm:text-2xl md:text-3xl">
-        Recently Updated
-      </h2>
+      <div className="self-start flex items-end-safe gap-x-2">
+        <h2 className="text-xl font-bold sm:text-2xl md:text-3xl">
+          Recently Updated
+        </h2>
+        <span className="text-white/50">{songs?.length}</span>
+      </div>
       <ul
         className="w-full overflow-x-auto snap-x snap-mandatory"
         style={{
