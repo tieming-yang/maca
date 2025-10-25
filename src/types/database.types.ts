@@ -1091,21 +1091,24 @@ export type Database = {
         Row: {
           id: number
           line_index: number | null
-          text_json: Json
+          text: string
+          text_json: Json | null
           timestamp_sec: number | null
           version_id: string
         }
         Insert: {
           id?: number
           line_index?: number | null
-          text_json: Json
+          text: string
+          text_json?: Json | null
           timestamp_sec?: number | null
           version_id: string
         }
         Update: {
           id?: number
           line_index?: number | null
-          text_json?: Json
+          text?: string
+          text_json?: Json | null
           timestamp_sec?: number | null
           version_id?: string
         }
