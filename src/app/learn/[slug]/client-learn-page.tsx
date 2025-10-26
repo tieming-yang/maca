@@ -454,7 +454,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                 </Button>
               </Link>
 
-              <Button
+              {/* <Button
                 variant="icon"
                 className="bg-black/20"
                 onClick={() => {
@@ -475,7 +475,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                     modal === "translation" ? "text-white/50" : "text-white"
                   }`}
                 />
-              </Button>
+              </Button> */}
 
               <Button
                 variant="icon"
@@ -516,7 +516,7 @@ export default function ClientLearnPage(props: { slug: string }) {
 
               <Button
                 variant="icon"
-                className="bg-black/10"
+                className="absolute right-3 bg-black/10"
                 onClick={async () => {
                   try {
                     await navigator?.clipboard.writeText(url);
