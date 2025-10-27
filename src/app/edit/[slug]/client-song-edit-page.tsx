@@ -403,16 +403,6 @@ function validateLinesSection(
     errors.lines = "No lines";
   }
 
-  //TODO: Add error to the duplicated line
-  // const hasDuplicateTimestamp = lines.some(
-  //   (line, index, array) =>
-  //     array.findIndex((other) => other.timestamp_sec === line.timestamp_sec) !==
-  //     index
-  // );
-  // if (hasDuplicateTimestamp) {
-  //   errors.lines = "Each line needs a unique timestamp.";
-  // }
-
   const plan: LinesMutationPlan = {
     inserts: [],
     updates: [],
