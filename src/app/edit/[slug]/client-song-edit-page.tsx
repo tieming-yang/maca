@@ -640,8 +640,17 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             workId = null;
             break;
           }
-          const created = await Work.create(input.workAction.payload);
-          workId = created.id;
+
+          const existedWork = await Work.getByName(
+            input.workAction.payload.title
+          );
+          if (!existedWork?.id) {
+            const created = await Work.create(input.workAction.payload);
+            workId = created.id;
+          } else {
+            workId = existedWork.id;
+          }
+
           break;
         }
         case "update": {

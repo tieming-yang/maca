@@ -46,6 +46,21 @@ export const Work = {
     if (error) throw error;
     return data;
   },
+
+  async getByName(title: string): Promise<WorkRow | null> {
+    const { data, error } = await db
+      .from("works")
+      .select("*")
+      .eq("title", title)
+      .maybeSingle();
+
+    if (error) {
+      console.error(error);
+      throw error;
+    }
+
+    return data;
+  },
 };
 
 export type { WorkRow as WorkTableRow };
