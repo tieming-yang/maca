@@ -409,19 +409,21 @@ function validateLinesSection(
   };
 
   for (const line of lines) {
+    const trimedLyric = line.lyric;
+
     if (line.id && typeof line.id === "number") {
-      const { lyric, timestamp_sec } = line;
+      const { timestamp_sec } = line;
       const update = {
         ...line,
-        lyric,
+        lyric: trimedLyric,
         timestamp_sec,
       };
 
       plan.updates.push(update);
     } else {
-      const { lyric, timestamp_sec } = line;
+      const { timestamp_sec } = line;
       const insert = {
-        lyric,
+        lyric: trimedLyric,
         timestamp_sec,
         song_id: values.id!,
       };
@@ -1498,7 +1500,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                       className={`${INPUT_CLASS} w-full overflow-auto`}
                       value={lyric ?? ""}
                       onChange={(e) => {
-                        const nextLyric = e.target.value.trim();
+                        const nextLyric = e.target.value;
 
                         setFormData((prev) => ({
                           ...prev,
