@@ -41,7 +41,7 @@ export const Line = {
 
     return data;
   },
-  //TODO: Fix when update lyrics it goes to insert
+  
   async insertMany(lines: LineInsert[]): Promise<LineRow[]> {
     if (!lines.length) return [];
     const sanitizedLines = lines.map(({ id, ...rest }) => rest);
