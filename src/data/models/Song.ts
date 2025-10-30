@@ -4,25 +4,17 @@ import type { Database } from "@/types/database.types";
 import { Work, type WorkRow } from "./Work";
 import { Credit, FormattedCredit } from "./Credit";
 import { Line, LineRow } from "./Line";
+import { Translation } from "./Translation";
 
 export type TableRow = Database["public"]["Tables"]["songs"]["Row"];
 export type ViewRow = Database["public"]["Tables"]["songs"]["Row"];
-export type VersionRow =
-  Database["public"]["Tables"]["translation_versions"]["Row"];
-export type TranslationLineRow =
-  Database["public"]["Tables"]["translation_lines"]["Row"];
+
 export type InsertRow = Database["public"]["Tables"]["songs"]["Insert"];
 export type UpdateRow = Database["public"]["Tables"]["songs"]["Update"];
 export type SongWithWorkRow = TableRow & { work: WorkRow | null };
 export type SongVisibility =
   Database["public"]["Tables"]["songs"]["Row"]["visibility"];
 export type JaToken = string | { kanji: string; furigana?: string };
-
-export type Translation = {
-  language_code: string;
-  version_id: string;
-  lines: Record<number, string>;
-};
 
 export type SongBundle = {
   credit: FormattedCredit;
@@ -163,36 +155,6 @@ export const Song = {
   //   return data;
   // },
 
-  async getDefaultVersion(songId: string, lang: string) {
-    const { data, error } = await db
-      .from("translation_versions")
-      .select("*")
-      .eq("song_id", songId)
-      .eq("language_code", lang)
-      // .order("is_default", { ascending: false })
-      // supabase-js doesn't support `nullsLast`; use `nullsFirst: false`
-      // .order("vote_score", { ascending: false, nullsFirst: false })
-      .order("version_number", { ascending: true })
-      .limit(1)
-      .maybeSingle<VersionRow>();
-    if (error) throw error;
-    return data ?? null;
-  },
-
-  async getTranslationLines(versionId: string) {
-    const { data, error } = await db
-      .from("translation_lines")
-      .select("line_index, text_json")
-      .eq("version_id", versionId)
-      .order("line_index", { ascending: true });
-    if (error) throw error;
-    return Object.fromEntries(
-      (data ?? []).map(
-        (l) => [l.line_index!, (l.text_json as unknown as string) ?? ""],
-      ), // jsonb -> string
-    ) as Record<number, string>;
-  },
-
   async getBundle(slug: string, lang: string = "en"): Promise<SongBundle> {
     const song = await Song.getBySlug(slug);
 
@@ -204,13 +166,13 @@ export const Song = {
       work = await Work.getById(song.work_id);
     }
 
-    let translation: Translation | undefined;
-    const version = await Song.getDefaultVersion(song.id!, lang);
+    // let translation: Translation | undefined;
+    // const version = await Song.getDefaultVersion(song.id!, lang);
 
-    if (version) {
-      const lines = await Song.getTranslationLines(version.id);
-      translation = { language_code: lang, version_id: version.id, lines };
-    }
+    // if (version) {
+    //   const lines = await Song.getTranslationLines(version.id);
+    //   translation = { language_code: lang, version_id: version.id, lines };
+    // }
 
     return {
       id: song.id!,
@@ -224,7 +186,7 @@ export const Song = {
       created_by: song.created_by,
       credit,
       lines,
-      translation,
+      // translation,
       work,
     };
   },
