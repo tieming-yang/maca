@@ -19,12 +19,19 @@ export type Translation = TranslationVersionRow & {
   lines: TranslationLinesRow[];
 };
 
+export type DraftTranslationLine =
+  & Omit<TranslationLinesInsert, "version_id">
+  & {
+    version_id?: string;
+  };
+export type DraftTranslationLineMap = Record<string, DraftTranslationLine>;
+
 export type DraftTranslation =
   & Pick<
     TranslationVersionInsert,
     "song_id" | "status" | "title" | "language_code"
   >
-  & { lines: TranslationLinesInsert[] };
+  & { lines: DraftTranslationLineMap };
 
 const db = createClient();
 
