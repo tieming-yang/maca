@@ -1580,6 +1580,8 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                             storageKey,
                             JSON.stringify(formData)
                           );
+
+                          setIsDirty(true);
                         }}
                       >
                         <X />
