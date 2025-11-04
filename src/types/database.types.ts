@@ -1094,7 +1094,7 @@ export type Database = {
           text: string
           text_json: Json | null
           timestamp_sec: number | null
-          version_id: string
+          version_id: string | null
         }
         Insert: {
           id?: number
@@ -1102,7 +1102,7 @@ export type Database = {
           text: string
           text_json?: Json | null
           timestamp_sec?: number | null
-          version_id: string
+          version_id?: string | null
         }
         Update: {
           id?: number
@@ -1110,7 +1110,7 @@ export type Database = {
           text?: string
           text_json?: Json | null
           timestamp_sec?: number | null
-          version_id?: string
+          version_id?: string | null
         }
         Relationships: [
           {
