@@ -1,5 +1,5 @@
 import { TranslationActionPageParam } from "../page";
-import ClientTranslatePage from "./client-translate-page";
+import ClientTranslationCreatePage from "./client-translation-create-page";
 
 export default async function TranslatePage({
   params,
@@ -8,7 +8,7 @@ export default async function TranslatePage({
 }) {
   const { action, slug, translationVersionId } = await params;
   return (
-    <ClientTranslatePage
+    <ClientTranslationCreatePage
       action={action}
       slug={slug}
       translationVersionId={translationVersionId}

@@ -15,6 +15,7 @@ import {
   LanguageCodeArray,
   TranslationStatusMap,
   TranslationStatus,
+  TranslationInsert,
 } from "@/data/models/Translation";
 import { FormAction } from "../page";
 import Loading from "@/app/components/loading";
@@ -110,37 +111,42 @@ export default function ClientTranslationCreatePage(props: {
   }, [translation, translation?.lines, storageKey]);
 
   const saveMutation = useMutation({
-    mutationFn: async (newTranslation: DraftTranslation) => {
-      if (!newTranslation.title) {
-        toast.error("We need a title.");
-        return;
-      }
+    mutationFn: async (
+      newTranslation: DraftTranslation
+    ): Promise<Translation> => {
+      if (!newTranslation.title) throw new Error("We need a title.");
 
       const sanitizedNewTranslation = {
         ...newTranslation,
         lines: Object.values(newTranslation.lines),
-      };
+      } satisfies TranslationInsert;
 
       if (sanitizedNewTranslation.status === "published") {
         for (const line of sanitizedNewTranslation?.lines) {
           const hasTranslation = line.text?.trim();
           if (!hasTranslation) {
             //TODO: Jump to the first unfilled line
-            toast.error("Save faild", {
-              description: `If you want to public your translation please translation the whole song. ${Song.secondsToTimestamp(
+            throw new Error(
+              `If you want to public your translation please translation the whole song. ${Song.secondsToTimestamp(
                 line.timestamp_sec!
-              )} don't have a translation yet.`,
-            });
-            return;
+              )} don't have a translation yet.`
+            );
           }
         }
       }
+
+      const insertedTranslation = await Translation.insert(
+        sanitizedNewTranslation
+      );
+
+      return insertedTranslation;
     },
-    onSuccess: (refreshed, translation) => {
-      router.replace("");
+    onSuccess: (refreshed) => {
+      router.replace(`./${refreshed.id}`);
       localStorage.removeItem(storageKey);
     },
     onError: (error: unknown) => {
+      console.warn("save mutation error:", error);
       const message =
         error instanceof Error
           ? error.message
@@ -152,7 +158,8 @@ export default function ClientTranslationCreatePage(props: {
     },
   });
 
-  const isPageLoading = isSongLoading;
+  const isPageLoading = isSongLoading || saveMutation.isPending;
+
   return (
     <main className="space-y-10 py-5 px-3">
       {isPageLoading && <Loading isFullScreen />}

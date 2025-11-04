@@ -19,6 +19,10 @@ export type Translation = TranslationVersionRow & {
   lines: TranslationLinesRow[];
 };
 
+export type TranslationInsert = TranslationVersionInsert & {
+  lines: TranslationLinesInsert[];
+};
+
 export type DraftTranslationLine =
   & Omit<TranslationLinesInsert, "version_id">
   & {
@@ -37,8 +41,36 @@ const db = createClient();
 
 export const LanguageCode = {
   En: "en",
+  ZhTw: "zh-TW",
+  ZhCn: "zh-CN",
+  Es: "es",
+  Fr: "fr",
+  De: "de",
+  Ja: "ja",
+  Ko: "ko",
+  Ru: "ru",
+  Pt: "pt",
+  It: "it",
+  Hi: "hi",
 } as const;
 export type LanguageCode = (typeof LanguageCode)[keyof typeof LanguageCode];
+export const LanguageCodeArray = Object.entries(LanguageCode).map((
+  [key, value],
+) => [key, value]);
+
+export type TranslationStatus =
+  Database["public"]["Tables"]["translation_versions"]["Row"]["status"];
+export const TranslationStatusMap = {
+  Draft: "draft",
+  Pending: "pending",
+  Publish: "published",
+} as const;
+export type TranslationStatusMap =
+  (typeof TranslationStatusMap)[keyof typeof TranslationStatusMap];
+export const PublicTranslationStatus = Object.entries(TranslationStatusMap)
+  .filter(
+    ([_, value]) => value !== "pending",
+  ).map(([key, value]) => [key, value]);
 
 export const Translation = {
   async getDefaultVersion(
@@ -77,9 +109,30 @@ export const Translation = {
     return data;
   },
 
+  async get(versionId: string): Promise<Translation | null> {
+    const { data, error } = await db
+      .from("translation_versions")
+      .select(
+        `
+        *,
+        translation_lines(*)
+      `,
+      )
+      .eq("id", versionId)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+
+    return {
+      ...data,
+      lines: data.translation_lines ?? [],
+    };
+  },
+
   async insertVersion(
     input: TranslationVersionInsert,
-  ): Promise<TranslationVersionInsert> {
+  ): Promise<TranslationVersionRow> {
     const { data, error } = await db
       .from("translation_versions")
       .insert(input)
@@ -144,8 +197,7 @@ export const Translation = {
   async insertLines(
     lines: TranslationLinesInsert[],
   ): Promise<TranslationLinesRow[]> {
-    if (!lines.length) return [];
-    const sanitizedTranslations = lines.map(({ id, ...rest }) => rest);
+    if (!lines.length) throw new Error("Empty lines");
 
     const { data, error } = await db
       .from("translation_lines")
@@ -210,4 +262,22 @@ export const Translation = {
       throw error;
     }
   },
-}; //
+
+  async insert(transaltion: TranslationInsert): Promise<Translation> {
+    let inserted;
+
+    try {
+      const version = await Translation.insertVersion(transaltion);
+      const lines = await Translation.insertLines(transaltion.lines);
+
+      inserted = {
+        ...version,
+        lines,
+      };
+    } catch (error) {
+      throw error;
+    }
+
+    return inserted;
+  },
+};
