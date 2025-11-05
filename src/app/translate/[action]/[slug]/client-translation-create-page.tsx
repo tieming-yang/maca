@@ -142,11 +142,11 @@ export default function ClientTranslationCreatePage(props: {
       return insertedTranslation;
     },
     onSuccess: (refreshed) => {
-      router.replace(`./${refreshed.id}`);
+      toast.success("Translation Saved");
+      router.replace(`/translate/update/${slug}/${refreshed.id}`);
       localStorage.removeItem(storageKey);
     },
     onError: (error: unknown) => {
-      console.warn("save mutation error:", error);
       const message =
         error instanceof Error
           ? error.message
@@ -251,7 +251,7 @@ export default function ClientTranslationCreatePage(props: {
         </label>
       </section>
 
-      <ul className="flex items-center flex-col gap-y-5">
+      <ul className="flex items-center flex-col gap-y-5 pb-15">
         {song?.lines &&
           song.lines.map((line, index) => {
             const { lyric, id, timestamp_sec } = line;
@@ -262,8 +262,8 @@ export default function ClientTranslationCreatePage(props: {
               <li key={id}>
                 <div className="flex px-3 md:min-w-3xl min-w-svw gap-x-3 items-center-safe flex-col">
                   <div className="flex justify-between w-full">
-                    <span>{Song.secondsToTimestamp(timestamp_sec)}</span>
                     <span>{lyric}</span>
+                    <span>{Song.secondsToTimestamp(timestamp_sec)}</span>
                   </div>
                   <label htmlFor={inputId} className="sr-only">
                     Translation for {Song.secondsToTimestamp(timestamp_sec)}
