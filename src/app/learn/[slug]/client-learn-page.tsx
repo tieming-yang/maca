@@ -18,6 +18,11 @@ import { toast } from "sonner";
 import useAuthUser from "@/hooks/use-auth-user";
 import { LuLanguages } from "react-icons/lu";
 import { TbLanguageHiragana } from "react-icons/tb";
+import {
+  LanguageCode,
+  Translation,
+  TranslationLinesRow,
+} from "@/data/models/Translation";
 
 function secToTs(total?: number | null) {
   if (!total || total <= 0) return "0:00";
@@ -39,7 +44,11 @@ export default function ClientLearnPage(props: { slug: string }) {
     redirect("/not-found");
   }
 
-  const [lang, setLang] = useState<string | undefined>("zh-TW");
+  const [lang, setLang] = useState<LanguageCode | undefined>(LanguageCode.En);
+  //TODO: add it to search params
+  const [translationVersionId, setTranslationVersionId] = useState<
+    string | null
+  >(null);
 
   const { authUser, isAuthUserLoading, isAuthUserError } = useAuthUser();
 
@@ -52,6 +61,19 @@ export default function ClientLearnPage(props: { slug: string }) {
     queryFn: () => Song.getBundle(slug, lang),
     staleTime: 60_000,
     placeholderData: (prev) => prev,
+  });
+
+  const {
+    data: translationLines,
+    isLoading: isTranslationLinesLoading,
+    error: isTranslationLinesError,
+  } = useQuery<TranslationLinesRow[] | null>({
+    queryKey: QueryKey.translationLines(translationVersionId),
+    queryFn: async () => {
+      if (!translationVersionId) return null;
+      return Translation.getTranslationLines(translationVersionId);
+    },
+    enabled: !!translationVersionId,
   });
 
   const url = typeof window !== "undefined" ? window.location.href : "";
@@ -112,10 +134,10 @@ export default function ClientLearnPage(props: { slug: string }) {
   }, [renderSong, currentSec]);
 
   const translationLine = useMemo(() => {
-    if (!song?.translation) return (idx: number) => undefined;
-    const map = song.translation.lines;
-    return (idx: number) => map[idx];
-  }, [song?.translation]);
+    if (!translationLines) return (timestamp: number) => undefined;
+    return (timestamp: number) =>
+      translationLines.find((line) => line.timestamp_sec === timestamp);
+  }, [translationLines]);
 
   useEffect(() => {
     if (!song) return;

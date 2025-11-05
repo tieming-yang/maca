@@ -5,6 +5,8 @@ export const QueryKey = {
   songs: () => ["songs"] as const,
   work: (id: string) => ["work", id] as const,
   songCredits: (songId: string) => ["song", songId, "credits"] as const,
+  translationLines: (versionId: string | null) =>
+    ["translationLines", versionId ?? "none"] as const,
   people: () => ["people"] as const,
   person: (id: string) => ["person", id] as const,
 

@@ -4,7 +4,7 @@ import type { Database } from "@/types/database.types";
 import { Work, type WorkRow } from "./Work";
 import { Credit, FormattedCredit } from "./Credit";
 import { Line, LineRow } from "./Line";
-import { Translation } from "./Translation";
+import { LanguageCode, Translation, TranslationVersionRow } from "./Translation";
 
 export type TableRow = Database["public"]["Tables"]["songs"]["Row"];
 export type ViewRow = Database["public"]["Tables"]["songs"]["Row"];
@@ -26,7 +26,7 @@ export type SongBundle = {
   end_seconds: number | null; // view column is `end_seconds`
   furigana: string | null;
   lines: LineRow[];
-  translation?: Translation;
+  translations?: TranslationVersionRow[];
   work: WorkRow | null;
   created_at: string | null;
   created_by: string | null;
@@ -155,7 +155,7 @@ export const Song = {
   //   return data;
   // },
 
-  async getBundle(slug: string, lang: string = "en"): Promise<SongBundle> {
+  async getBundle(slug: string, lang: LanguageCode = LanguageCode.En): Promise<SongBundle> {
     const song = await Song.getBySlug(slug);
 
     const credit = await Credit.get(song.id!);
@@ -166,15 +166,10 @@ export const Song = {
       work = await Work.getById(song.work_id);
     }
 
-    // let translation: Translation | undefined;
-    // const version = await Song.getDefaultVersion(song.id!, lang);
+    const translations = await Translation.getVersions(song.id, lang);
 
-    // if (version) {
-    //   const lines = await Song.getTranslationLines(version.id);
-    //   translation = { language_code: lang, version_id: version.id, lines };
-    // }
 
-    return {
+     return {
       id: song.id!,
       slug: song.slug!,
       name: song.name ?? "",
@@ -186,7 +181,7 @@ export const Song = {
       created_by: song.created_by,
       credit,
       lines,
-      // translation,
+      translations,
       work,
     };
   },

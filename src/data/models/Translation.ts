@@ -23,18 +23,19 @@ export type TranslationInsert = TranslationVersionInsert & {
   lines: TranslationLinesInsert[];
 };
 
-export type DraftTranslationLine = Omit<
-  TranslationLinesInsert,
-  "version_id"
-> & {
-  version_id?: string;
-};
+export type DraftTranslationLine =
+  & Omit<TranslationLinesInsert, "version_id">
+  & {
+    version_id?: string;
+  };
 export type DraftTranslationLineMap = Record<string, DraftTranslationLine>;
 
-export type DraftTranslation = Pick<
-  TranslationVersionInsert,
-  "song_id" | "status" | "title" | "language_code"
-> & { lines: DraftTranslationLineMap };
+export type DraftTranslation =
+  & Pick<
+    TranslationVersionInsert,
+    "song_id" | "status" | "title" | "language_code"
+  >
+  & { lines: DraftTranslationLineMap };
 
 const db = createClient();
 
@@ -53,9 +54,9 @@ export const LanguageCode = {
   Hi: "hi",
 } as const;
 export type LanguageCode = (typeof LanguageCode)[keyof typeof LanguageCode];
-export const LanguageCodeArray = Object.entries(LanguageCode).map(
-  ([key, value]) => [key, value]
-);
+export const LanguageCodeArray = Object.entries(LanguageCode).map((
+  [key, value],
+) => [key, value]);
 
 export type TranslationStatus =
   Database["public"]["Tables"]["translation_versions"]["Row"]["status"];
@@ -67,13 +68,14 @@ export const TranslationStatusMap = {
 export type TranslationStatusMap =
   (typeof TranslationStatusMap)[keyof typeof TranslationStatusMap];
 export const PublicTranslationStatus = Object.entries(TranslationStatusMap)
-  .filter(([_, value]) => value !== "pending")
-  .map(([key, value]) => [key, value]);
+  .filter(
+    ([_, value]) => value !== "pending",
+  ).map(([key, value]) => [key, value]);
 
 export const Translation = {
   async getDefaultVersion(
     songId: string,
-    lang: string
+    lang: string,
   ): Promise<TranslationVersionRow | null> {
     const { data, error } = await db
       .from("translation_versions")
@@ -91,7 +93,7 @@ export const Translation = {
 
   async getVersions(
     songId: string,
-    language: LanguageCode
+    language: LanguageCode,
   ): Promise<TranslationVersionRow[]> {
     const { data, error } = await db
       .from("translation_versions")
@@ -114,7 +116,7 @@ export const Translation = {
         `
         *,
         translation_lines(*)
-      `
+      `,
       )
       .eq("id", versionId)
       .maybeSingle();
@@ -129,7 +131,7 @@ export const Translation = {
   },
 
   async insertVersion(
-    input: TranslationVersionInsert
+    input: TranslationVersionInsert,
   ): Promise<TranslationVersionRow> {
     const { data, error } = await db
       .from("translation_versions")
@@ -147,7 +149,7 @@ export const Translation = {
 
   async updateVersion(
     id: string,
-    update: TranslationVersionUpdate
+    update: TranslationVersionUpdate,
   ): Promise<TranslationVersionRow> {
     const { data, error } = await db
       .from("translation_versions")
@@ -165,10 +167,10 @@ export const Translation = {
   },
 
   async deleteVersion(id: string): Promise<void> {
-    const { error } = await db
-      .from("translation_versions")
-      .delete()
-      .eq("id", id);
+    const { error } = await db.from("translation_versions").delete().eq(
+      "id",
+      id,
+    );
 
     if (error) {
       console.error(error);
@@ -193,7 +195,7 @@ export const Translation = {
   },
 
   async insertLines(
-    lines: TranslationLinesInsert[]
+    lines: TranslationLinesInsert[],
   ): Promise<TranslationLinesRow[]> {
     if (!lines.length) throw new Error("Empty lines");
 
@@ -212,14 +214,10 @@ export const Translation = {
 
   async updateLine(
     id: number,
-    update: TranslationsLinesUpdate
+    update: TranslationsLinesUpdate,
   ): Promise<TranslationLinesRow> {
-    const { data, error } = await db
-      .from("translation_lines")
-      .update(update)
-      .eq("id", id)
-      .select()
-      .single();
+    const { data, error } = await db.from("translation_lines").update(update)
+      .eq("id", id).select().single();
 
     if (error) {
       console.error(error);
@@ -230,19 +228,22 @@ export const Translation = {
   },
 
   async updateLines(
-    updates: TranslationsLinesUpdate[]
+    updates: TranslationsLinesUpdate[],
   ): Promise<TranslationLinesRow[]> {
     if (!updates.length) return [];
 
     const results = await Promise.all(
-      updates.map(({ id, ...data }) => Translation.updateLine(id!, data))
+      updates.map(({ id, ...data }) => Translation.updateLine(id!, data)),
     );
 
     return results;
   },
 
   async deleteLine(id: number): Promise<void> {
-    const { error } = await db.from("translation_lines").delete().eq("id", id);
+    const { error } = await db
+      .from("translation_lines")
+      .delete()
+      .eq("id", id);
 
     if (error) {
       console.error(error);
@@ -263,16 +264,16 @@ export const Translation = {
   },
 
   async insert(translation: TranslationInsert): Promise<Translation> {
-    const { lines, ...versionInput } = translation;
-    const version = await Translation.insertVersion(versionInput);
+     const { lines, ...versionInput } = translation;
+  const version = await Translation.insertVersion(versionInput);
 
-    const linesWithVersion = lines.map((line, index) => ({
-      line_index: line.line_index ?? index,
-      ...line,
-      version_id: version.id,
-    }));
+  const linesWithVersion = lines.map((line, index) => ({
+    line_index: line.line_index ?? index,
+    ...line,
+    version_id: version.id,
+  }));
 
-    const insertedLines = await Translation.insertLines(linesWithVersion);
-    return { ...version, lines: insertedLines };
+  const insertedLines = await Translation.insertLines(linesWithVersion);
+  return { ...version, lines: insertedLines };
   },
 };
