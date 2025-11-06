@@ -110,8 +110,7 @@ export default function ClientAuthPage() {
         staleTime: 0,
         retry: 2,
       });
-
-      router.replace(`/profile/${uid}`);
+      router.back();
     },
     onError: (err: unknown) => {
       const msg = err instanceof Error ? err.message : "Sign in failed";
@@ -133,7 +132,7 @@ export default function ClientAuthPage() {
   const isPending = signUpMutation.isPending || signInMutation.isPending;
 
   return (
-    <main className="mx-auto max-w-md p-6 text-white">
+    <main className="mx-auto max-w-md p-6 text-white h-svh flex flex-col justify-center-safe items-center-safe">
       {/* Tabs / Mode Switcher */}
       <div className="mb-6 flex gap-2">
         <Button
