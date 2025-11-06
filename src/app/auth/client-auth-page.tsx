@@ -12,6 +12,7 @@ import { Profile } from "@/data/models/Profile";
 import { QueryKey } from "@/data/query-keys";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "../components/ui/button";
+import { INPUT_CLASS } from "../edit/[slug]/client-song-edit-page";
 
 export default function ClientAuthPage() {
   const router = useRouter();
@@ -132,27 +133,7 @@ export default function ClientAuthPage() {
   const isPending = signUpMutation.isPending || signInMutation.isPending;
 
   return (
-    <main className="mx-auto max-w-md p-6 text-white h-svh flex flex-col justify-center-safe items-center-safe">
-      {/* Tabs / Mode Switcher */}
-      <div className="mb-6 flex gap-2">
-        <Button
-          variant="outline"
-          className={`${mode === "signin" ? "border" : "border-0"}`}
-          onClick={() => setMode("signin")}
-          type="button"
-        >
-          Sign in
-        </Button>
-        <Button
-          variant="outline"
-          className={`${mode === "signup" ? "border" : "border-0"}`}
-          onClick={() => setMode("signup")}
-          type="button"
-        >
-          Sign up
-        </Button>
-      </div>
-
+    <main className="flex flex-col max-w-md p-6 mx-auto text-white gap-y-10 h-svh justify-center-safe items-center-safe">
       {/* Forms */}
       {mode === "signup" ? (
         <form onSubmit={handleSubmitSignUp} className="space-y-4">
@@ -161,7 +142,7 @@ export default function ClientAuthPage() {
             <input
               type="email"
               required
-              className="w-full rounded-full border border-white/20 bg-black/30 px-3 py-2"
+              className={`${INPUT_CLASS}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
@@ -173,7 +154,7 @@ export default function ClientAuthPage() {
               type="password"
               required
               minLength={6}
-              className="w-full rounded-full border border-white/20 bg-black/30 px-3 py-2"
+              className={`${INPUT_CLASS}`}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
@@ -185,14 +166,19 @@ export default function ClientAuthPage() {
               type="text"
               required
               minLength={3}
-              className="w-full rounded-full border border-white/20 bg-black/30 px-3 py-2"
+              className={`${INPUT_CLASS}`}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
             />
           </div>
 
-          <Button variant="primary" type="submit" disabled={isPending}>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={isPending}
+            className="w-full"
+          >
             {signUpMutation.isPending ? "Signing up…" : "Create account"}
           </Button>
 
@@ -216,7 +202,7 @@ export default function ClientAuthPage() {
             <input
               type="email"
               required
-              className="w-full rounded-full border border-white/20 bg-black/30 px-3 py-2"
+              className={`${INPUT_CLASS}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
@@ -226,8 +212,8 @@ export default function ClientAuthPage() {
             <label className="block text-sm">Password</label>
             <input
               type="password"
+              className={`${INPUT_CLASS}`}
               required
-              className="w-full rounded-full border border-white/20 bg-black/30 px-3 py-2"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
@@ -235,7 +221,12 @@ export default function ClientAuthPage() {
             />
           </div>
 
-          <Button variant="primary" type="submit" disabled={isPending}>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={isPending}
+            className="w-full"
+          >
             {signInMutation.isPending ? "Signing in…" : "Sign in"}
           </Button>
 
@@ -249,6 +240,30 @@ export default function ClientAuthPage() {
           )}
         </form>
       )}
+
+      {/* Tabs / Mode Switcher */}
+      <div className="flex gap-2 border rounded-full border-zinc-800">
+        <Button
+          variant="outline"
+          className={`${
+            mode === "signin" ? "border border-zinc-700" : "border-0"
+          }`}
+          onClick={() => setMode("signin")}
+          type="button"
+        >
+          Sign in
+        </Button>
+        <Button
+          variant="outline"
+          className={`${
+            mode === "signup" ? "border border-zinc-700" : "border-0"
+          }`}
+          onClick={() => setMode("signup")}
+          type="button"
+        >
+          Sign up
+        </Button>
+      </div>
     </main>
   );
 }
