@@ -8,7 +8,7 @@ import { QueryKey } from "@/data/query-keys";
 import { Song, SongBundle } from "@/data/models/Song";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { addFurigana } from "@/utils/furigana/addFurigana";
 import { FuriganaType, FuriganaTypeArray } from "@/utils/furigana/constants";
 import Loading from "@/app/components/loading";
@@ -41,7 +41,7 @@ export default function ClientLearnPage(props: { slug: string }) {
   const { slug } = props;
   if (!slug) {
     console.error("No Slug!");
-    redirect("/not-found");
+    notFound();
   }
 
   const [lang, setLang] = useState<LanguageCode | undefined>(LanguageCode.En);
@@ -51,6 +51,7 @@ export default function ClientLearnPage(props: { slug: string }) {
   >(null);
 
   const { authUser, isAuthUserLoading, isAuthUserError } = useAuthUser();
+  const router = useRouter();
 
   const {
     data: song,
@@ -239,7 +240,7 @@ export default function ClientLearnPage(props: { slug: string }) {
 
   if (error)
     return <div className="p-10 text-red-400">Error: {error.message}</div>;
-  if (isLoading || !song) return <Loading isFullScreen />;
+  if (isLoading || !song || isAuthUserLoading) return <Loading isFullScreen />;
 
   return (
     <main className="flex flex-col items-center font-sans" ref={containerRef}>
@@ -361,9 +362,9 @@ export default function ClientLearnPage(props: { slug: string }) {
         ref={lyricsContainerRef}
       >
         <ul className="flex flex-col gap-y-5">
-          {renderSong?.lines.map((line, i) => {
+          {renderSong?.lines.map((line, index) => {
             const { timestamp_sec, lyric } = line;
-            const isActive = i === activeLineIndex;
+            const isActive = index === activeLineIndex;
 
             return lyric === "music" ? (
               <Music
@@ -389,7 +390,12 @@ export default function ClientLearnPage(props: { slug: string }) {
                   isActive ? "text-white" : "text-white/50"
                 }`}
               >
-                {lyric}
+                <p>{lyric}</p>
+                {translationLine(timestamp_sec)?.text && (
+                  <p className="text-sm md:text-xl">
+                    {translationLine(timestamp_sec)?.text}
+                  </p>
+                )}
               </li>
             );
           })}
@@ -476,7 +482,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                 </Button>
               </Link>
 
-              {/* <Button
+              <Button
                 variant="icon"
                 className="bg-black/20"
                 onClick={() => {
@@ -497,7 +503,7 @@ export default function ClientLearnPage(props: { slug: string }) {
                     modal === "translation" ? "text-white/50" : "text-white"
                   }`}
                 />
-              </Button> */}
+              </Button>
 
               <Button
                 variant="icon"
@@ -538,7 +544,7 @@ export default function ClientLearnPage(props: { slug: string }) {
 
               <Button
                 variant="icon"
-                className="absolute right-3 bg-black/10"
+                className="bg-black/10"
                 onClick={async () => {
                   try {
                     await navigator?.clipboard.writeText(url);
@@ -556,16 +562,61 @@ export default function ClientLearnPage(props: { slug: string }) {
 
               <dialog
                 open={modal === "translation"}
-                className={`text-white bg-black/50 border space-y-5 p-3 mx-auto w-full max-w-3xl backdrop-blur-2xl fixed top-0 my-9`}
+                className={`text-white bg-black/50 border space-y-5 p-3 mx-auto w-full md:max-w-3xl backdrop-blur-2xl fixed bottom-50 my-9`}
               >
-                <div className="flex flex-col items-center-safe">
-                  <div>{/* all version, sorted by vote | created time */}</div>
+                <div className="flex flex-col items-center-safe space-y-5">
+                  {isTranslationLinesLoading ? (
+                    <Loading />
+                  ) : (
+                    <ul className="py-5 flex flex-col items-center w-full justify-center max-h-56 overflow-y-auto">
+                      {/* all version, sorted by vote | created time */}
+                      {song.translations && song.translations?.length > 0
+                        ? song.translations.map((translation) => {
+                            return (
+                              <Button
+                                key={translation.id}
+                                className="border w-full rounded-none p-1"
+                                onClick={() => {
+                                  setTranslationVersionId(translation.id);
+                                  setModal("idle");
+                                }}
+                              >
+                                {translation.title}
+                              </Button>
+                            );
+                          })
+                        : "No Translation Yet"}
+                    </ul>
+                  )}
 
-                  <Link href={`/translate/${song.slug}`}>
-                    <Button className="rounded-none border">
-                      Create Yours Translation
+                  <div>
+                    <Button
+                      className="rounded-none border"
+                      onClick={() => {
+                        if (!authUser) {
+                          toast.warning("You need to sign in first");
+                          router.push("/auth");
+                          return;
+                        }
+
+                        router.push(`/translate/create/${song.slug}`);
+                      }}
+                    >
+                      Create Your Translation
                     </Button>
-                  </Link>
+
+                    {translationVersionId && (
+                      <Button
+                        className="rounded-none border"
+                        onClick={() => {
+                          setTranslationVersionId(null);
+                          setModal("idle");
+                        }}
+                      >
+                        Turn it off
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </dialog>
             </nav>
