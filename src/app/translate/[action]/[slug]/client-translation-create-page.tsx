@@ -25,6 +25,7 @@ import {
   LanguageCode,
 } from "../../../../data/models/Translation";
 import { useRouter } from "next/navigation";
+import useAuthUser from "@/hooks/use-auth-user";
 
 function makeBlankTranslation(song: SongBundle) {
   return {
@@ -55,8 +56,11 @@ export default function ClientTranslationCreatePage(props: {
 }) {
   const { action, slug, translationVersionId } = props;
   const router = useRouter();
+  const { authUser, isAuthUserLoading, isAuthUserError } = useAuthUser();
 
-  const isNew = action === "create" && !translationVersionId;
+  if (!authUser) {
+    router.push("/auth");
+  }
 
   const storageKey = useMemo(
     () => `maca:create:translationForm:${slug}`,
@@ -158,7 +162,8 @@ export default function ClientTranslationCreatePage(props: {
     },
   });
 
-  const isPageLoading = isSongLoading || saveMutation.isPending;
+  const isPageLoading =
+    isSongLoading || saveMutation.isPending || isAuthUserLoading;
 
   return (
     <main className="space-y-10 py-5 px-3">
@@ -170,15 +175,15 @@ export default function ClientTranslationCreatePage(props: {
       {/* Metadata */}
       <h2 className="text-xl text-center">Basic Info</h2>
       <section
-        className={`border px-3 py-5 flex justify-center flex-col md:flex-row`}
+        className={`px-3 py-5 flex justify-center flex-col gap-y-5 `}
       >
         <label className="grid gap-1">
           <span>title</span>
           <input
             type="text"
-            placeholder="awsome translation v1"
+            placeholder={`${authUser?.user_metadata.username}'s awsome translation v1`}
             className={
-              "w-full border h-10 px-3 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 disabled:cursor-not-allowed disabled:border-zinc-800 disabled:bg-zinc-900/50"
+              "border h-10 px-3 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 disabled:cursor-not-allowed disabled:border-zinc-800 disabled:bg-zinc-900/50"
             }
             value={translation?.title ?? ""}
             onChange={(e) => {
@@ -193,65 +198,67 @@ export default function ClientTranslationCreatePage(props: {
             }}
           ></input>
         </label>
-        <label className="grid gap-1">
-          <span>langauge</span>
-          <select
-            className={
-              "w-full border h-10 px-3 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 disabled:cursor-not-allowed disabled:border-zinc-800 disabled:bg-zinc-900/50"
-            }
-            value={translation?.language_code ?? LanguageCode.En}
-            onChange={(e) => {
-              const newLanguageCode = e.target.value;
-              setTranslation((prev) => {
-                if (!prev) return prev;
+        <div className="flex self-center-safe">
+          <label className="grid gap-1">
+            <span>langauge</span>
+            <select
+              className={
+                "w-full border h-10 px-3 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 disabled:cursor-not-allowed disabled:border-zinc-800 disabled:bg-zinc-900/50"
+              }
+              value={translation?.language_code ?? LanguageCode.En}
+              onChange={(e) => {
+                const newLanguageCode = e.target.value;
+                setTranslation((prev) => {
+                  if (!prev) return prev;
 
-                return {
-                  ...prev,
-                  language_code: newLanguageCode,
-                };
-              });
-            }}
-          >
-            {LanguageCodeArray.map(([key, value]) => {
-              return (
-                <option value={value} key={key} className="w-full">
-                  {value}
-                </option>
-              );
-            })}
-          </select>
-        </label>
-        <label className="grid gap-1">
-          <span>status</span>
-          <select
-            className={
-              "w-full border h-10 px-3 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 disabled:cursor-not-allowed disabled:border-zinc-800 disabled:bg-zinc-900/50"
-            }
-            value={translation?.status ?? TranslationStatusMap.Draft}
-            onChange={(e) => {
-              const newStatus = e.target.value as TranslationStatus;
-              setTranslation((prev) => {
-                if (!prev) return prev;
+                  return {
+                    ...prev,
+                    language_code: newLanguageCode,
+                  };
+                });
+              }}
+            >
+              {LanguageCodeArray.map(([key, value]) => {
+                return (
+                  <option value={value} key={key} className="w-full">
+                    {value}
+                  </option>
+                );
+              })}
+            </select>
+          </label>
+          <label className="grid gap-1">
+            <span>status</span>
+            <select
+              className={
+                "w-full border h-10 px-3 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 disabled:cursor-not-allowed disabled:border-zinc-800 disabled:bg-zinc-900/50"
+              }
+              value={translation?.status ?? TranslationStatusMap.Draft}
+              onChange={(e) => {
+                const newStatus = e.target.value as TranslationStatus;
+                setTranslation((prev) => {
+                  if (!prev) return prev;
 
-                return {
-                  ...prev,
-                  status: newStatus,
-                };
-              });
-            }}
-          >
-            {PublicTranslationStatus.map(([key, value]) => {
-              return (
-                <option value={value} key={key} className="w-full">
-                  {value}
-                </option>
-              );
-            })}
-          </select>
-        </label>
+                  return {
+                    ...prev,
+                    status: newStatus,
+                  };
+                });
+              }}
+            >
+              {PublicTranslationStatus.map(([key, value]) => {
+                return (
+                  <option value={value} key={key} className="w-full">
+                    {value}
+                  </option>
+                );
+              })}
+            </select>
+          </label>
+        </div>
       </section>
 
-      <ul className="flex items-center flex-col gap-y-5 pb-15">
+      <ul className="flex items-center flex-col gap-y-5 pb-30">
         {song?.lines &&
           song.lines.map((line, index) => {
             const { lyric, id, timestamp_sec } = line;
