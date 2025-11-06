@@ -981,8 +981,9 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   const renderLines = useMemo(() => {
     const lines = [...formData.lines];
     if (editingField === "timestamp") return lines;
-    return lines.sort((a, b) => a.timestamp_sec - b.timestamp_sec);
-  }, [formData.lines, editingField]);
+    formData.lines = lines.sort((a, b) => a.timestamp_sec - b.timestamp_sec);
+    return formData.lines;
+  }, [editingField, formData]);
 
   return (
     <section className="w-full font-mono max-w-3xl mx-auto space-y-6 py-8 text-zinc-100 px-3">
