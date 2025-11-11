@@ -86,7 +86,7 @@ export default function SongList() {
 
                 {editable && (
                   <Link href={`/edit/${song.slug}`}>
-                    <Button variant="outline">Edit</Button>
+                    <Button variant="outline" className="rounded-none border-white w-full py-1">Edit</Button>
                   </Link>
                 )}
               </div>
