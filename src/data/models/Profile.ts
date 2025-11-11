@@ -8,6 +8,7 @@ import type {
 import type { Database } from "@/types/database.types";
 
 export type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
+export type ProfileRole = Database["public"]["Tables"]["profiles"]["Row"]["role"];
 
 export type ProfileUpdate = Database["public"]["Tables"]["profiles"]["Update"];
 

@@ -6,11 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Loading from "./loading";
 import { toast } from "sonner";
+import useProfile from "@/hooks/use-profile";
+import { Button } from "@/app/components/ui/button";
 
 export default function SongList() {
   const {
     data: songs,
-    isLoading,
+    isLoading: isSongsLoading,
     error,
   } = useQuery({
     queryKey: QueryKey.songs(),
@@ -18,11 +20,13 @@ export default function SongList() {
     staleTime: 60_000,
     placeholderData: (prev) => prev,
   });
+  const { profile, isProfileLoading } = useProfile();
 
   if (error) {
     toast.error("We are having trouble to fetch the songs, please try again");
   }
-
+  const isLoading = isSongsLoading || isProfileLoading;
+  const editable = profile?.role === "admin" || profile?.role === "editor";
   return (
     <section className="flex flex-col items-center justify-center w-full h-full max-w-5xl px-0 pb-32 mx-auto space-y-7">
       {isLoading && <Loading isFullScreen />}
@@ -50,24 +54,27 @@ export default function SongList() {
               song.credits?.featured_artist.at(0)?.display_name;
 
             return (
-              <Link
-                href={`learn/${song.slug}`}
-                prefetch
-                className="flex flex-col justify-center p-2 transition-all duration-200 border text-md group snap-center xl:text-xl sm:p-3 hover:scale-110 hover:bg-white hover:text-black"
-                // style={{ filter: "drop-shadow(0 0 15px)" }}
+              <div
                 key={song.id ?? song.slug ?? song.name}
+                className="flex flex-col justify-center transition-all duration-200 border text-md group snap-center xl:text-xl hover:scale-110 hover:bg-white hover:text-black"
               >
-                <li className="font-semibold whitespace-nowrap">{song.name}</li>
-                <div className="text-sm text-white/75 group-hover:text-zinc-800 whitespace-nowrap">
-                  {featureArtist ? (
-                    <span>
-                      {primaryArtist} & {featureArtist}
-                    </span>
-                  ) : (
-                    <span>{primaryArtist}</span>
-                  )}
-                </div>
-                {/* <Link
+                <Link
+                  href={`learn/${song.slug}`}
+                  className="w-full h-full p-2 sm:p-3"
+                >
+                  <li className="font-semibold whitespace-nowrap">
+                    {song.name}
+                  </li>
+                  <div className="text-sm text-white/75 group-hover:text-zinc-800 whitespace-nowrap">
+                    {featureArtist ? (
+                      <span>
+                        {primaryArtist} & {featureArtist}
+                      </span>
+                    ) : (
+                      <span>{primaryArtist}</span>
+                    )}
+                  </div>
+                  {/* <Link
                   className="text-white/70"
                   href={`artist/${
                     song.credits.primary_artist.at(0)?.id
@@ -75,7 +82,14 @@ export default function SongList() {
                 >
                   {song.credits.primary_artist.at(0)?.display_name}
                 </Link> */}
-              </Link>
+                </Link>
+
+                {editable && (
+                  <Link href={`/edit/${song.slug}`}>
+                    <Button variant="outline">Edit</Button>
+                  </Link>
+                )}
+              </div>
             );
           })}
       </ul>
