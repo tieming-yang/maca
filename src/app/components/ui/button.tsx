@@ -18,7 +18,7 @@ const variantClassMap: Record<ButtonVariant, string> = {
   danger: `${topGlowBorder} border border-rose-500/60 text-rose-300 enabled:hover:bg-rose-500/10 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-rose-400`,
   icon: `${topGlowBorder} bg-black/10 text-white enabled:hover:bg-zinc-900 px-2 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-zinc-300 size-13`,
   outline:
-    "bg-transparent text-white enabled:hover:bg-zinc-400 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-zinc-300",
+    "bg-transparent border border-white/50 text-white enabled:hover:bg-zinc-400 enabled:focus-visible:outline enabled:focus-visible:outline-offset-2 enabled:focus-visible:outline-zinc-300",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
