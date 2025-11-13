@@ -15,7 +15,7 @@ export async function generateMetadata(
 
   const song = await Song.getBySlug(slug);
 
-  const title = song?.name ? `${song.name} | Maca` : "Maca";
+  const title = song?.name ? `${song.name}` : "Maca";
   const description = song?.romaji ?? "Learn Japanese lyrics on Maca.";
   const image = "https://maca.club/favicons/web-app-manifest-512x512.png";
 
