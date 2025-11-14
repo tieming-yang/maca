@@ -31,7 +31,7 @@ export default function ClientEditPage() {
   }
 
   return (
-    <section className="w-full max-w-5xl space-y-6 py-8 px-3 text-zinc-100">
+    <section className="w-full mx-auto max-w-5xl space-y-6 py-8 px-3 text-zinc-100">
       <header className="flex flex-col gap-4 rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 shadow-[0_20px_45px_-35px_rgba(12,12,12,1)] sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-semibold">Songs</h1>
