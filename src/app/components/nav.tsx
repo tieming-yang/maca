@@ -1,18 +1,20 @@
 "use client";
 
-import { Home, User, ArrowLeft } from "lucide-react";
+import { Home, User, ArrowLeft, Pen } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { usePreviousPath } from "@/hooks/use-previous-path";
-import { MdOutlineHowToVote } from "react-icons/md";
+import useProfile from "@/hooks/use-profile";
 
+const noGoingBackPaths = ["/", "/auth"];
 export default function Nav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
   const previousPath = usePreviousPath();
+  const { profile } = useProfile();
 
   const [url, setUrl] = useState("/");
   useEffect(() => {
@@ -23,7 +25,8 @@ export default function Nav() {
   if (pathname.includes("/learn")) {
     return null;
   }
-  const hasPreviousPath = previousPath && pathname !== "/";
+
+  const hasPreviousPath = previousPath && noGoingBackPaths.includes(pathname);
 
   return (
     <nav className="fixed bottom-7 mx-auto w-full">
@@ -44,11 +47,21 @@ export default function Nav() {
           )}
 
           {pathname !== "/auth" && (
-            <Link href="/auth">
-              <Button variant="icon">
-                <User />
-              </Button>
-            </Link>
+            <div className="flex gap-x-5">
+              <Link href="/auth">
+                <Button variant="icon">
+                  <User />
+                </Button>
+              </Link>
+
+              {profile?.role === "admin" && (
+                <Link href="/edit">
+                  <Button variant="icon">
+                    <Pen />
+                  </Button>
+                </Link>
+              )}
+            </div>
           )}
 
           {/* {pathname !== "/vote" && (
