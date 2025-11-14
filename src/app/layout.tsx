@@ -94,20 +94,20 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-mono antialiased md:px-0 overflow-x-hidden`}
       >
         <Providers>
-          {children}
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              // unstyled: true,
-              // classNames: {
-              //   default: `${topGlowBorder} inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition gap-x-2 border border-white/20 backdrop-blur-2xl`,
-              // },
-              style: {
-                borderRadius: 100,
-              },
-            }}
-          />
           <Suspense fallback={<Loading isFullScreen />}>
+            {children}
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                // unstyled: true,
+                // classNames: {
+                //   default: `${topGlowBorder} inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition gap-x-2 border border-white/20 backdrop-blur-2xl`,
+                // },
+                style: {
+                  borderRadius: 100,
+                },
+              }}
+            />
             <Nav />
           </Suspense>
         </Providers>
