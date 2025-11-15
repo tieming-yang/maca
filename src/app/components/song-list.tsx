@@ -28,7 +28,7 @@ export default function SongList() {
   const isLoading = isSongsLoading || isProfileLoading;
   const editable = profile?.role === "admin" || profile?.role === "editor";
   return (
-    <section className="flex flex-col items-center justify-center w-full h-full max-w-5xl px-0 pb-32 mx-auto space-y-7">
+    <section className="flex flex-col items-center justify-center w-full h-full px-0 pb-32 mx-auto space-y-7">
       {isLoading && <Loading isFullScreen />}
       <div className="self-start flex items-end-safe gap-x-2">
         <h2 className="text-xl font-bold sm:text-2xl md:text-3xl">
@@ -56,7 +56,7 @@ export default function SongList() {
             return (
               <div
                 key={song.id ?? song.slug ?? song.name}
-                className="flex flex-col justify-center transition-all duration-200 border text-md group snap-center xl:text-xl hover:scale-110 hover:bg-white hover:text-black"
+                className="flex flex-col justify-center transition-all duration-200 border text-sm group snap-center xl:text-md hover:scale-110 hover:bg-white hover:text-black"
               >
                 <Link
                   href={`learn/${song.slug}`}
@@ -65,7 +65,7 @@ export default function SongList() {
                   <li className="font-semibold whitespace-nowrap">
                     {song.name}
                   </li>
-                  <div className="text-sm text-white/75 group-hover:text-zinc-800 whitespace-nowrap">
+                  <div className="text-xs xl:text-sm text-white/75 group-hover:text-zinc-800 whitespace-nowrap">
                     {featureArtist ? (
                       <span>
                         {primaryArtist} & {featureArtist}
