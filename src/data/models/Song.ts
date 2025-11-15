@@ -141,6 +141,23 @@ export const Song = {
     return data;
   },
 
+  async getById(id: string): Promise<SongWithWorkRow> {
+    const { data, error } = await db
+      .from("songs")
+      .select(
+        "*, work:works(id, title, romaji, furigana, kind, notes, year, created_at)",
+      )
+      .eq("id", id)
+      .single<SongWithWorkRow>();
+
+    if (error) {
+      console.error(error);
+      throw Error("getById Error:", error);
+    }
+
+    return data;
+  },
+
   //TODO: Fix song_with_base_json to include visibility
   // async getViewBySlug(slug: string): Promise<ViewRow> {
   //   const { data, error } = await db
@@ -157,6 +174,37 @@ export const Song = {
 
   async getBundle(slug: string, lang: LanguageCode = LanguageCode.En): Promise<SongBundle> {
     const song = await Song.getBySlug(slug);
+
+    const credit = await Credit.get(song.id!);
+    const lines = await Line.get(song.id);
+
+    let work = null;
+    if (song.work_id) {
+      work = await Work.getById(song.work_id);
+    }
+
+    const translations = await Translation.getVersions(song.id, lang);
+
+
+     return {
+      id: song.id!,
+      slug: song.slug!,
+      name: song.name ?? "",
+      youtube_id: song.youtube_id ?? null,
+      romaji: song.romaji ?? "",
+      end_seconds: song.end_seconds ?? null,
+      furigana: song.furigana ?? null,
+      created_at: song.created_at,
+      created_by: song.created_by,
+      credit,
+      lines,
+      translations,
+      work,
+    };
+  },
+
+  async getBundleById(id: string, lang: LanguageCode = LanguageCode.En): Promise<SongBundle> {
+    const song = await Song.getById(id);
 
     const credit = await Credit.get(song.id!);
     const lines = await Line.get(song.id);
