@@ -36,6 +36,7 @@ function idFor(sec: number) {
 }
 
 const FURIGANA_ELEMENTS = "li, span, h1";
+const OUTRO_SIGNS = ["[outro]", "outro", "「アウトロ」"];
 
 export default function ClientLearnPage(props: { slug: string }) {
   const { slug } = props;
@@ -365,8 +366,9 @@ export default function ClientLearnPage(props: { slug: string }) {
           {renderSong?.lines.map((line, index) => {
             const { timestamp_sec, lyric } = line;
             const isActive = index === activeLineIndex;
+            const isOutro = OUTRO_SIGNS.includes(lyric);
 
-            return lyric === "music" ? (
+            return lyric === "music" || isOutro ? (
               <Music
                 key={timestamp_sec}
                 data-furigana-excluded
