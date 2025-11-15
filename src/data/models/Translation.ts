@@ -113,7 +113,7 @@ export const Translation = {
       .select(
         `
         *,
-        translation_lines(*)
+        lines:translation_lines(*)
       `
       )
       .eq("id", versionId)
@@ -122,10 +122,8 @@ export const Translation = {
     if (error) throw error;
     if (!data) return null;
 
-    return {
-      ...data,
-      lines: data.translation_lines ?? [],
-    };
+    return data;
+      
   },
 
   async getByUser(userId: string): Promise<TranslationVersionRow[]> {
