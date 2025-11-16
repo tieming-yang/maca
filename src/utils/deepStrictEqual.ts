@@ -41,10 +41,7 @@ export function deepStrictEqual<T>(actual: T, expect: T): boolean {
     } else {
       const actualKeys = Object.keys(actual);
       const expectKeys = Object.keys(expect);
-      console.log({ actualKeys });
-      console.log({ expectKeys });
       if (actualKeys.length !== expectKeys.length) {
-        console.log("0");
         return false;
       }
 
