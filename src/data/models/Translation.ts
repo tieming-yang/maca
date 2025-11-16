@@ -97,7 +97,8 @@ export const Translation = {
       .from("translation_versions")
       .select("*")
       .eq("song_id", songId)
-      .eq("language_code", language);
+      .eq("language_code", language)
+      .eq("status", "published");
 
     if (error) {
       console.error(error);
