@@ -24,8 +24,10 @@ export async function addFurigana(
   // we simply use the original text to rebuild all current selected type from scratch.
   for (const element of elements) {
     ensureOriginalText(element);
-    const source = (element as HTMLElement).dataset.furiganaSource ??
-      element.textContent ?? "";
+    const source =
+      (element as HTMLElement).dataset.furiganaSource ??
+      element.textContent ??
+      "";
     element.textContent = source;
   }
 
@@ -43,17 +45,13 @@ export async function addFurigana(
       range.setStart(text, token.start);
       range.setEnd(text, token.end);
       range.deleteContents();
+      //TODO: Failed to execute 'insertNode' on 'Range': This operation would split a text node, but there's no parent into which to insert.
       range.insertNode(ruby);
     }
   }
 }
 
-const exclusionParentTagSet = new Set([
-  "SCRIPT",
-  "STYLE",
-  "NOSCRIPT",
-  "TITLE",
-]);
+const exclusionParentTagSet = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "TITLE"]);
 
 export const collectTexts = (element: Element): Text[] => {
   const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
@@ -120,7 +118,7 @@ const readingFor = (base: string, type: FuriganaType) => {
 
 export const createRuby = (
   token: KanjiMark | KanjiToken,
-  types: FuriganaType[],
+  types: FuriganaType[]
 ): HTMLElement => {
   const ruby = document.createElement("ruby");
   ruby.classList.add(FURIGANA_CLASS);
