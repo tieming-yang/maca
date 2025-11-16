@@ -575,16 +575,26 @@ export default function ClientLearnPage(props: { slug: string }) {
                       {song.translations && song.translations?.length > 0
                         ? song.translations.map((translation) => {
                             return (
-                              <Button
-                                key={translation.id}
-                                className="border w-full rounded-none p-1"
-                                onClick={() => {
-                                  setTranslationVersionId(translation.id);
-                                  setModal("idle");
-                                }}
-                              >
-                                {translation.title}
-                              </Button>
+                              <div key={translation.id} className="flex">
+                                <Button
+                                  className="border w-full rounded-none p-1 shrink-0"
+                                  onClick={() => {
+                                    setTranslationVersionId(translation.id);
+                                    setModal("idle");
+                                  }}
+                                >
+                                  {translation.title}
+                                </Button>
+                                {authUser?.id === translation.created_by && (
+                                  <Link
+                                    href={`/translate/update/${song.id}/${translation.id}`}
+                                  >
+                                    <Button className="border w-full rounded-none p-1">
+                                      Edit
+                                    </Button>
+                                  </Link>
+                                )}
+                              </div>
                             );
                           })
                         : "No Translation Yet"}

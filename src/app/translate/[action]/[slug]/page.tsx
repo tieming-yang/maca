@@ -7,11 +7,5 @@ export default async function TranslatePage({
   params: TranslationActionPageParam;
 }) {
   const { action, slug, translationVersionId } = await params;
-  return (
-    <ClientTranslationCreatePage
-      action={action}
-      slug={slug}
-      translationVersionId={translationVersionId}
-    />
-  );
+  return <ClientTranslationCreatePage action={action} slug={slug} />;
 }

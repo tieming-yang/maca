@@ -54,7 +54,7 @@ export default function ClientTranslationCreatePage(props: {
   slug: string;
   translationVersionId?: string;
 }) {
-  const { action, slug, translationVersionId } = props;
+  const { slug } = props;
   const router = useRouter();
   const { authUser, isAuthUserLoading, isAuthUserError } = useAuthUser();
 
