@@ -123,7 +123,6 @@ export const Translation = {
     if (!data) return null;
 
     return data;
-      
   },
 
   async getByUser(userId: string): Promise<TranslationVersionRow[]> {
@@ -283,5 +282,17 @@ export const Translation = {
 
     const insertedLines = await Translation.insertLines(linesWithVersion);
     return { ...version, lines: insertedLines };
+  },
+
+  async update(newTranslation: Translation): Promise<Translation> {
+    const { id, lines, ...versionUpdate } = newTranslation;
+
+    const updatedVersion = await Translation.updateVersion(id, versionUpdate);
+    const updateLines = await Translation.updateLines(lines);
+
+    return {
+      ...updatedVersion,
+      lines: updateLines,
+    };
   },
 };

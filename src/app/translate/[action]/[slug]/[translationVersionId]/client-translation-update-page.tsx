@@ -1,5 +1,5 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FormAction } from "../../page";
 import { QueryKey } from "@/data/query-keys";
 import {
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import useSong from "@/hooks/use-song";
 import { Song } from "@/songs/Song";
 import { FaSave } from "react-icons/fa";
+import { deepStrictEqual } from "@/utils/deepStrictEqual";
 
 export default function ClientTranslationUpdatePage(props: {
   action: FormAction;
@@ -36,7 +37,7 @@ export default function ClientTranslationUpdatePage(props: {
     isLoading: isTranslationLoading,
     error: translationError,
   } = useQuery({
-    queryKey: QueryKey.translationLines(translationVersionId),
+    queryKey: QueryKey.translation(translationVersionId),
     queryFn: () => Translation.get(translationVersionId),
     placeholderData: (prev) => prev,
   });
@@ -50,12 +51,41 @@ export default function ClientTranslationUpdatePage(props: {
     setNewTranslation(translation);
   }, [translation, translationError]);
 
+  const queryClient = useQueryClient();
+  const updateMutation = useMutation({
+    mutationFn: async (newTranslation: Translation): Promise<Translation> => {
+      console.log("new in update mutation", newTranslation);
+      if (!newTranslation.title) throw new Error("We need a title.");
+
+      const updated = Translation.update(newTranslation);
+
+      return updated;
+    },
+    onSuccess: (refreshed, newTranslation) => {
+      queryClient.setQueryData(
+        QueryKey.translation(newTranslation.id),
+        refreshed
+      );
+      toast.success("Translation Updated");
+    },
+    onError: (error: unknown) => {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unknown error happened when save";
+
+      toast.error("Error on Update", {
+        description: message,
+      });
+    },
+  });
+
   const isPageLoading = isTranslationLoading || isSongLoading;
 
   return (
-    <main className="space-y-10 py-5 px-3">
+    <main className="px-3 py-5 space-y-10">
       {isPageLoading && <Loading isFullScreen />}
-      <h1 className="text-2xl md:text-3xl transition-all duration-300">
+      <h1 className="text-2xl transition-all duration-300 md:text-3xl">
         Edit Your Translation
       </h1>
 
@@ -89,17 +119,12 @@ export default function ClientTranslationUpdatePage(props: {
               className={
                 "w-full border h-10 px-3 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 disabled:cursor-not-allowed disabled:border-zinc-800 disabled:bg-zinc-900/50"
               }
-              value={translation?.language_code ?? LanguageCode.En}
+              value={newTranslation?.language_code ?? LanguageCode.En}
               onChange={(e) => {
                 const newLanguageCode = e.target.value;
-                setNewTranslation((prev) => {
-                  if (!prev) return prev;
-
-                  return {
-                    ...prev,
-                    language_code: newLanguageCode,
-                  };
-                });
+                toast.warning(
+                  "I would recommand you to create a new translation for a new langauge"
+                );
               }}
             >
               {LanguageCodeArray.map(([key, value]) => {
@@ -117,7 +142,7 @@ export default function ClientTranslationUpdatePage(props: {
               className={
                 "w-full border h-10 px-3 focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 disabled:cursor-not-allowed disabled:border-zinc-800 disabled:bg-zinc-900/50"
               }
-              value={translation?.status ?? TranslationStatusMap.Draft}
+              value={newTranslation?.status ?? TranslationStatusMap.Draft}
               onChange={(e) => {
                 const newStatus = e.target.value as TranslationStatus;
                 setNewTranslation((prev) => {
@@ -142,7 +167,7 @@ export default function ClientTranslationUpdatePage(props: {
         </div>
       </section>
 
-      <ul className="flex items-center flex-col gap-y-5 pb-30">
+      <ul className="flex flex-col items-center gap-y-5 pb-30">
         {song?.lines &&
           newTranslation &&
           song.lines.map((line, index) => {
@@ -154,7 +179,7 @@ export default function ClientTranslationUpdatePage(props: {
 
             return (
               <li key={id}>
-                <div className="flex px-3 md:min-w-3xl min-w-svw gap-x-3 items-center-safe flex-col">
+                <div className="flex flex-col px-3 md:min-w-3xl min-w-svw gap-x-3 items-center-safe">
                   <div className="flex justify-between w-full">
                     <span>{lyric}</span>
                     <span>{Song.secondsToTimestamp(timestamp_sec)}</span>
@@ -192,14 +217,19 @@ export default function ClientTranslationUpdatePage(props: {
       </ul>
 
       {/* Controls */}
-      <div className="fixed bottom-20 right-5 flex flex-col gap-5">
+      <div className="fixed flex flex-col gap-5 bottom-20 right-5">
         <Button
-          className="rounded-none border-2"
-          disabled={!translation}
+          className="border-2 rounded-none"
+          disabled={!newTranslation}
           onClick={() => {
-            if (!translation) return;
+            if (!newTranslation) return;
+            const noChange = deepStrictEqual(translation, newTranslation);
+            if (noChange) {
+              toast.warning("No Changeing has been made");
+              return;
+            }
 
-            // saveMutation.mutate(translation);
+            updateMutation.mutate(newTranslation);
           }}
         >
           <FaSave />

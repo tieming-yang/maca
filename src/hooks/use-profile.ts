@@ -5,7 +5,6 @@ import useAuthUser from "./use-auth-user";
 import { Profile } from "@/data/models/Profile";
 import { QueryKey } from "@/data/query-keys";
 
-
 export default function useProfile() {
   const { authUser, isAuthUserLoading } = useAuthUser();
   const uid = authUser?.id;

@@ -70,7 +70,7 @@ export default function ClientLearnPage(props: { slug: string }) {
     isLoading: isTranslationLinesLoading,
     error: isTranslationLinesError,
   } = useQuery<TranslationLinesRow[] | null>({
-    queryKey: QueryKey.translationLines(translationVersionId),
+    queryKey: QueryKey.translation(translationVersionId),
     queryFn: async () => {
       if (!translationVersionId) return null;
       return Translation.getTranslationLines(translationVersionId);

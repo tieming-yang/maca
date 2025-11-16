@@ -174,9 +174,7 @@ export default function ClientTranslationCreatePage(props: {
 
       {/* Metadata */}
       <h2 className="text-xl text-center">Basic Info</h2>
-      <section
-        className={`px-3 py-5 flex justify-center flex-col gap-y-5 `}
-      >
+      <section className={`px-3 py-5 flex justify-center flex-col gap-y-5 `}>
         <label className="grid gap-1">
           <span>title</span>
           <input
