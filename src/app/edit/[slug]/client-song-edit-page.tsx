@@ -777,7 +777,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     onSuccess: (refreshed) => {
       queryClient.invalidateQueries({ queryKey: QueryKey.people() });
       queryClient.setQueryData(QueryKey.person(refreshed.id), refreshed);
-      setPersonData(makeBlankCreditPerson)
+      setPersonData(makeBlankCreditPerson);
       setModal("idel");
 
       toast.success("Person Added");
@@ -839,6 +839,21 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       const value = event.target.value;
       setFormData((prev) => {
         switch (field) {
+          case "youtube_id":
+            const trimmed = value.trim();
+            let parsedYoutubeId;
+            if (trimmed.startsWith("http")) {
+              parsedYoutubeId =
+                new URL(trimmed).searchParams.get("v") ?? trimmed;
+            } else {
+              parsedYoutubeId = trimmed;
+            }
+
+            return {
+              ...prev,
+              ["youtube_id"]: parsedYoutubeId,
+            };
+
           default:
             return { ...prev, [field]: value };
         }
@@ -1062,7 +1077,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             htmlFor="youtube_id"
             className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
           >
-            YouTube ID
+            YouTube ID <span>(Paste YouTube url or just the id)</span>
           </label>
           <input
             id="youtube_id"
