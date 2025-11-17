@@ -12,7 +12,7 @@ export const People = {
     const { data, error } = await db
       .from("people")
       .select("*")
-      .order("display_name", { ascending: true });
+      .order("created_at", { ascending: true });
 
     if (error) {
       console.error(error);
