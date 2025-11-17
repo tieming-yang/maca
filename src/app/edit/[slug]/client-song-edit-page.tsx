@@ -777,7 +777,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
     onSuccess: (refreshed) => {
       queryClient.invalidateQueries({ queryKey: QueryKey.people() });
       queryClient.setQueryData(QueryKey.person(refreshed.id), refreshed);
-
+      setPersonData(makeBlankCreditPerson)
       setModal("idel");
 
       toast.success("Person Added");
