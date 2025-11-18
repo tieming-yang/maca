@@ -537,6 +537,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
 
   const storageKey = useMemo(() => `maca:formData:${slug || "new"}`, [slug]);
 
+  const [isTvSize, setIsTvSize] = useState(false);
   const [formData, setFormData] = useState<SongFormData>(() => {
     try {
       const raw = localStorage.getItem(storageKey);
@@ -1031,6 +1032,39 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
         noValidate
       >
         {/* Basic Info */}
+        {isNew && (
+          <div className="flex items-center gap-2 pt-2">
+            <input
+              id="isTvSize"
+              type="checkbox"
+              checked={isTvSize}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setIsTvSize(checked);
+                setFormData((prev) => {
+                  const base = prev.name.replace(/\s*\(tv size\)$/i, "").trim();
+                  const slugBase = prev.slug
+                    .replace(/\s*\-tv-size$/i, "")
+                    .trim();
+                  return {
+                    ...prev,
+                    name: checked ? `${base} (tv size)` : base,
+                    slug: checked ? `${slugBase}-tv-size` : slugBase,
+                    end_seconds: checked ? "01:44" : "03:00",
+                  };
+                });
+              }}
+              disabled={disableInputs}
+              className="h-4 w-4 accent-teal-500"
+            />
+            <label
+              htmlFor="isTvSize"
+              className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
+            >
+              Is TV Size?
+            </label>
+          </div>
+        )}
         <div className="grid gap-1">
           <label
             htmlFor="name"
