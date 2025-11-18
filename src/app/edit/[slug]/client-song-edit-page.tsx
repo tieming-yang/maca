@@ -117,7 +117,7 @@ function makeBlankSong(): SongFormData {
     romaji: "",
     slug: "",
     youtube_id: "",
-    end_seconds: "",
+    end_seconds: "03:00",
     furigana: "",
     work_id: "",
     work_title: "",
