@@ -53,16 +53,18 @@ export function deepStrictEqual<T>(actual: T, expect: T): boolean {
       return false;
     }
 
-    const actualKeys = Object.keys(actual);
-    const expectKeys = Object.keys(expect);
+    const actualObject = actual as Record<string, unknown>;
+    const expectObject = expect as Record<string, unknown>;
+    const actualKeys = Object.keys(actualObject);
+    const expectKeys = Object.keys(expectObject);
     if (actualKeys.length !== expectKeys.length) {
       return false;
     }
 
     for (let i = 0; i < actualKeys.length; i++) {
       const key = actualKeys[i];
-      if (Object.prototype.hasOwnProperty.call(expect, key)) {
-        if (!deepStrictEqual(actual[key], expect[key])) {
+      if (Object.prototype.hasOwnProperty.call(expectObject, key)) {
+        if (!deepStrictEqual(actualObject[key], expectObject[key])) {
           return false;
         }
       } else {
