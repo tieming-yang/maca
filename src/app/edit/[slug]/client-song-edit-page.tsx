@@ -1003,9 +1003,9 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
   const renderLines = useMemo(() => {
     const lines = [...formData.lines];
     if (editingField === "timestamp") return lines;
-    formData.lines = lines.sort((a, b) => a.timestamp_sec - b.timestamp_sec);
-    return formData.lines;
-  }, [editingField, formData]);
+
+    return lines.sort((a, b) => a.timestamp_sec - b.timestamp_sec);
+  }, [editingField, formData.lines]);
 
   return (
     <section className="w-full font-mono max-w-3xl mx-auto space-y-6 py-8 text-zinc-100 px-3">
@@ -1085,7 +1085,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
             value={formData.name}
             onChange={handleInputChange("name")}
             className={INPUT_CLASS}
-            placeholder="千本桜"
+            placeholder="なえぼ"
             required
             disabled={disableInputs}
           />
@@ -1523,7 +1523,17 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                       className={`${INPUT_CLASS} w-fit`}
                       value={timestamp ?? ""}
                       onFocus={() => setEditingField("timestamp")}
-                      onBlur={() => setEditingField("none")}
+                      onBlur={() => {
+                        setEditingField("none");
+
+                        //? set sorted lines back to formData
+                        setFormData((prev) => ({
+                          ...prev,
+                          lines: renderLines.sort(
+                            (a, b) => a.timestamp_sec - b.timestamp_sec
+                          ),
+                        }));
+                      }}
                       onChange={(e) => {
                         const newTimestamp = Song.timestampToSeconds(
                           e.target.value
