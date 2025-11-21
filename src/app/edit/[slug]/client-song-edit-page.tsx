@@ -1618,6 +1618,7 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
                         variant="icon"
                         className="bg-red-500 size-7"
                         onClick={() => {
+                          //? client id is a string, db id is a int
                           if (isNew || typeof line.id === "string") {
                             setFormData((prev) => {
                               return {
