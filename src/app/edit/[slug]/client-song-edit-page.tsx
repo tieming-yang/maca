@@ -129,7 +129,13 @@ function makeBlankSong(): SongFormData {
     featured_artist: [makeBlankCreditPerson()],
     composer: [makeBlankCreditPerson()],
     lyricist: [makeBlankCreditPerson()],
-    lines: [],
+    lines: [
+      {
+        song_id: "fake-song-id",
+        timestamp_sec: 0,
+        lyric: "",
+      },
+    ],
   };
 }
 
