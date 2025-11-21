@@ -131,8 +131,9 @@ function makeBlankSong(): SongFormData {
     lyricist: [makeBlankCreditPerson()],
     lines: [
       {
+        id: -1,
         song_id: "fake-song-id",
-        timestamp_sec: 0,
+        timestamp_sec: -1,
         lyric: "",
       },
     ],
