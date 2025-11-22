@@ -4,7 +4,11 @@ import type { Database } from "@/types/database.types";
 import { Work, type WorkRow } from "./Work";
 import { Credit, FormattedCredit } from "./Credit";
 import { Line, LineRow } from "./Line";
-import { LanguageCode, Translation, TranslationVersionRow } from "./Translation";
+import {
+  LanguageCode,
+  Translation,
+  TranslationVersionRow,
+} from "./Translation";
 
 export type TableRow = Database["public"]["Tables"]["songs"]["Row"];
 export type ViewRow = Database["public"]["Tables"]["songs"]["Row"];
@@ -50,7 +54,7 @@ export const Song = {
 
   timestampToSeconds(
     timestamp: string | number,
-    option?: { srt: boolean },
+    option?: { srt: boolean }
   ): number {
     if (!timestamp) return 0;
     if (typeof timestamp === "number") return Math.round(timestamp);
@@ -62,16 +66,15 @@ export const Song = {
         return 0;
       }
 
-      const match = rawStart?.match(
-        /^(\d{2}):(\d{2}):(\d{2}),(\d{3})$/,
-      );
+      const match = rawStart?.match(/^(\d{2}):(\d{2}):(\d{2}),(\d{3})$/);
       if (!match) {
         console.error("No capture matched");
         return 0;
       }
 
       const [, hours, minutes, seconds, millis] = match;
-      const totalSeconds = Number(hours) * 3600 +
+      const totalSeconds =
+        Number(hours) * 3600 +
         Number(minutes) * 60 +
         Number(seconds) +
         Number(millis) / 1000;
@@ -101,13 +104,15 @@ export const Song = {
   async getAllWithMetadata(): Promise<SongWithMetadata[]> {
     const { data: songs, error } = await db
       .from("songs")
-      .select(`
+      .select(
+        `
         *,
         credits:song_credits (
           id, song_id, role, person:people(*)
         ),
         work:works (*)
-      `)
+      `
+      )
       .neq("visibility", "private")
       .order("created_at", { ascending: false });
 
@@ -128,7 +133,7 @@ export const Song = {
     const { data, error } = await db
       .from("songs")
       .select(
-        "*, work:works(id, title, romaji, furigana, kind, notes, year, created_at)",
+        "*, work:works(id, title, romaji, furigana, kind, notes, year, created_at)"
       )
       .eq("slug", slug)
       .single<SongWithWorkRow>();
@@ -145,7 +150,7 @@ export const Song = {
     const { data, error } = await db
       .from("songs")
       .select(
-        "*, work:works(id, title, romaji, furigana, kind, notes, year, created_at)",
+        "*, work:works(id, title, romaji, furigana, kind, notes, year, created_at)"
       )
       .eq("id", id)
       .single<SongWithWorkRow>();
@@ -172,7 +177,10 @@ export const Song = {
   //   return data;
   // },
 
-  async getBundle(slug: string, lang: LanguageCode = LanguageCode.En): Promise<SongBundle> {
+  async getBundle(
+    slug: string,
+    lang: LanguageCode = LanguageCode.En
+  ): Promise<SongBundle> {
     const song = await Song.getBySlug(slug);
 
     const credit = await Credit.get(song.id!);
@@ -185,8 +193,7 @@ export const Song = {
 
     const translations = await Translation.getVersions(song.id, lang);
 
-
-     return {
+    return {
       id: song.id!,
       slug: song.slug!,
       name: song.name ?? "",
@@ -203,7 +210,10 @@ export const Song = {
     };
   },
 
-  async getBundleById(id: string, lang: LanguageCode = LanguageCode.En): Promise<SongBundle> {
+  async getBundleById(
+    id: string,
+    lang: LanguageCode = LanguageCode.En
+  ): Promise<SongBundle> {
     const song = await Song.getById(id);
 
     const credit = await Credit.get(song.id!);
@@ -216,8 +226,7 @@ export const Song = {
 
     const translations = await Translation.getVersions(song.id, lang);
 
-
-     return {
+    return {
       id: song.id!,
       slug: song.slug!,
       name: song.name ?? "",
