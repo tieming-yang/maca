@@ -1,9 +1,67 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import SongList from "./components/song-list";
 import InstallPWAPrompt from "./components/install-pwa-prompt";
+import { OG_IMAGE_URL, SITE_URL } from "@/utils/furigana/constants";
 
 type SearchParams = Promise<{ isStaging: string }>;
+
+export function generateMetadata(): Metadata {
+  const title = "Learn Japanese by Singing Anime & J-Pop Lyrics | Maca";
+  const description =
+    "Maca is a lyric-first Japanese learning companion that pairs anime, J-Pop, and game soundtracks with romaji, furigana, timestamps, and community translations so you can memorize vocabulary and pitch accent while singing along.";
+
+  return {
+    title,
+    description,
+    applicationName: "Maca",
+    category: "education",
+    keywords: [
+      "learn Japanese",
+      "Japanese lyrics",
+      "anime songs",
+      "J-Pop romaji",
+      "furigana practice",
+      "Japanese karaoke",
+      "language learning app",
+      "music based learning",
+    ],
+    alternates: {
+      canonical: SITE_URL,
+    },
+    formatDetection: {
+      telephone: false,
+      email: false,
+      address: false,
+    },
+    openGraph: {
+      title,
+      description,
+      url: SITE_URL,
+      siteName: "Maca",
+      type: "website",
+      locale: "en_US",
+      images: [
+        {
+          url: OG_IMAGE_URL,
+          width: 1200,
+          height: 630,
+          alt: "Screenshot of the Maca interface highlighting synced lyrics and translations",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [OG_IMAGE_URL],
+    },
+    other: {
+      "msapplication-TileColor": "#020617",
+    },
+  };
+}
 
 export default async function Home(props: { searchParams: SearchParams }) {
   return (

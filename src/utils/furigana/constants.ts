@@ -1,3 +1,6 @@
+export const SITE_URL = "https://maca.club/";
+export const OG_IMAGE_URL = `${SITE_URL}favicons/web-app-manifest-512x512.png`;
+
 export const FURIGANA_CLASS = "--furigana--";
 
 export const ExtEvent = {
