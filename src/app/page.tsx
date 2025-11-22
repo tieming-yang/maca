@@ -88,7 +88,7 @@ export default async function Home(props: { searchParams: SearchParams }) {
       </header>
 
       <SongList pageTitle="Recently Added" workTitle={null} />
-      <SongList pageTitle="Naruto" workTitle="ナルト" sorting="ascending" />
+      <SongList pageTitle="Naruto OPs" workTitle="ナルト" sorting="ascending" />
       <InstallPWAPrompt />
     </main>
   );
