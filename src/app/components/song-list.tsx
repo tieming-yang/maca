@@ -9,7 +9,14 @@ import { toast } from "sonner";
 import useProfile from "@/hooks/use-profile";
 import { Button } from "@/app/components/ui/button";
 
-export default function SongList() {
+type SongListProps = {
+  pageTitle: string;
+  workTitle: string | null;
+  sorting?: "ascending" | "descending";
+};
+export default function SongList(props: SongListProps) {
+  const { pageTitle, workTitle, sorting = "descending" } = props;
+
   const {
     data: songs,
     isLoading: isSongsLoading,
@@ -19,6 +26,10 @@ export default function SongList() {
     queryFn: () => Song.getAllWithMetadata(),
     staleTime: 60_000,
     placeholderData: (prev) => prev,
+    select: (songs) =>
+      workTitle
+        ? songs.filter((song) => song.work?.title === workTitle)
+        : songs,
   });
   const { profile, isProfileLoading } = useProfile();
 
@@ -27,12 +38,14 @@ export default function SongList() {
   }
   const isLoading = isSongsLoading || isProfileLoading;
   const editable = profile?.role === "admin" || profile?.role === "editor";
+  const renderSongs = sorting === "ascending" ? songs?.toReversed() : songs;
+
   return (
-    <section className="flex flex-col items-center justify-center w-full h-full px-0 pb-32 mx-auto space-y-7">
+    <section className="flex flex-col items-center justify-center w-full h-full px-0 mx-auto space-y-7">
       {isLoading && <Loading isFullScreen />}
       <div className="self-start flex items-end-safe gap-x-2">
         <h2 className="text-xl font-bold sm:text-2xl md:text-3xl">
-          Recently Updated
+          {pageTitle}
         </h2>
         <span className="text-white/50">{songs?.length}</span>
       </div>
@@ -46,8 +59,8 @@ export default function SongList() {
           padding: "0.5rem 0",
         }}
       >
-        {songs &&
-          songs.map((song) => {
+        {renderSongs &&
+          renderSongs.map((song) => {
             const primaryArtist =
               song.credits?.primary_artist.at(0)?.display_name;
             const featureArtist =
@@ -86,7 +99,12 @@ export default function SongList() {
 
                 {editable && (
                   <Link href={`/edit/${song.slug}`}>
-                    <Button variant="outline" className="rounded-none border-white w-full py-1">Edit</Button>
+                    <Button
+                      variant="outline"
+                      className="rounded-none border-white w-full py-1"
+                    >
+                      Edit
+                    </Button>
                   </Link>
                 )}
               </div>

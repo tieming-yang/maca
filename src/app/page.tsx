@@ -7,7 +7,7 @@ type SearchParams = Promise<{ isStaging: string }>;
 
 export default async function Home(props: { searchParams: SearchParams }) {
   return (
-    <main className="px-1 w-full py-3 sm:px-3">
+    <main className="space-y-10 px-1 w-full py-3 sm:px-3 pb-32">
       <header className="flex md:px-3 justify-between pb-7 items-center w-full">
         <Link
           className="font-mono text-xl size-10 relative font-semibold"
@@ -29,7 +29,8 @@ export default async function Home(props: { searchParams: SearchParams }) {
         </h1>
       </header>
 
-      <SongList />
+      <SongList pageTitle="Recently Added" workTitle={null} />
+      <SongList pageTitle="Naruto" workTitle="ナルト" sorting="ascending" />
       <InstallPWAPrompt />
     </main>
   );
