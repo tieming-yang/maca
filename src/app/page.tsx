@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import Image from "next/image";
-import SongList from "./components/song-list";
-import InstallPWAPrompt from "./components/install-pwa-prompt";
 import { OG_IMAGE_URL, SITE_URL } from "@/utils/furigana/constants";
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import InstallPWAPrompt from "./components/install-pwa-prompt";
+import SongList from "./components/song-list";
 
 type SearchParams = Promise<{ isStaging: string }>;
 
