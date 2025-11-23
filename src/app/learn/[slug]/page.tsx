@@ -1,6 +1,7 @@
 import { Song } from "@/data/models/Song";
 import ClientLearnPage from "./client-learn-page";
 import { Metadata, ResolvingMetadata } from "next";
+import { redirect } from "next/navigation";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -13,7 +14,12 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const slug = (await params).slug;
 
-  const song = await Song.getBySlug(slug);
+  let song;
+  try {
+    song = await Song.getBySlug(slug);
+  } catch (error) {
+    redirect("/not-found");
+  }
 
   const title = song?.name ? `${song.name}` : "Maca";
   const description = song?.romaji ?? "Learn Japanese lyrics on Maca.";
