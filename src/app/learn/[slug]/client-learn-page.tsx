@@ -239,8 +239,7 @@ export default function ClientLearnPage(props: { slug: string }) {
     return () => container.removeEventListener("scroll", onScroll);
   }, []);
 
-  if (error)
-    return <div className="p-10 text-red-400">Error: {error.message}</div>;
+  if (error) return notFound();
   if (isLoading || !song || isAuthUserLoading) return <Loading isFullScreen />;
 
   return (

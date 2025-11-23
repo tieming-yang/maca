@@ -139,8 +139,7 @@ export const Song = {
       .single<SongWithWorkRow>();
 
     if (error) {
-      console.error(error);
-      throw Error("getBySlug Error:", error);
+      throw error;
     }
 
     return data;
