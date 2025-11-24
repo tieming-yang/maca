@@ -42,6 +42,16 @@ export default function ClientEditPage() {
         <Button type="button" onClick={handleCreate}>
           New Song
         </Button>
+
+        {/* Test Song */}
+        <div className="flex flex-col gap-y-3">
+          <Link href="/learn/test-song" target="_blank">
+            <Button>Test Song</Button>
+          </Link>
+          <Link href="/edit/test-song">
+            <Button>Edit Test Song</Button>
+          </Link>
+        </div>
       </header>
 
       {error && (
