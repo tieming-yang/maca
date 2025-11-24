@@ -44,7 +44,7 @@ export default function ClientEditPage() {
         </Button>
 
         {/* Test Song */}
-        <div className="flex flex-col gap-y-3">
+        <div className="flex md:flex-col gap-1">
           <Link href="/learn/test-song" target="_blank">
             <Button>Test Song</Button>
           </Link>
