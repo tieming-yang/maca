@@ -725,7 +725,9 @@ export default function ClientSongEditPage({ slug }: { slug: string }) {
       return Song.getBundle(slugToFetch);
     },
     onSuccess: (refreshed, input) => {
-      queryClient.invalidateQueries({ queryKey: QueryKey.songs() });
+      queryClient.invalidateQueries({
+        queryKey: QueryKey.song(refreshed.slug),
+      });
       queryClient.setQueryData(QueryKey.song(refreshed.slug), refreshed);
       if (refreshed.work?.id) {
         queryClient.invalidateQueries({
