@@ -16,8 +16,6 @@ export type ViewRow = Database["public"]["Tables"]["songs"]["Row"];
 export type InsertRow = Database["public"]["Tables"]["songs"]["Insert"];
 export type UpdateRow = Database["public"]["Tables"]["songs"]["Update"];
 export type SongWithWorkRow = TableRow & { work: WorkRow | null };
-export type SongVisibility =
-  Database["public"]["Tables"]["songs"]["Row"]["visibility"];
 export type JaToken = string | { kanji: string; furigana?: string };
 
 export type SongBundle = {
@@ -40,6 +38,17 @@ export type SongWithMetadata = TableRow & {
   credits: FormattedCredit;
   work: WorkRow | null;
 };
+
+export const SongVisibility = {
+  Public: "public",
+  Pravite: "private",
+} as const satisfies Record<
+  string,
+  Database["public"]["Tables"]["songs"]["Row"]["visibility"]
+>;
+
+export type SongVisibility =
+  (typeof SongVisibility)[keyof typeof SongVisibility];
 
 const db = createClient();
 
@@ -259,6 +268,21 @@ export const Song = {
       .eq("id", id)
       .select()
       .single<TableRow>();
+
+    if (error) throw error;
+
+    return data;
+  },
+
+  async updateVisibility(payload: { id: string; visibility: SongVisibility }) {
+    const { id, visibility } = payload;
+
+    const { data, error } = await db
+      .from("songs")
+      .update({ visibility })
+      .eq("id", id)
+      .select("id, visibility")
+      .single();
 
     if (error) throw error;
 

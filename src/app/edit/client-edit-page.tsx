@@ -2,14 +2,18 @@
 
 import { Song, TableRow } from "@/data/models/Song";
 import { QueryKey } from "@/data/query-keys";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Loading from "../components/loading";
 import { Button } from "@/app/components/ui/button";
+import { SongVisibility } from "../../data/models/Song";
+import { ChangeEvent, useState } from "react";
+import { toast } from "sonner";
 
 export default function ClientEditPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const {
     data: songs,
@@ -20,6 +24,35 @@ export default function ClientEditPage() {
     queryFn: () => Song.getAll(),
     staleTime: 60_000,
     placeholderData: (prev) => prev,
+  });
+
+  const [visibilities, setVisibilities] = useState<
+    Record<string, SongVisibility>
+  >({});
+
+  type SelectedVisibility = {
+    id: string;
+    visibility: SongVisibility;
+  };
+  const visibilitiesMutation = useMutation({
+    mutationFn: async (selectedVisibility: SelectedVisibility) => {
+      const { id, visibility } = selectedVisibility;
+      const refreshed = await Song.updateVisibility({ id, visibility });
+
+      return refreshed;
+    },
+    onSuccess: (refreshed) => {
+      toast.success(`Updated:${refreshed.id} to ${refreshed.visibility}`);
+      queryClient.invalidateQueries({
+        queryKey: QueryKey.song(refreshed.id),
+      });
+    },
+
+    onError: (error: unknown) => {
+      const message =
+        error instanceof Error ? error.message : "Unable to save the song.";
+      toast.error(message);
+    },
   });
 
   const handleCreate = () => {
@@ -84,7 +117,7 @@ export default function ClientEditPage() {
                   Updated
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Actions
+                  Visibility
                 </th>
               </tr>
             </thead>
@@ -111,6 +144,30 @@ export default function ClientEditPage() {
                           Edit
                         </Link>
                       </Button>
+                    </td>
+                    <td>
+                      <select
+                        value={visibilities[song.id] ?? song.visibility}
+                        onChange={(event) => {
+                          const value = event.target.value as SongVisibility;
+                          const selectedVisibility = {
+                            id: song.id,
+                            visibility: value,
+                          };
+
+                          setVisibilities((prev) => ({
+                            ...prev,
+                            [song.id]: value,
+                          }));
+                          visibilitiesMutation.mutate(selectedVisibility);
+                        }}
+                      >
+                        {Object.values(SongVisibility).map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
                     </td>
                   </tr>
                 );
